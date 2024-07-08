@@ -119,386 +119,382 @@ June, 2024
 <!-- TOC -->
 
 - [A Layout Control System for Model Railroads](#a-layout-control-system-for-model-railroads)
-    - [Table of Contents](#table-of-contents)
-    - [Introduction](#introduction)
-        - [Elements of a Layout Control System](#elements-of-a-layout-control-system)
-        - [Components, Documentation, Standards and Compatibility](#components-documentation-standards-and-compatibility)
-        - [This Book](#this-book)
-        - [A final note](#a-final-note)
-    - [*General Concepts*](#general-concepts)
-        - [*Layout Control Bus*](#layout-control-bus)
-        - [*Hardware Module*](#hardware-module)
-        - [*Nodes*](#nodes)
-        - [*Ports*](#ports)
-        - [*Attributes*](#attributes)
-        - [*Events*](#events)
-        - [*DCC Subsystem*](#dcc-subsystem)
-        - [*Analog Subsystem*](#analog-subsystem)
-        - [*Configuration*](#configuration)
-        - [*Operation*](#operation)
-        - [*Summary*](#summary)
-    - [*Message Formats*](#message-formats)
-        - [*LCS Message Format*](#lcs-message-format)
-        - [*General Management*](#general-management)
-        - [*Node and Port Management*](#node-and-port-management)
-        - [*Event Management*](#event-management)
-        - [*DCC Track Management*](#dcc-track-management)
-        - [*DCC Locomotive Decoder Management*](#dcc-locomotive-decoder-management)
-        - [*DCC Accessory Decoder Management*](#dcc-accessory-decoder-management)
-        - [*RailCom DCC Packet management*](#railcom-dcc-packet-management)
-        - [*Raw DCC Packet Management*](#raw-dcc-packet-management)
-        - [*DCC errors and status*](#dcc-errors-and-status)
-        - [*Analog Engines*](#analog-engines)
-        - [*Layout Event management*](#layout-event-management)
-        - [*General LCS Bus Management*](#general-lcs-bus-management)
-        - [*DCC Track Management*](#dcc-track-management)
-        - [*Locomotive Session Management*](#locomotive-session-management)
-        - [*Locomotive Configuration Management*](#locomotive-configuration-management)
-        - [*Configuration Management using RailCom*](#configuration-management-using-railcom)
-        - [*DCC Accessory Decoder Management*](#dcc-accessory-decoder-management)
-        - [*Sending DCC packets*](#sending-dcc-packets)
-        - [*Summary*](#summary)
-    - [*The LCS Runtime Library*](#the-lcs-runtime-library)
-    - [*Runtime Library Storage*](#runtime-library-storage)
-        - [*Root Map*](#root-map)
-        - [*HW Resource Map*](#hw-resource-map)
-        - [*Node Map*](#node-map)
-        - [*Port Map*](#port-map)
-        - [*Node and Port Items*](#node-and-port-items)
-        - [*Event Map*](#event-map)
-        - [*User defined maps*](#user-defined-maps)
-        - [*Pending Request Map*](#pending-request-map)
-        - [*Driver map*](#driver-map)
-        - [*Summary*](#summary)
-    - [*LCS Runtime Library Functions*](#lcs-runtime-library-functions)
-        - [*Library initialization*](#library-initialization)
-        - [*Obtaining node information*](#obtaining-node-information)
-        - [*Controlling a node aspect*](#controlling-a-node-aspect)
-        - [*Reacting to events*](#reacting-to-events)
-        - [*Sending messages*](#sending-messages)
-        - [*Summary*](#summary)
-    - [*LCS Library Callback Functions*](#lcs-library-callback-functions)
-        - [*General Callbacks*](#general-callbacks)
-        - [*Node and Port Initialization Callback*](#node-and-port-initialization-callback)
-        - [*Node and Port Request Reply Callback*](#node-and-port-request-reply-callback)
-        - [*Node and Port Control and Info Callback*](#node-and-port-control-and-info-callback)
-        - [*Inbound Event Callback*](#inbound-event-callback)
-        - [*Console Command Line Callback*](#console-command-line-callback)
-        - [*DCC Message Callback*](#dcc-message-callback)
-        - [*RailCom Message Callback*](#railcom-message-callback)
-        - [*LCS Periodic Task Callback*](#lcs-periodic-task-callback)
-        - [*Summary*](#summary)
-    - [*Core Library Command Interface*](#core-library-command-interface)
-        - [*Configuration Mode Commands*](#configuration-mode-commands)
-        - [*Event Commands*](#event-commands)
-        - [*Node Map and Attributes Commands*](#node-map-and-attributes-commands)
-        - [*Send a raw Message*](#send-a-raw-message)
-        - [*List node status*](#list-node-status)
-        - [*Driver commands*](#driver-commands)
-        - [*Batch mode*](#batch-mode)
-        - [*LCS message text format*](#lcs-message-text-format)
-        - [*Summary*](#summary)
-    - [*LCS Core Library Usage Example*](#lcs-core-library-usage-example)
-        - [*Sending Node*](#sending-node)
-        - [*Receiving Node*](#receiving-node)
-        - [*Summary*](#summary)
-    - [*The DCC Subsystem*](#the-dcc-subsystem)
-        - [*Locomotive session management*](#locomotive-session-management)
-        - [*Stationary Decoders*](#stationary-decoders)
-        - [*DCC Packet generation*](#dcc-packet-generation)
-        - [*Sending a DCC packet*](#sending-a-dcc-packet)
-        - [*DCC Track Signal Generation*](#dcc-track-signal-generation)
-        - [*Power consumption monitoring*](#power-consumption-monitoring)
-        - [*Decoder programming support*](#decoder-programming-support)
-        - [*RailCom support*](#railcom-support)
-        - [*DCC Track sections*](#dcc-track-sections)
-        - [*A short Glimpse at Software Implementation*](#a-short-glimpse-at-software-implementation)
-        - [*Summary*](#summary)
-    - [*The Analog Subsystem*](#the-analog-subsystem)
-        - [*Requirements*](#requirements)
-        - [*Overall concept*](#overall-concept)
-        - [*Locomotive session management*](#locomotive-session-management)
-        - [*Analog Track Signal Generation*](#analog-track-signal-generation)
-        - [*Analog Track Blocks and Track subsections*](#analog-track-blocks-and-track-subsections)
-        - [*A short Glimpse at Software Implementation*](#a-short-glimpse-at-software-implementation)
-        - [*Summary*](#summary)
-    - [*LCS Hardware Module Design*](#lcs-hardware-module-design)
-        - [*Selecting the controller*](#selecting-the-controller)
-        - [*The Controller Platform*](#the-controller-platform)
-        - [*Hardware Module Schematics*](#hardware-module-schematics)
-        - [*Controller and Extension Board*](#controller-and-extension-board)
-        - [*LCS Bus connector*](#lcs-bus-connector)
-        - [*LCSNodes Extension Board Connector*](#lcsnodes-extension-board-connector)
-        - [*Power Line Connectors*](#power-line-connectors)
-        - [*Track Power Connectors*](#track-power-connectors)
-        - [*Summary*](#summary)
-    - [*A Main Controller Board with Raspberry PI Pico*](#a-main-controller-board-with-raspberry-pi-pico)
-        - [*Block Diagram*](#block-diagram)
-        - [*Main Controller*](#main-controller)
-        - [*Connectors and Level Shifters*](#connectors-and-level-shifters)
-        - [*A Main Controller Board PCB for PICO*](#a-main-controller-board-pcb-for-pico)
-        - [*Summary*](#summary)
-    - [*Controller Dependent Code*](#controller-dependent-code)
-        - [*The big picture*](#the-big-picture)
-        - [*Configuring the pins*](#configuring-the-pins)
-        - [*CDC Library setup*](#cdc-library-setup)
-        - [*General Controller Attributes and Functions*](#general-controller-attributes-and-functions)
-        - [*Power Fail detect*](#power-fail-detect)
-        - [*External Interrupt*](#external-interrupt)
-        - [*Status LEDs*](#status-leds)
-        - [*Option Button*](#option-button)
-        - [*Timer*](#timer)
-        - [*Digital IO*](#digital-io)
-        - [*Analog Input*](#analog-input)
-        - [*PWM Output*](#pwm-output)
-        - [*UART Interface*](#uart-interface)
-        - [I2C](#i2c)
-        - [SPI](#spi)
-        - [CAN Bus](#can-bus)
-        - [NVM storage](#nvm-storage)
-        - [*Extension Connector and hardware pins*](#extension-connector-and-hardware-pins)
-        - [*Summary*](#summary)
-    - [*LCS Node Firmware Design*](#lcs-node-firmware-design)
-        - [*General Thoughts - Nodes, Ports and Events*](#general-thoughts---nodes-ports-and-events)
-        - [*General thoughts - Software layers*](#general-thoughts---software-layers)
-        - [*Node Functions and Attributes*](#node-functions-and-attributes)
-        - [*Port Functions and Attributes*](#port-functions-and-attributes)
-        - [*Local Attributes*](#local-attributes)
-        - [*Command Line and Display*](#command-line-and-display)
-        - [*Event handling*](#event-handling)
-        - [*Periodic Tasks*](#periodic-tasks)
-        - [*Configuration*](#configuration)
-        - [*The main code*](#the-main-code)
-        - [*Summary*](#summary)
-    - [*Power Module Design*](#power-module-design)
-        - [*Dual Power Module - L6205*](#dual-power-module---l6205)
-        - [*Mono Power Module - L6205*](#mono-power-module---l6205)
-        - [*Power Module - Breakout Boards*](#power-module---breakout-boards)
-        - [*Summary*](#summary)
-    - [*Railcom Signal Detector*](#railcom-signal-detector)
-        - [*Summary*](#summary)
-    - [*The Base Station*](#the-base-station)
-        - [*Key Requirements*](#key-requirements)
-        - [Module hardware](#module-hardware)
-        - [*Base Station PCB*](#base-station-pcb)
-        - [*Summary*](#summary)
-    - [*Base Station Firmware*](#base-station-firmware)
-        - [*Locomotive Session Management*](#locomotive-session-management)
-        - [*Base Station Global Functions*](#base-station-global-functions)
-        - [*Locomotive Session Management Attributes and Functions*](#locomotive-session-management-attributes-and-functions)
-        - [*DCC Track management*](#dcc-track-management)
-        - [*DCC Track Management Attributes and Functions*](#dcc-track-management-attributes-and-functions)
-        - [*RailCom Support*](#railcom-support)
-        - [*RailCom Support Attributes and Functions*](#railcom-support-attributes-and-functions)
-        - [*LocoNet Support*](#loconet-support)
-        - [*Base Station Serial Commands*](#base-station-serial-commands)
-        - [*Summary*](#summary)
-    - [*Signaling Block Control*](#signaling-block-control)
-        - [*Requirements*](#requirements)
-        - [*Block Element Concept*](#block-element-concept)
-        - [*Turnouts*](#turnouts)
-        - [*Signals*](#signals)
-        - [*ABS and APB*](#abs-and-apb)
-        - [*Block Control Algorithms*](#block-control-algorithms)
-        - [*Summary*](#summary)
-    - [*The Block Controller Node Hardware*](#the-block-controller-node-hardware)
-        - [*Requirements*](#requirements)
-        - [*Overall hardware module design*](#overall-hardware-module-design)
-        - [*Summary*](#summary)
-    - [*Block Controller Board*](#block-controller-board)
-        - [*Block Controller PCB*](#block-controller-pcb)
-        - [*Summary*](#summary)
-    - [*Block Controller Firmware*](#block-controller-firmware)
-        - [*Block Controller Ports Overview*](#block-controller-ports-overview)
-        - [*Block Port*](#block-port)
-        - [*Section Port*](#section-port)
-        - [*H-Bridge Port*](#h-bridge-port)
-        - [*Turnout Port*](#turnout-port)
-        - [*Signal Port*](#signal-port)
-        - [*Block Controller Node*](#block-controller-node)
-        - [*Info, Control and Events*](#info-control-and-events)
-        - [*To think about*](#to-think-about)
-        - [*Summary*](#summary)
-    - [*Sensors and Actors*](#sensors-and-actors)
-        - [*Requirements*](#requirements)
-        - [*Extension Boards*](#extension-boards)
-        - [*Summary*](#summary)
-    - [*Hardware Extension Module Design*](#hardware-extension-module-design)
-        - [*Requirements*](#requirements)
-        - [*Concepts*](#concepts)
-        - [*I2C Addressing*](#i2c-addressing)
-        - [*Multiple Extension Boards*](#multiple-extension-boards)
-        - [*Extension library*](#extension-library)
-        - [Board Discovery and Setup](#bo#ard-discovery-and-setup)
-        - [*Extension Descriptor Memory*](#extension-descriptor-memory)
-        - [*Extension Board Driver*](#extension-board-driver)
-        - [*Utility for writing the NVM*](#utility-for-writing-the-nvm)
-        - [Summary](#summary)
-    - [*Track Occupancy Detector Extension Board*](#track-occupancy-detector-extension-board)
-        - [*Block Diagram*](#block-diagram)
-        - [*Connectors and Logic*](#connectors-and-logic)
-        - [*Detectors*](#detectors)
-        - [*PCB*](#pcb)
-    - [*Servo Extension Board*](#servo-extension-board)
-        - [*Block Diagram*](#block-diagram)
-        - [*Connectors*](#connectors)
-        - [*Logic*](#logic)
-        - [*PCB*](#pcb)
-        - [*Firmware*](#firmware)
-    - [*GPIO Extension Board*](#gpio-extension-board)
-        - [*Block Diagram*](#block-diagram)
-        - [*Connectors*](#connectors)
-        - [*Logic*](#logic)
-        - [*PCB*](#pcb)
-    - [*Signal Extension Board*](#signal-extension-board)
-        - [*Block Diagram*](#block-diagram)
-        - [*Connectors*](#connectors)
-        - [*Logic*](#logic)
-        - [*PCB*](#pcb)
-        - [*Firmware*](#firmware)
-    - [*Turnout Extension Board*](#turnout-extension-board)
-    - [*Relay Extension Board*](#relay-extension-board)
-        - [*Block Diagram*](#block-diagram)
-        - ["Connectors"](#connectors)
-        - [*Logic*](#logic)
-        - [*PCB*](#pcb)
-        - [*Firmware*](#firmware)
-    - [*Combo Extension Board*](#combo-extension-board)
-        - [*Block Diagram*](#block-diagram)
-        - ["Connectors"](#connectors)
-        - [*Logic*](#logic)
-        - [*PCB*](#pcb)
-        - [*Firmware*](#firmware)
-    - [*Cab Control Extension Board*](#cab-control-extension-board)
-        - [*Block Diagram*](#block-diagram)
-        - [*Connectors and Logic*](#connectors-and-logic)
-        - [*PCB*](#pcb)
-        - [*Firmware*](#firmware)
-        - [Summary](#summary)
-    - [*Prototype Extension Board*](#prototype-extension-board)
-        - [*Block Diagram*](#block-diagram)
-        - [*Connectors and Logic*](#connectors-and-logic)
-        - [*PCB*](#pcb)
-        - [*Firmware*](#firmware)
-    - [*The Cab Handheld*](#the-cab-handheld)
-        - [*Requirements*](#requirements)
-    - [*Cab Handheld Firmware Development Platform*](#cab-handheld-firmware-development-platform)
-    - [*A Cab Handheld*](#a-cab-handheld)
-        - [*Summary*](#summary)
-    - [*Cab Handheld Firmware*](#cab-handheld-firmware)
-        - [Concepts](#concepts)
-        - [Screen Layout](#screen-layout)
-        - [Screen Navigation](#screen-navigation)
-        - [Operate Screen](#operate-screen)
-        - [Engine On/off Screen](#engine-onoff-screen)
-        - [Engine Lights Screen](#engine-lights-screen)
-        - [New Cab Screen](#new-cab-screen)
-        - [Select Cab Screen](#select-cab-screen)
-        - [Save Cab Screen](#save-cab-screen)
-        - [Set DCC Function](#set-dcc-function)
-        - [Config Cab Handheld Functions](#config-cab-handheld-functions)
-        - [Options](#options)
-        - [Diag](#diag)
-        - [*Summary*](#summary)
-        - [*Requirements*](#requirements)
-        - [*Module hardware*](#module-hardware)
-        - [*Module firmware*](#module-firmware)
-        - [*Summary*](#summary)
-    - [*Layout Connector Panel*](#layout-connector-panel)
-        - [*Requirements*](#requirements)
-        - [*Implementation*](#implementation)
-        - [*Summary*](#summary)
-    - [*LCS Module - Gateways*](#lcs-module---gateways)
-    - [*DCC Monitoring*](#dcc-monitoring)
-        - [*Requirements*](#requirements)
-        - [*Module hardware*](#module-hardware)
-        - [*Module firmware*](#module-firmware)
-        - [*Summary*](#summary)
-    - [*Layout System Configuration*](#layout-system-configuration)
-        - [*Requirements*](#requirements)
-        - [*Layout Configuration Software*](#layout-configuration-software)
-        - [*Summary*](#summary)
-    - [*The LCS Guidance Computer*](#the-lcs-guidance-computer)
-        - [*Nodes, Verbs, Nouns and Registers*](#nodes-verbs-nouns-and-registers)
-        - [*Display and Keyboard*](#display-and-keyboard)
-        - [*Summary*](#summary)
-    - [*UI Elements*](#ui-elements)
-        - [*Concepts*](#concepts)
-        - [*Buttons*](#buttons)
-        - [*Rotary Encoders*](#rotary-encoders)
-        - [*LEDs*](#leds)
-        - [*Displays*](#displays)
-        - [*Screens*](#screens)
-        - [*Summary*](#summary)
-    - [*Outlook*](#outlook)
-        - [Planned  GitHub Structure](#planned--github-structure)
-        - [Schematics and Boards](#schematics-and-boards)
-    - [*Appendix n - LCS Nodes Items Reference*](#appendix-n---lcs-nodes-items-reference)
-        - [Concept review](#concept-review)
-        - [Common items for an LCS node](#common-items-for-an-lcs-node)
-        - [Power Module items](#power-module-items)
-        - [Base Station items](#base-station-items)
-        - [Cab Handheld items](#cab-handheld-items)
-        - [GPIO extension items](#gpio-extension-items)
-        - [Occupancy detect extension items](#occupancy-detect-extension-items)
-        - [Servo extension items](#servo-extension-items)
-    - [*Appendix n - Core Library Status Code*](#appendix-n---core-library-status-code)
-    - [*Appendix n - Core Library Routines Reference*](#appendix-n---core-library-routines-reference)
-        - [Setup](#setup)
-        - [*getCoreLibConfigDescDefaults*](#getcorelibconfigdescdefaults)
-        - [*init*](#init)
-        - [*run*](#run)
-        - [Control and Information](#control-and-information)
-        - [*nodeControl*](#nodecontrol)
-        - [*nodeInfo*](#nodeinfo)
-        - [*getAttr*](#getattr)
-        - [*setAttr*](#setattr)
-        - [*getAttrAdr*](#getattradr)
-        - [Callbacks](#callbacks)
-        - [*registerLcsMsgCallback*](#registerlcsmsgcallback)
-        - [*registerDccMsgCallback*](#registerdccmsgcallback)
-        - [*attachCommandHandler*](#attachcommandhandler)
-        - [*registerReqRepCallback*](#registerreqrepcallback)
-        - [*attachPortEventHandler*](#attachporteventhandler)
-        - [*registerInitCallback*](#registerinitcallback)
-        - [*registerInfoCallback*](#registerinfocallback)
-        - [*registerCtrlCallback*](#registerctrlcallback)
-        - [*registerPeriodicTask*](#registerperiodictask)
-        - [General Bus Management Messages](#general-bus-management-messages)
-        - [*sendRawLcsMsg*](#sendrawlcsmsg)
-        - [Node and Port Management Messages](#node-and-port-management-messages)
-        - [*sendNodeReset*](#sendnodeReset)
-        - [*sendQueryNode*](#sendquerynode)
-        - [Event Management Messages](#event-management-messages)
-        - [DCC Track Management Messages](#dcc-track-management-messages)
-        - [*sendTrackOn*](#sendtrackon)
-        - [*sendReqTrackOff*](#sendreqtrackoff)
-        - [*sendTrackOff*](#sendtrackoff)
-        - [DCC Subsystem Management Messages](#dcc-subsystem-management-messages)
-        - [*sendSetLocSpDir*](#sendsetlocspdir)
-        - [*sendSetLocFuncOff*](#sendsetlocfuncoff)
-        - [*sendSetLocFgroup*](#sendsetlocfgroup)
-        - [*sendSetLocCvMain*](#sendsetloccvmain)
-        - [*sendSetLocCvProg*](#sendsetloccvprog)
-        - [Extension Driver Management](#extension-driver-management)
-        - [*drvControl*](#drvcontrol)
-        - [*drvInfo*](#drvinfo)
-        - [*drvRead*](#drvread)
-        - [*drvWrite*](#drvwrite)
-    - [*Appendix n - Library Serial Commands Reference*](#appendix-n---library-serial-commands-reference)
-    - [*Appendix n - Controller Dependent Code Library Routines Reference*](#appendix-n---controller-dependent-code-library-routines-reference)
-        - [*Overview*](#overview)
-        - [*yyy*](#yyy)
-    - [*Appendix n - DCC++ Serial Commands Reference*](#appendix-n---dcc-serial-commands-reference)
-    - [*Appendix n - LCS Nodes and EasyEda*](#appendix-n---lcs-nodes-and-easyeda)
-        - [*Symbols and Footprints*](#symbols-and-footprints)
-        - [Links](#links)
-    - [*Appendix n - Inspiring work and links*](#appendix-n---inspiring-work-and-links)
-        - [Standards](#standards)
-        - [Projects](#projects)
-        - [Tools](#tools)
-    - [*Appendix n - A generic power supply*](#appendix-n---a-generic-power-supply)
-    - [*Notes for making this book*](#notes-for-making-this-book)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+    - [Elements of a Layout Control System](#elements-of-a-layout-control-system)
+    - [Components, Documentation, Standards and Compatibility](#components-documentation-standards-and-compatibility)
+    - [This Book](#this-book)
+    - [A final note](#a-final-note)
+  - [*General Concepts*](#general-concepts)
+    - [*Layout Control Bus*](#layout-control-bus)
+    - [*Hardware Module*](#hardware-module)
+    - [*Nodes*](#nodes)
+    - [*Ports*](#ports)
+    - [*Attributes*](#attributes)
+    - [*Events*](#events)
+    - [*DCC Subsystem*](#dcc-subsystem)
+    - [*Analog Subsystem*](#analog-subsystem)
+    - [*Configuration*](#configuration)
+    - [*Operation*](#operation)
+    - [*Summary*](#summary)
+  - [*Message Formats*](#message-formats)
+    - [*LCS Message Format*](#lcs-message-format)
+    - [*General Management*](#general-management)
+    - [*Node and Port Management*](#node-and-port-management)
+    - [*Event Management*](#event-management)
+    - [*DCC Track Management*](#dcc-track-management)
+    - [*DCC Locomotive Decoder Management*](#dcc-locomotive-decoder-management)
+    - [*DCC Accessory Decoder Management*](#dcc-accessory-decoder-management)
+    - [*RailCom DCC Packet management*](#railcom-dcc-packet-management)
+    - [*Raw DCC Packet Management*](#raw-dcc-packet-management)
+    - [*DCC errors and status*](#dcc-errors-and-status)
+    - [*Analog Engines*](#analog-engines)
+    - [*Layout Event management*](#layout-event-management)
+    - [*General LCS Bus Management*](#general-lcs-bus-management)
+    - [*DCC Track Management*](#dcc-track-management-1)
+    - [*Locomotive Session Management*](#locomotive-session-management)
+    - [*Locomotive Configuration Management*](#locomotive-configuration-management)
+    - [*Configuration Management using RailCom*](#configuration-management-using-railcom)
+    - [*DCC Accessory Decoder Management*](#dcc-accessory-decoder-management-1)
+    - [*Sending DCC packets*](#sending-dcc-packets)
+    - [*Summary*](#summary-1)
+  - [*The LCS Runtime Library*](#the-lcs-runtime-library)
+  - [*Runtime Library Storage*](#runtime-library-storage)
+    - [*Node Map*](#node-map)
+    - [*Port Map*](#port-map)
+    - [*Node and Port Items*](#node-and-port-items)
+    - [*Event Map*](#event-map)
+    - [*User defined maps*](#user-defined-maps)
+    - [*Pending Request Map*](#pending-request-map)
+    - [*Driver map*](#driver-map)
+    - [*Summary*](#summary-2)
+  - [*LCS Runtime Library Functions*](#lcs-runtime-library-functions)
+    - [*Library initialization*](#library-initialization)
+    - [*Obtaining node information*](#obtaining-node-information)
+    - [*Controlling a node aspect*](#controlling-a-node-aspect)
+    - [*Controlling extension functions*](#controlling-extension-functions)
+    - [*Reacting to events*](#reacting-to-events)
+    - [*Sending messages*](#sending-messages)
+    - [*Summary*](#summary-3)
+  - [*LCS Library Callback Functions*](#lcs-library-callback-functions)
+    - [*General Callbacks*](#general-callbacks)
+    - [*Node and Port Initialization Callback*](#node-and-port-initialization-callback)
+    - [*Node and Port Request Reply Callback*](#node-and-port-request-reply-callback)
+    - [*Node and Port Control and Info Callback*](#node-and-port-control-and-info-callback)
+    - [*Inbound Event Callback*](#inbound-event-callback)
+    - [*Console Command Line Callback*](#console-command-line-callback)
+    - [*DCC Message Callback*](#dcc-message-callback)
+    - [*RailCom Message Callback*](#railcom-message-callback)
+    - [*LCS Periodic Task Callback*](#lcs-periodic-task-callback)
+    - [*Summary*](#summary-4)
+  - [*Core Library Command Interface*](#core-library-command-interface)
+    - [*Configuration Mode Commands*](#configuration-mode-commands)
+    - [*Event Commands*](#event-commands)
+    - [*Node Map and Attributes Commands*](#node-map-and-attributes-commands)
+    - [*Send a raw Message*](#send-a-raw-message)
+    - [*List node status*](#list-node-status)
+    - [*Driver commands*](#driver-commands)
+    - [*Batch mode*](#batch-mode)
+    - [*LCS message text format*](#lcs-message-text-format)
+    - [*Summary*](#summary-5)
+  - [*LCS Core Library Usage Example*](#lcs-core-library-usage-example)
+    - [*Sending Node*](#sending-node)
+    - [*Receiving Node*](#receiving-node)
+    - [*Summary*](#summary-6)
+  - [*The DCC Subsystem*](#the-dcc-subsystem)
+    - [*Locomotive session management*](#locomotive-session-management-1)
+    - [*Stationary Decoders*](#stationary-decoders)
+    - [*DCC Packet generation*](#dcc-packet-generation)
+    - [*Sending a DCC packet*](#sending-a-dcc-packet)
+    - [*DCC Track Signal Generation*](#dcc-track-signal-generation)
+    - [*Power consumption monitoring*](#power-consumption-monitoring)
+    - [*Decoder programming support*](#decoder-programming-support)
+    - [*RailCom support*](#railcom-support)
+    - [*DCC Track sections*](#dcc-track-sections)
+    - [*A short Glimpse at Software Implementation*](#a-short-glimpse-at-software-implementation)
+    - [*Summary*](#summary-7)
+  - [*The Analog Subsystem*](#the-analog-subsystem)
+    - [*Requirements*](#requirements)
+    - [*Overall concept*](#overall-concept)
+    - [*Locomotive session management*](#locomotive-session-management-2)
+    - [*Analog Track Signal Generation*](#analog-track-signal-generation)
+    - [*Analog Track Blocks and Track subsections*](#analog-track-blocks-and-track-subsections)
+    - [*A short Glimpse at Software Implementation*](#a-short-glimpse-at-software-implementation-1)
+    - [*Summary*](#summary-8)
+  - [*LCS Hardware Module Design*](#lcs-hardware-module-design)
+    - [*Selecting the controller*](#selecting-the-controller)
+    - [*The Controller Platform*](#the-controller-platform)
+    - [*Hardware Module Schematics*](#hardware-module-schematics)
+    - [*Controller and Extension Board*](#controller-and-extension-board)
+    - [*LCS Bus connector*](#lcs-bus-connector)
+    - [*LCSNodes Extension Board Connector*](#lcsnodes-extension-board-connector)
+    - [*Power Line Connectors*](#power-line-connectors)
+    - [*Track Power Connectors*](#track-power-connectors)
+    - [*Summary*](#summary-9)
+  - [*A Main Controller Board with Raspberry PI Pico*](#a-main-controller-board-with-raspberry-pi-pico)
+    - [*Block Diagram*](#block-diagram)
+    - [*Main Controller*](#main-controller)
+    - [*Connectors and Level Shifters*](#connectors-and-level-shifters)
+    - [*A Main Controller Board PCB for PICO*](#a-main-controller-board-pcb-for-pico)
+    - [*Summary*](#summary-10)
+  - [*Controller Dependent Code*](#controller-dependent-code)
+    - [*The big picture*](#the-big-picture)
+    - [*Configuring the pins*](#configuring-the-pins)
+    - [*CDC Library setup*](#cdc-library-setup)
+    - [*General Controller Attributes and Functions*](#general-controller-attributes-and-functions)
+    - [*Power Fail detect*](#power-fail-detect)
+    - [*External Interrupt*](#external-interrupt)
+    - [*Status LEDs*](#status-leds)
+    - [*Timer*](#timer)
+    - [*Digital IO*](#digital-io)
+    - [*Analog Input*](#analog-input)
+    - [*PWM Output*](#pwm-output)
+    - [*UART Interface*](#uart-interface)
+    - [I2C](#i2c)
+    - [SPI](#spi)
+    - [*Extension Connector and hardware pins*](#extension-connector-and-hardware-pins)
+    - [*Summary*](#summary-11)
+  - [*LCS Node Firmware Design*](#lcs-node-firmware-design)
+    - [*General Thoughts - Nodes, Ports and Events*](#general-thoughts---nodes-ports-and-events)
+    - [*General thoughts - Software layers*](#general-thoughts---software-layers)
+    - [*Node Functions and Attributes*](#node-functions-and-attributes)
+    - [*Port Functions and Attributes*](#port-functions-and-attributes)
+    - [*Command Line and Display*](#command-line-and-display)
+    - [*Event handling*](#event-handling)
+    - [*Periodic Tasks*](#periodic-tasks)
+    - [*Configuration*](#configuration-1)
+    - [*The main code*](#the-main-code)
+    - [*Summary*](#summary-12)
+  - [*Power Module Design*](#power-module-design)
+    - [*Dual Power Module - L6205*](#dual-power-module---l6205)
+    - [*Mono Power Module - L6205*](#mono-power-module---l6205)
+    - [*Power Module - Breakout Boards*](#power-module---breakout-boards)
+    - [*Summary*](#summary-13)
+  - [*Railcom Signal Detector*](#railcom-signal-detector)
+    - [*Summary*](#summary-14)
+  - [*The Base Station*](#the-base-station)
+    - [*Key Requirements*](#key-requirements)
+    - [Module hardware](#module-hardware)
+    - [*Base Station PCB*](#base-station-pcb)
+    - [*Summary*](#summary-15)
+  - [*Base Station Firmware*](#base-station-firmware)
+    - [*Locomotive Session Management*](#locomotive-session-management-3)
+    - [*Base Station Global Functions*](#base-station-global-functions)
+    - [*Locomotive Session Management Attributes and Functions*](#locomotive-session-management-attributes-and-functions)
+    - [*DCC Track management*](#dcc-track-management-2)
+    - [*DCC Track Management Attributes and Functions*](#dcc-track-management-attributes-and-functions)
+    - [*RailCom Support*](#railcom-support-1)
+    - [*RailCom Support Attributes and Functions*](#railcom-support-attributes-and-functions)
+    - [*LocoNet Support*](#loconet-support)
+    - [*Base Station Serial Commands*](#base-station-serial-commands)
+    - [*Summary*](#summary-16)
+  - [*Signaling Block Control*](#signaling-block-control)
+    - [*Requirements*](#requirements-1)
+    - [*Block Element Concept*](#block-element-concept)
+    - [*Turnouts*](#turnouts)
+    - [*Signals*](#signals)
+    - [*ABS and APB*](#abs-and-apb)
+    - [*Block Control Algorithms*](#block-control-algorithms)
+    - [*Summary*](#summary-17)
+  - [*The Block Controller Node Hardware*](#the-block-controller-node-hardware)
+    - [*Requirements*](#requirements-2)
+    - [*Overall hardware module design*](#overall-hardware-module-design)
+    - [*Summary*](#summary-18)
+  - [*Block Controller Board*](#block-controller-board)
+    - [*Block Controller PCB*](#block-controller-pcb)
+    - [*Summary*](#summary-19)
+  - [*Block Controller Firmware*](#block-controller-firmware)
+    - [*Block Controller Ports Overview*](#block-controller-ports-overview)
+    - [*Block Port*](#block-port)
+    - [*Section Port*](#section-port)
+    - [*H-Bridge Port*](#h-bridge-port)
+    - [*Turnout Port*](#turnout-port)
+    - [*Signal Port*](#signal-port)
+    - [*Block Controller Node*](#block-controller-node)
+    - [*Info, Control and Events*](#info-control-and-events)
+    - [*To think about*](#to-think-about)
+    - [*Summary*](#summary-20)
+  - [*Sensors and Actors*](#sensors-and-actors)
+    - [*Requirements*](#requirements-3)
+    - [*Extension Boards*](#extension-boards)
+    - [*Summary*](#summary-21)
+  - [*Hardware Extension Module Design*](#hardware-extension-module-design)
+    - [*Requirements*](#requirements-4)
+    - [*Concepts*](#concepts)
+    - [*I2C Addressing*](#i2c-addressing)
+    - [*Multiple Extension Boards*](#multiple-extension-boards)
+    - [*Extension library*](#extension-library)
+    - [Board Discovery and Setup](#board-discovery-and-setup)
+    - [*Extension Descriptor Memory*](#extension-descriptor-memory)
+    - [*Extension Board Driver*](#extension-board-driver)
+    - [*Utility for writing the NVM*](#utility-for-writing-the-nvm)
+    - [Summary](#summary-22)
+  - [*Track Occupancy Detector Extension Board*](#track-occupancy-detector-extension-board)
+    - [*Block Diagram*](#block-diagram-1)
+    - [*Connectors and Logic*](#connectors-and-logic)
+    - [*Detectors*](#detectors)
+    - [*PCB*](#pcb)
+  - [*Servo Extension Board*](#servo-extension-board)
+    - [*Block Diagram*](#block-diagram-2)
+    - [*Connectors*](#connectors)
+    - [*Logic*](#logic)
+    - [*PCB*](#pcb-1)
+    - [*Firmware*](#firmware)
+  - [*GPIO Extension Board*](#gpio-extension-board)
+    - [*Block Diagram*](#block-diagram-3)
+    - [*Connectors*](#connectors-1)
+    - [*Logic*](#logic-1)
+    - [*PCB*](#pcb-2)
+  - [*Signal Extension Board*](#signal-extension-board)
+    - [*Block Diagram*](#block-diagram-4)
+    - [*Connectors*](#connectors-2)
+    - [*Logic*](#logic-2)
+    - [*PCB*](#pcb-3)
+    - [*Firmware*](#firmware-1)
+  - [*Turnout Extension Board*](#turnout-extension-board)
+  - [*Relay Extension Board*](#relay-extension-board)
+    - [*Block Diagram*](#block-diagram-5)
+    - ["Connectors"](#connectors-3)
+    - [*Logic*](#logic-3)
+    - [*PCB*](#pcb-4)
+    - [*Firmware*](#firmware-2)
+  - [*Combo Extension Board*](#combo-extension-board)
+    - [*Block Diagram*](#block-diagram-6)
+    - ["Connectors"](#connectors-4)
+    - [*Logic*](#logic-4)
+    - [*PCB*](#pcb-5)
+    - [*Firmware*](#firmware-3)
+  - [*Cab Control Extension Board*](#cab-control-extension-board)
+    - [*Block Diagram*](#block-diagram-7)
+    - [*Connectors and Logic*](#connectors-and-logic-1)
+    - [*PCB*](#pcb-6)
+    - [*Firmware*](#firmware-4)
+    - [Summary](#summary-23)
+  - [*Prototype Extension Board*](#prototype-extension-board)
+    - [*Block Diagram*](#block-diagram-8)
+    - [*Connectors and Logic*](#connectors-and-logic-2)
+    - [*PCB*](#pcb-7)
+    - [*Firmware*](#firmware-5)
+  - [*The Cab Handheld*](#the-cab-handheld)
+    - [*Requirements*](#requirements-5)
+  - [*Cab Handheld Firmware Development Platform*](#cab-handheld-firmware-development-platform)
+  - [*A basic Cab Handheld*](#a-basic-cab-handheld)
+    - [*Summary*](#summary-24)
+  - [*Cab Handheld Firmware*](#cab-handheld-firmware)
+    - [Concepts](#concepts-1)
+    - [Screen Layout](#screen-layout)
+    - [Screen Navigation](#screen-navigation)
+    - [Operate Screen](#operate-screen)
+    - [Engine On/off Screen](#engine-onoff-screen)
+    - [Engine Lights Screen](#engine-lights-screen)
+    - [New Cab Screen](#new-cab-screen)
+    - [Select Cab Screen](#select-cab-screen)
+    - [Save Cab Screen](#save-cab-screen)
+    - [Set DCC Function](#set-dcc-function)
+    - [Config Cab Handheld Functions](#config-cab-handheld-functions)
+    - [Options](#options)
+    - [Diag](#diag)
+    - [*Summary*](#summary-25)
+    - [*Requirements*](#requirements-6)
+    - [*Module hardware*](#module-hardware-1)
+    - [*Module firmware*](#module-firmware)
+    - [*Summary*](#summary-26)
+  - [*Layout Connector Panel*](#layout-connector-panel)
+    - [*Requirements*](#requirements-7)
+    - [*Implementation*](#implementation)
+    - [*Summary*](#summary-27)
+  - [*LCS Module - Gateways*](#lcs-module---gateways)
+  - [*DCC Monitoring*](#dcc-monitoring)
+    - [*Requirements*](#requirements-8)
+    - [*Module hardware*](#module-hardware-2)
+    - [*Module firmware*](#module-firmware-1)
+    - [*Summary*](#summary-28)
+  - [*Layout System Configuration*](#layout-system-configuration)
+    - [*Requirements*](#requirements-9)
+    - [*Layout Configuration Software*](#layout-configuration-software)
+    - [*Summary*](#summary-29)
+  - [*The LCS Guidance Computer*](#the-lcs-guidance-computer)
+    - [*Nodes, Verbs, Nouns and Registers*](#nodes-verbs-nouns-and-registers)
+    - [*Display and Keyboard*](#display-and-keyboard)
+    - [*Summary*](#summary-30)
+  - [*Utility boards*](#utility-boards)
+  - [*UI Elements*](#ui-elements)
+    - [*Concepts*](#concepts-2)
+    - [*Buttons*](#buttons)
+    - [*Rotary Encoders*](#rotary-encoders)
+    - [*LEDs*](#leds)
+    - [*Displays*](#displays)
+    - [*Screens*](#screens)
+    - [*Summary*](#summary-31)
+  - [*Outlook*](#outlook)
+    - [( Planned ) GitHub Structure](#-planned--github-structure)
+    - [Schematics and Boards](#schematics-and-boards)
+  - [*Appendix n - LCS Nodes Items Reference*](#appendix-n---lcs-nodes-items-reference)
+    - [Concept review](#concept-review)
+    - [Common items for an LCS node](#common-items-for-an-lcs-node)
+    - [Power Module items](#power-module-items)
+    - [Base Station items](#base-station-items)
+    - [Cab Handheld items](#cab-handheld-items)
+    - [GPIO extension items](#gpio-extension-items)
+    - [Occupancy detect extension items](#occupancy-detect-extension-items)
+    - [Servo extension items](#servo-extension-items)
+  - [*Appendix n - Core Library Status Code*](#appendix-n---core-library-status-code)
+  - [*Appendix n - Core Library Routines Reference*](#appendix-n---core-library-routines-reference)
+    - [Setup](#setup)
+    - [*getCoreLibConfigDescDefaults*](#getcorelibconfigdescdefaults)
+    - [*init*](#init)
+    - [*run*](#run)
+    - [Control and Information](#control-and-information)
+    - [*nodeControl*](#nodecontrol)
+    - [*nodeInfo*](#nodeinfo)
+    - [*getAttr*](#getattr)
+    - [*setAttr*](#setattr)
+    - [*getAttrAdr*](#getattradr)
+    - [Callbacks](#callbacks)
+    - [*registerLcsMsgCallback*](#registerlcsmsgcallback)
+    - [*registerDccMsgCallback*](#registerdccmsgcallback)
+    - [*attachCommandHandler*](#attachcommandhandler)
+    - [*registerReqRepCallback*](#registerreqrepcallback)
+    - [*attachPortEventHandler*](#attachporteventhandler)
+    - [*registerInitCallback*](#registerinitcallback)
+    - [*registerInfoCallback*](#registerinfocallback)
+    - [*registerCtrlCallback*](#registerctrlcallback)
+    - [*registerPeriodicTask*](#registerperiodictask)
+    - [General Bus Management Messages](#general-bus-management-messages)
+    - [*sendRawLcsMsg*](#sendrawlcsmsg)
+    - [Node and Port Management Messages](#node-and-port-management-messages)
+    - [*sendNodeReset*](#sendnodereset)
+    - [*sendQueryNode*](#sendquerynode)
+    - [Event Management Messages](#event-management-messages)
+    - [DCC Track Management Messages](#dcc-track-management-messages)
+    - [*sendTrackOn*](#sendtrackon)
+    - [*sendReqTrackOff*](#sendreqtrackoff)
+    - [*sendTrackOff*](#sendtrackoff)
+    - [DCC Subsystem Management Messages](#dcc-subsystem-management-messages)
+    - [*sendSetLocSpDir*](#sendsetlocspdir)
+    - [*sendSetLocFuncOff*](#sendsetlocfuncoff)
+    - [*sendSetLocFgroup*](#sendsetlocfgroup)
+    - [*sendSetLocCvMain*](#sendsetloccvmain)
+    - [*sendSetLocCvProg*](#sendsetloccvprog)
+    - [Extension Driver Management](#extension-driver-management)
+    - [*drvControl*](#drvcontrol)
+    - [*drvInfo*](#drvinfo)
+    - [*drvRead*](#drvread)
+    - [*drvWrite*](#drvwrite)
+  - [*Appendix n - Library Serial Commands Reference*](#appendix-n---library-serial-commands-reference)
+  - [*Appendix n - Controller Dependent Code Library Routines Reference*](#appendix-n---controller-dependent-code-library-routines-reference)
+    - [*Overview*](#overview)
+    - [*yyy*](#yyy)
+  - [*Appendix n - DCC++ Serial Commands Reference*](#appendix-n---dcc-serial-commands-reference)
+  - [*Appendix n - LCS Nodes and EasyEda*](#appendix-n---lcs-nodes-and-easyeda)
+    - [*Symbols and Footprints*](#symbols-and-footprints)
+    - [Links](#links)
+  - [*Appendix n - Inspiring work and links*](#appendix-n---inspiring-work-and-links)
+    - [Standards](#standards)
+    - [Projects](#projects)
+    - [Tools](#tools)
+  - [*Appendix n - A generic power supply*](#appendix-n---a-generic-power-supply)
+  - [*Notes for making this book*](#notes-for-making-this-book)
 
 <!-- /TOC -->
 
@@ -633,8 +629,6 @@ A node has a **port map** that contains one entry for each defined port. **port 
 
 **Node attributes** and **port attributes** are conceptually similar to the CV resources in a DCC decoder. Many decoders, including the DCC subsystem decoders, feature a set of variables that can be queried or set. The LCS layout system implements a slightly different scheme based on items. In contrast to a purely decoder variable scheme an item can also just represent just an action such as setting an output signal. Items are passed parameter data to further qualify the item. Items are just numbers assigned. The range of item numbers is divided into a reserved section for the layout system itself, and a user defined range that allows for a great flexibility to implement the functions on a particular node and port. The meaning of user defined items is entirely up to the firmware programmer. If it is desired to have a variables, a combination of items and attributes can provide the traditional scheme as well. In addition, there are node local variables, called attributes, available to the firmware programmer for storing data items.
 
-Besides the fixed set of node map and port map entry attributes, both nodes and ports can use the node **local attributes** available in the **attribute map**. Attributes are just 16-bit quantities. The attribute map is accessed using the **attribute Id**. The range is up to 65535 attributes, subject to the underlying hardware capabilities. Attributes can also be flushed to a non-volatile location. When the node is initialized, this data represents the initial values for the attribute. Attributes number assignment and usage of attributes are local to the node and entirely up to the node firmware programmer.
-
 ### *Events*
 <a id="markdown-*events*" name="*events*"></a>
 
@@ -658,7 +652,7 @@ The DCC standard defines mobile and stationary decoders. The DCC signal could al
 ### *Analog Subsystem*
 <a id="markdown-*analog-subsystem*" name="*analog-subsystem*"></a>
 
-The layout control system is primarily a digital system. There are however layout use cases where there are many analog locomotives that would represent a significant investment when converting the running equipment to DCC or that cannot easily be equipped with a DCC decoder. In a DCC subsystem the decoder is in the locomotive and many locomotives can run therefore on the same track. In an analog system, the locomotive has no capabilities and therefore the track needs to be divided into sections that can be controlled individually. One locomotive per section is the condition. In a sense the decoder becomes part of the track section. The layout control system offers support for building such a track section subsystem. Often the sections are combined into blocks and build the foundation for a block signaling system. Note that the rest of the layout control system is of course digital. What is typically the booster to support a section of track, is the block controller for an analog layout. We will see in the later chapters that booster and block controller are very similar and design a block controller to accommodate both use cases.
+The layout control system is primarily a digital control system. There are however layout use cases where there are many analog locomotives that would represent a significant investment when converting to DCC or that cannot easily be equipped with a DCC decoder. In a DCC subsystem the decoder is in the locomotive and many locomotives can run therefore on the same track. In an analog system, the locomotive has no capabilities and therefore the track needs to be divided into sections that can be controlled individually. One locomotive per section is the condition. In a sense the decoder becomes part of the track section. The layout control system offers support for building such a track section subsystem. Often the sections are combined into blocks and build the foundation for a block signaling system. Note that the rest of the layout control system is of course digital. What is typically the booster to support a section of track, is the block controller for an analog layout. We will see in the later chapters that booster and block controller are very similar and design a block controller to accommodate both use cases.
 
 ### *Configuration*
 <a id="markdown-*configuration*" name="*configuration*"></a>
@@ -674,9 +668,9 @@ After the node is up and running with a valid node Id, there are event configura
 
 Besides the basic producer/consumer model with the event messages as communication mechanism, there are several LCS control and info messages used for managing the overall layout with signals turnouts and so on as well as the physical track and the running equipment. In a layout, the track typically consist of one or more sections, each managed by a booster or block controller node. Track sections are monitored for their power consumption to detect short circuits. Back communication channels such as RailCom are handled by the booster node and provide information about the running equipment. Stationary equipment such as turnouts and signals as well as detectors, such as track occupancy detectors or turnout setting detectors are monitored and controlled through LCS messages and the event system. Conceptually any node can send and receive such event, info or control messages. Some nodes, however have a special role.
 
-For example, the key hardware module for layout operations is the **base station**. The base station, a node itself, is primarily responsible for managing the active locomotives on the layout. When a control handheld wants to run a locomotive, a cab session for that locomotive is established by the base station. Within the session, the locomotive speed, direction and functions are controlled through the cab handheld sending the respective messages. The base station is responsible for generating the DCC packets that are sent by the booster or block controller power module to the track sections. This module is - you guessed it - also a node.
+For example, the key module for layout operations is the **base station**. The base station, a node itself, is primarily responsible for managing the active locomotives on the layout. When a control handheld wants to run a locomotive, a cab session for that locomotive is established by the base station. Within the session, the locomotive speed, direction and functions are controlled through the cab handheld sending the respective messages. The base station is responsible for generating the DCC packets that are sent by the booster or block controller power module to the actual track sections. Booster and block controller module are - you guessed it - node themselves.
 
-Finally, there are LCS nodes that represent **cab handhelds** to control a locomotive or consists, layout panel connectors, gateways to other layout protocols, sensors and actors to implement for example turnout control, signaling, section occupancy detections and many more. All these components share the LCS common bus and uses ports and events to implement the  capabilities for operating a layout.
+Finally, there are LCS nodes that represent cab handhelds to control a locomotive or consists, layout panel connectors, gateways to other layout protocols, sensors and actors to implement for example turnout control, signaling, section occupancy detections and many more. All these components share the common LCS bus and use ports and events to implement the capabilities for operating a layout.
 
 In a layout with many track sections the **block controller** is a special node that will manage a block on the layout. Like all other nodes, a block controller itself is a node that can react to events and is controller and monitored by LCS messages. There will be several chapters devoted to this topic later.
 
@@ -699,7 +693,7 @@ The communication bus should rest on a reliable bus with a sufficient bandwidth.
 ## *Message Formats*
 <a id="markdown-*message-formats*" name="*message-formats*"></a>
 
-Before diving into the actual design of the software and hardware components, let us first outline the message data formats as they flow on the layout control bus. It is the foundation of the layout control system, so let's have a first brief look at all the messages defined. This  chapter will provide the overview on the available messages a give a shirt introduction to what they do. Later chapters built on it and explain how the messages are used for designing LCS node functions. The layout control system messages can be grouped into several categories.
+Before diving into the actual design of the software and hardware components, let us first outline the message data formats as they flow on the layout control bus. It is the foundation of the layout control system, so let's have a first brief look at all the messages defined. This chapter will provide the overview on the available messages a give a short introduction to what they do. Later chapters built on it and explain how the messages are used for designing LCS node functions. The layout control system messages can be grouped into several categories.
 
 * General management
 * Node and Port management
@@ -734,7 +728,10 @@ The general management message group contains commands for dealing with the layo
 
 
 // ??? **note** Do we need a message for a central system time concept ?
+
 // ??? **note** do we need a message for a message that describes the global LCS capabilities ?
+
+// ??? do we need an emergency stop message that every node can just emit ?
 
 | Opcode |Data1|Data2|Data3|Data4|Data5|Data6|Data7|
 |:-------|:----|:----|:----|:----|:----|:----|:----|
@@ -801,6 +798,10 @@ Model railroads run on tracks. Imagine that. While on a smaller layout, there is
 |REQ-ESTP||||||||
 |ESTP|||||||||
 |||||||||
+
+// ??? the ESTP message here is for specific enegine ?
+
+// ??? the track on/off should apply to a section or all ?
 
 ### *DCC Locomotive Decoder Management*
 <a id="markdown-*dcc-locomotive-decoder-management*" name="*dcc-locomotive-decoder-management*"></a>
@@ -1024,6 +1025,8 @@ Instead of configuring engines and stationary decoders on the programming track,
 
 // ??? **note** to be defined... we would need LCS messages to support this capability...
 
+// ??? one message could be the channel one message of a RC detector...
+
 ### *DCC Accessory Decoder Management*
 <a id="markdown-*dcc-accessory-decoder-management*" name="*dcc-accessory-decoder-management*"></a>
 
@@ -1050,7 +1053,13 @@ The base station is the hardware module that receives the LCS messages for confi
 |**SEND-DCC6**( arg1, arg2, arg3, arg4, arg5, arg6 ) --> | puts a 6 byte DCC packets on the track, just as is|
 |||
 
-Sending a large DCC packet will use the **SEND-DCCM** message. The "ctrl" byte defines which part of the message is send. The base station will assemble the pieces and then issue the DCC packet. Again, as the DCC packets are sent out without further checking you better know the packet format by heart. Perhaps put the NMRA DCC specification under your pillow.
+Sending a large DCC packet will use the **SEND-DCCM** message. The "ctrl" byte defines which part of the message is send. The base station will assemble the pieces and then issue the DCC packet. 
+
+|Handheld or Computer|Basestation|
+|:-----|:-----|
+|**SEND_DCCM**| ... |
+
+Again, as the DCC packets are sent out without further checking you better know the packet format by heart. Perhaps put the NMRA DCC specification under your pillow.
 
 ### *Summary*
 <a id="markdown-*summary*" name="*summary*"></a>
@@ -1071,7 +1080,7 @@ This chapter introduced the general message flow for the layout control bus func
 
 Intended for the node firmware programmer, the LCS runtime library is the main interface to the hardware module. The library has methods for node and port configuration, event processing and layout control bus management. Most of the LCS bus management, node, port and port data management is performed transparently to the node firmware programmer. The library also provides convenience methods to send messages to other nodes and allows for a rich set of callback functions to be registered to act on messages and events.
 
-The key design objective for the runtime library is to relief the firmware programmer as much as possible from the details of running a firmware inside a hardware module. Rather than implementing the lower layers for storage and message processing at the firmware level, the runtime library will handle most of this processing transparently to the upper firmware layer. A small set of intuitive to use and easy to remember functions make up the core library. The library communicates back to the firmware layer via a set of defined callbacks. Throughout the next chapters, the library will be presented in considerable detail. Let's start with the high level view.
+The key design objective for the runtime library is to relief the LCS nodes firmware programmer as much as possible from the details of running a firmware inside a hardware module. Rather than implementing the lower layers for storage and message processing at the firmware level, the runtime library will handle most of this processing transparently to the upper firmware layer. A small set of intuitive to use and easy to remember functions make up the core library. The library communicates back to the firmware layer via a set of defined callbacks. Throughout the next chapters, the library will be presented in considerable detail. Let's start with the high level view.
 
 The following figure depicts the overall structure of a LCS hardware module and node. At the bottom is the hardware module, which contains the communication interfaces, the controller and the node specific functions. The core library offers a set of APIs and callbacks to the node firmware. The firmware programmer can perform functions such as sending a message or accessing a node attribute through the APIs provided. The library in turn communicates with the firmware solely via registered callbacks.
 
@@ -1101,27 +1110,10 @@ Maps do of course have a size. A port map for example will have a number of entr
 
 This chapter presents a high level overview of the available maps and their purpose. Instead of painting many pictures, we will directly take code snippets from the runtime include files to show the data found in each map. Note that all maps are only accessible via runtime library routines.
 
-### *Root Map*
-<a id="markdown-*root-map*" name="*root-map*"></a>
-
-The NVM and MEM area contains all maps, one after the other. The first map is the overall description of the node data. When a node is started, this part is read to check that we have a valid data structure and the node was configured properly.
-
-// ??? **note** global structure to describe the rest ...
-
-
-
-### *HW Resource Map*
-<a id="markdown-*hw-resource-map*" name="*hw-resource-map*"></a>
-
-// ??? **note** HW related data, board specific
-
-
 ### *Node Map*
 <a id="markdown-*node-map*" name="*node-map*"></a>
 
-The node map is a node private data structure only accessible to the library firmware. 
-
-It contains the information about the configured maps, the node options, nodeId, canId and other data such as the library version. When a node is initially created the configuration descriptor contains all the required information to set up a node map. Nodes need volatile and non-volatile storage. Our design implements a mirroring scheme. For the LCS storage there is a memory and an EEPROM version with the same layout. When a node is running the memory version is the storage to use for performance reasons. Also, it can be expected that the memory contents changes very often during operation. EEPROMs do have a limited number of writes in their lifetime and are not that performant for a write cycle. On the other the other hand the data is stored non-volatile. Information that needs to be changed and available across a restart is therefore synced from MEM to NVM. On restart, the NVM data is just copied to MEM. We always start with a defined state. The following figure shows the nodeMap data structure.
+The node map is a node private data structure only accessible to the library firmware. It contains the information about the configured maps, the node options, nodeId, canId and other data such as the library version. When a node is initially created the configuration descriptor contains all the required information to set up a node map. Nodes need volatile and non-volatile storage. Our design implements a mirroring scheme. For the LCS storage there is a memory and an EEPROM version with the same layout. When a node is running the memory version is the storage to use for performance reasons. Also, it can be expected that the memory contents changes very often during operation. EEPROMs do have a limited number of writes in their lifetime and are not that performant for a write cycle. On the other the other hand the data is stored non-volatile. Information that needs to be changed and available across a restart is therefore synced from MEM to NVM. On restart, the NVM data is just copied to MEM. We always start with a defined state. The following figure shows the nodeMap data structure.
 
 ```cpp
 
@@ -1131,8 +1123,6 @@ It contains the information about the configured maps, the node options, nodeId,
 ```
 
 Most of the data items deal with the location and entry sizes of the key maps. In addition, there are the nodeId, the node name, creation options, actual status flags and the set of node map attributes. Finally, the software version of the node version is kept here. For the firmware programmer there are methods to read from and write an item to the node. The library the ***nodeInfo*** and ***nodeControl*** routines offer a controlled access to the node map and other node data for node firmware programmers. They both use an item / value concept. Each routine passed an item Id for the data of interest and the data value. We will see an example later in this chapter. There are also three LCS messages, (QRY-NODE), (REP-NODE) and (SET-NODE) which allow for access from another node. Since these messages come from another node, there is also the option to register a callback for access control checks to node data before the operation is performed.
-
-
 
 ### *Port Map*
 <a id="markdown-*port-map*" name="*port-map*"></a>
@@ -1207,7 +1197,7 @@ In addition to the search function, event map entries can be added and deleted b
 ### *User defined maps*
 <a id="markdown-*user-defined-maps*" name="*user-defined-maps*"></a>
 
-In addition to the runtime maps for node, ports, and events, the LCS runtime offers a user map for the firmware to use. This storage area is simply an unstructured array and the size depends on the capability of the node hardware. There are routines to manage this area. 
+In addition to the runtime maps for node, ports, and events, the LCS runtime offers a user map for the firmware to use. This storage area is simply an unstructured array and the size depends on the capability of the node hardware NVM storage size. The area is the remaining storage available in the NVM chip array.
 
 // ??? **note** explain the concept and purpose ...
 
@@ -1216,6 +1206,8 @@ In addition to the runtime maps for node, ports, and events, the LCS runtime off
 <a id="markdown-*pending-request-map*" name="*pending-request-map*"></a>
 
 The pending request map, is a small map that keeps track of outstanding reply messages to a previously issued message request. If a node sends a request, an entry is added to this map that indicates that a reply from another node is pending. When a reply messages is detected, the firmware callback is only invoked if this reply matches a previous request. This map is a volatile structure, a restart will clear all outstanding requests.
+
+// ??? a timeout concept
 
 ### *Driver map*
 <a id="markdown-*driver-map*" name="*driver-map*"></a>
@@ -1246,7 +1238,6 @@ Any change to the structure of the maps, for example changing the number of entr
 <a id="markdown-*lcs-runtime-library-functions*" name="*lcs-runtime-library-functions*"></a>
 
 The LCS runtime library is the foundation for any module firmware written. The library presents to the firmware programer a set of routines to configure, manage the LCS node and use the LCS functions, such as sending a message. This chapter will present the key functions used. We will look at library initialization, obtaining node information, controlling a node aspect, reacting to an event and sending message to other nodes.
-
 Refer to the appendix for a complete set of available LCS runtime functions.
 
 ### *Library initialization*
@@ -1267,7 +1258,7 @@ While there are many library functions to call, the only way for the library to 
   int rStat;
 
   // ... create the LCS library object and startup
-  rStat = initRuntime( ... );
+  rStat = LCS::initRuntime( &cfg );
 
   // ... register callbacks with lcsLib
   // ... other node specific things to do
@@ -1283,10 +1274,10 @@ The final library call is a call to **run**. The run function processes the inco
 Obtaining node or port information is an interface to query basic information about the node or port. A portID or NIL_PORT_ID will refer to the node, any other portID to a specific port on that node. The data is largely coming from the nodeMap and portMap data structures. The LCS library defines a set of data items that can be retrieved. The return result is stored in one or two 16-bit variables and is request item specific. The nodeInfo / nodeControl routines allow for local access, the (QRY-NODE) and (REP_NODE) messages allow for remote access. The following example shows how the number of configured ports is retrieved from the nodeMap.
 
 ```cpp
-  int 		  rStat;
+  int 		rStat;
   uint16_t	value;
   
-  rStat = LcsRuntimeLib::nodeInfo( 0, NPI_PORT_MAP_ENTRIES, &value );
+  rStat = LCS::nodeInfo( 0, NPI_PORT_MAP_ENTRIES, &value );
   if ( rStat != ALL_OK ) { ... }
   ```
 
@@ -1299,16 +1290,22 @@ Very similar to how we retrieve node data, the nodeControl routine allows for se
   int 		rStat = ALL_OK;
   uint16_t	value = 1;
 
-  rStat = LcsRuntimeLib::nodeControl(  0, NPC_SET_READY_LED, &value );
+  rStat = LCS::nodeControl(  0, NPC_SET_READY_LED, &value );
   if ( rStat != ALL_OK ) { ... }
 ```
 
 The example shows that a node item is not only used to read or write a data item. It can also be used to execute a defined command, such as turning on an LED. In addition to the predefined node items, there is room for user defined items. In order to use them, a callback function that handles these items needs to be registered. This concept allows for a very flexible scheme how to interact with a node.
 
+### *Controlling extension functions*
+<a id="markdown-*controlling extension functions*" name="*controlleing extension functions*"></a>
+
+// ??? the extensio and drivr stuiff....
+
 ### *Reacting to events*
 <a id="markdown-*reacting-to-events*" name="*reacting-to-events*"></a>
 
 
+// ??? rather a callback topic ?
 
 
 ### *Sending messages*
@@ -1318,7 +1315,7 @@ Sending a message represent a large part of the available library functions. For
 
 ```cpp
   int 	   rStat      = ALL_OK;
-  uint16_t nodeId     = LcsRuntimeLib::getNodeId( );
+  uint16_t nodeId     = LCS::getNodeId( );
   uint16_t eventId    = 200;
 
   ...
@@ -1577,7 +1574,11 @@ The "s" command will list a great detail on the node data. When debugging a node
 ### *Driver commands*
 <a id="markdown-*driver-commands*" name="*driver-commands*"></a>
 
-// ??? char      nodeName[ MAX_NODE_NAME_SIZE ]            = { 0 }; they will not have a callback ...
+
+
+|Command | Arguments | Operation |
+|:----|:-----|:-----|
+||||
 
 What about the "#" commands? Well, they are used issue commands to the hardware drivers. We have not talked about them so far. This topic is presented when we know more about how the hardware is structured. Stay tuned.
 
@@ -1638,7 +1639,9 @@ void setupButtonHw( ) { ... }  // set up the button ...
 bool readButton( ) { ... }     // read the button state ...
 
 void readButtonTask( ) {
+
    int rStat = ALL_OK;
+   
    if ( readButton( )) {
            rStat = sendEventOn( getNodeId( ), eventId );
            if ( rStat != ALL_OK ) { ... }
@@ -1647,7 +1650,7 @@ void readButtonTask( ) {
 
 void main( ) {
 
-    LcsConfigDesc   cDesc = LcsCoreLib::getCoreLibConfigDescDefaults( );
+    LcsConfigDesc   cDesc = LCS::getCoreLibConfigDescDefaults( );
     uint8_t         rStat;
 
     cDesc.nodeId   = 100;
@@ -1656,7 +1659,7 @@ void main( ) {
     rStat = initRuntime( );
     if ( rStat != ALL_OK ) { ... }
 
-    rStat = lcsLib.registerPeriodicTask( readButtonTask );
+    rStat = LCS::registerPeriodicTask( readButtonTask );
     if ( rStat != ALL_OK ) { ... }
 
 	setupButtonHw( );
@@ -1848,7 +1851,7 @@ This chapter presents an overview for a subsystem managing analog locomotives. W
 
 The first major difference to a DCC based system is that for a given track section there can only be one locomotive or consist. In contrast to a digital signal with a permanent flow of the square wave signal, an analog system will use a pulse width modulated (PWM) approach. A wider pulse width will make the engines run faster, a smaller pulse width makes it run slower. The signal contains no information about the actual engine and just delivers power corresponding to speed desired to the track section.
 
-To still run several engines, the layout needs to be divided into sections or blocks. Just as we divided a layout into sections with separate DCC boosters, analog layouts will control sections with a separate power module. It is not necessary to have a power module for each section, but the more sections and power modules the more analog engines could run simultaneously. Built on top, an analog layout often has a concept of blocks to run trains automated managed by a block signal control system. The blocks are often divided further into subsections and there are track occupancy detectors to know where the loco is within the block.
+To still run several engines, the layout needs to be divided into several sections or blocks. Just as we divided a layout into sections with separate DCC boosters, analog layouts will control sections with a separate power module. It is not necessary to have a power module for each section, but the more sections and power modules the more analog engines could run simultaneously. Built on top, an analog layout often has a concept of blocks to run trains automated managed by a block signal control system. The blocks are often divided further into subsections and there are track occupancy detectors to know where the loco is within the block.
 
 Just like their DCC cousin, analog track sections need special consideration when an engine is moving from one block to the next. For DCC track sections, each having a booster receiving the same DCC signal from the base station, there is a short window of power disconnect to address any small booster timing differences. For the analog world, the current section and the following one need to be also in sync for the engine to cross from one block to the next. The PWM signals, which deliver the power to the locomotive, need to be synchronized in order to avoid that one block still delivers power and the next block not quite yet. A locomotive would not run smoothly in that case.
 
@@ -1971,7 +1974,7 @@ Each node in the layout control system is a node and hence there is a controller
 
 All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. In particular, the 10x16cm board should be very familiar as the "Euro PCB" format. The main controller board has on the left side the connectors for the LCS bus and the power input. On the left side, there are two connectors toward an extension board. The middle one is the extension connector described earlier, the lower right side is the power lines routed through from the power in connector.
 
-Extension boards have three connectors pairs, in and out. The lower pair just routes power through to the next extension board. The middle connector pair will route a subset of the extension connector signals fro the main controller. What exactly is routed is described in the extension board chapters. Finally, the extension boards have an optional third line, which is the track power connectors. This line is used by the base station and block controller boards. Again, all this will be explained in the later chapters. Som that is the physical layout for our boards. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as footprints in the EasyEDA library.
+Extension boards have three connectors pairs, in and out. The lower pair just routes power through to the next extension board. The middle connector pair will route a subset of the extension connector signals from the main controller. What exactly is routed is described in the extension board chapters. Finally, the extension boards have an optional third line, which is the track power connectors. This line is used by the base station and block controller boards. Again, all this will be explained in the later chapters. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as footprints in the EasyEDA library.
 
 ### *LCS Bus connector*
 <a id="markdown-*lcs-bus-connector*" name="*lcs-bus-connector*"></a>
@@ -1981,7 +1984,7 @@ Every hardware module needs the LCS bus interface to connect to the bus. Some mo
 |Pin|Name|Purpose|Pin|Name|Purpose|
 |:--|:---|:------|:--|:---|:------|
 |1|DCC-Sig-1| The DCC signal labelled "+" | 5| RSV | reserved |
-|2|DCC-Sig-2| The DCC signal labelled "-" | 6| VS | The bus supplied 12V power line. This line is intended for devices with very little power consumption. Any other module should connect to its own power supply line. |
+|2|DCC-Sig-2| The DCC signal labelled "-" | 6| VS | The bus supplied 12V power line. This line is intended for devices with very little power consumption to get their power from. Any other module should connect to its own power supply line. |
 |3|GND| Common ground | 7| CAN-L|Line L of the differential CAN bus signal.|
 |4|RSV| reserved| 8 | CAN-H|Line H of the differential CAN bus signal.|
 |||||||
@@ -2053,7 +2056,7 @@ Ready for the first hardware work ? All aboard, the train leaves for the next ch
 ## *A Main Controller Board with Raspberry PI Pico*
 <a id="markdown-*a-main-controller-board-with-raspberry-pi-pico*" name="*a-main-controller-board-with-raspberry-pi-pico*"></a>
 
-The Raspberry PI Pico is a powerful controller with a dual core, generous program and memory sizes, USB also included. The Pico is a small board that can be soldered to a mother PCB or connected just like a big IC. This chapter will present our main controller board which is just the controller along to a CAN bus interface, the non-volatile memory and the level shifters to accommodate our 5V interface level standard.
+The Raspberry PI Pico is a powerful controller with a dual core, generous program and memory sizes and USB also included. The Pico is a small board that can be soldered to a mother PCB or connected just like a big IC. This chapter will present our main controller board which is just the controller along to a CAN bus interface, the non-volatile memory and the level shifters to accommodate our 5V interface level standard. Although there will be more different controller boards in the chapters to come, this basic building block is the generic heart and can be used for many other projects in the LCS system.
 
 ### *Block Diagram*
 <a id="markdown-*block-diagram*" name="*block-diagram*"></a>
@@ -2088,9 +2091,9 @@ And here is the PCB for the PICO based main controller. Note that there is quite
 ### *Summary*
 <a id="markdown-*summary*" name="*summary*"></a>
 
-By now we have a core library which can handle the basics of just about any node and we have two main controller boards that will form the heart of many projects to come for the layout control system. However, while the two boards will run the same core library, there are still differences how for example the pins are assigned on the boards. It is very likely that new software versions and perhaps different processors and boards layouts will require that the core library is adapted to each processor / board combination. This is especially true for monolithic board designs, where there is a great freedom which pins to use for what. At this point, many projects found on the web now start a symphony of "ifdefs" in their coding. The conditional compiles often reach up to the highest layers of the firmware programming. Perhaps there is a way to shield all these differences at a lower layer. This **controller dependent layer** will be the topic of the next chapter.
+By now we have a core library which can handle the basics of just about any node and we have a main controller board that will form the heart of many projects to come for the layout control system. However, while LCS boards will all run the same core library, there are still differences how for example the controller pins are assigned on the boards. It is very likely that new software versions and perhaps different processors and boards layouts will require that the core library is adapted to each processor / board combination. This is especially true for monolithic board designs, where there is a great freedom which pins to use for what. At this point, many projects found on the web will now start a symphony of "ifdefs" in their coding. The conditional compiles often reach up to the highest layers of the firmware programming. 
 
-
+Perhaps there is a way to shield all these differences at a lower layer such that higher level libraries and firmware just refer to symbolic names for controller functions and pins. A mapping structure will translate between the symbolic names and the actual HW cunterpart. This **controller dependent layer** will be the topic of the next chapte
 <!--------------------------------------------------------------------------------------------------------->
 <!--------------------------------------------------------------------------------------------------------->
 <!-- Chapter - Controller Dependent Code ------------------------------------------------------------------>
@@ -2126,12 +2129,12 @@ The CDC library is rather low level hardware abstraction to give access to the p
 Each project therefore needs to define a structure containing some constants and pin number assignments that are used through the node firmware. For this purpose, the CDC library defines a structure with all the pin names and a sensible default setting for a particular controller. Think of the structure a the superset of all pins and HW functions that can be configured for any controller. Using the structure, all the firmware programmer has to do is to set the controller pin numbers of the particular hardware module design to the names predefined in that structure. The upper layer code then just uses these names. The following figure shows the CDC configuration structure.
 
 ```cpp
+
+// ??? rework when done ....
+
 struct CdcConfigInfo {
 
     uint8_t   CFG_STATUS;
-
-    uint32_t  MAX_MEM_STORAGE_SIZE;
-    uint32_t  MAX_EEPROM_STORAGE_SIZE;
 
     uint8_t   PFAIL_PIN;
     uint8_t   EXT_INT_PIN;
@@ -2236,54 +2239,28 @@ Some of the routines can also be found in the Arduino IDE and its libraries for 
 ### *Power Fail detect*
 <a id="markdown-*power-fail-detect*" name="*power-fail-detect*"></a>
 
-The main controller board features optional power failure detection. The power supply provides a signal line to the controller which goes low when power drops. The power fail input pin is set in the configuration structure and just passed as an input to the configure routine. There is also a routine to register the callback for the power fail event. The callback is invoked upon the imminent power loss. Depending on the capacity of the power capacitor of the power supply, see the main controller schematic, the callback could use the remaining time to store critical data to non-volatile memory.
+The main controller board features optional power failure detection. The power supply provides a signal line to the controller which goes low when power drops. The power fail input pin is set in the configuration structure and just passed as an input to the configure routine. 
 
-```cpp
-   typedef void ( *PfailCallback ) ( );
 
-   uint8_t       configurePfail( uint8_t pFailPin );
-   uint8_t       enablePfail( bool val );
-   void          onPfailEvent( PfailCallback functionId );
-```
+// ??? has chang...
+
+
 
 ### *External Interrupt*
 <a id="markdown-*external-interrupt*" name="*external-interrupt*"></a>
 
 The CDC library offers a set of routines for handling an external interrupt. While a controller typically allows for interrupts on almost any IO pin, there are one some controllers dedicated IO pins which offer an interrupt input with flexible setting and high resolution timing. A callback needs to be registered for this interrupt.
 
-```cpp
-   typedef void ( *ExtIntCallback ) ( );
+// ??? has changed ...
 
-   uint8_t       configureExtInt( uint8_t extIntPin, uint8_t mode );
-   uint8_t       enableExtInt( bool enable );
-   void          onExtIntEvent( ExtIntCallback functionId );
-```
 
 ### *Status LEDs*
 <a id="markdown-*status-leds*" name="*status-leds*"></a>
 
 The main controller board features two LEDs. They are the ready and the activity LED. They are accessed via the **writeDio** routine. The LCS core library will use the ready LED to indicate that the node is ready. The activity LED is used to show library activities such as receiving a LCS message. The recommended colors for the LEDs are a green for the READY LED and yellow for the ACTIVE LED. The following just shows an example how to control the LEDs.
 
-```cpp
-   const uint8_t LED_READY_PIN   = ...
-   const uint8_t LED_ACTIVE_PIN  = ...
+// ??? this is done via nodeCOntrol calls ...
 
-   void CDC::writeDio(LED_READY_PIN, true );
-   void CDC::toggleDio( LED_ACTIVE_PIN );
-```
-
-### *Option Button*
-<a id="markdown-*option-button*" name="*option-button*"></a>
-
-The main controller board also features an option button. The idea is that on node reset this button can be pushed and queried by the startup routines. It can of course be pushed and queried at any time later to receive a manual input. The button is read via the **readDio** routine. Here is an example.
-
-```cpp
-   const uint8_t BT1_PIN = ...
-
-   bool CDC::readDio( BT1_PIN );
-```
-
-The option button is implemented on the controller boards. However, no all boards may have such a button. In this case the pin is simply undefined. The core library is aware of the optional button.
 
 ### *Timer*
 <a id="markdown-*timer*" name="*timer*"></a>
@@ -2306,6 +2283,8 @@ Timers work slightly different on Atmega and PICO. Nevertheless, both versions a
 <a id="markdown-*digital-io*" name="*digital-io*"></a>
 
 The digital IO routines offer an interface to plain digital input and output operations. If it is an input channel, the input can be set to active low or high input. Also, there is an option to enable the controller internal input pull-up resistor. For configured output pins, two pins can be set in pairs if supported by the actual hardware configuration, i.e. the two IO pins are on the same controller output port. This feature enables the simultaneous setting the two pins. A typical use case is the DCC signal where the two signal levels are set in one call.
+
+// ??? add the interrupt stuff...
 
 ```cpp
    uint8_t       configureDio( uint8_t dioPin, uint8_t Mode = IN );
@@ -2389,35 +2368,7 @@ SPI is the bus used for connecting NVM and CAN controller chips. The CDC library
    uint8_t       writeSpi( uint8_t *buf, uint32_t len );
 ```
 
-### CAN Bus
-<a id="markdown-can-bus" name="can-bus"></a>
 
-The current implementation of the LCS message bus uses the CAN Bus. There are two ways to add CAN bus to a controller. The Atmega uses the MCP2515 / MCP 2562 chip CAN bus interface. There is a library available that communicates with the CAN Bus controller via SPI. On the Raspberry PI Pico, there is a software library that implements the CAB Bus protocol using the PICO controller PIO hardware. Only the line driver MCP2562 or alike is needed. The appendix lists the links to where to get these libraries.
-
-```cpp
-
-... a configure routine for the pins and baud rate ?
-
-```
-
-// ??? **note** how much of the other calls should be here ?
-// ??? **note** there is a msg bus library for it
-// ??? **note** should we have a chapter on the CAN bus lib ?
-
-### NVM storage
-<a id="markdown-nvm-storage" name="nvm-storage"></a>
-
-NVK storage is used by the controller for storing LCS node data, such as the events map, attributes, and so on. NV chips are available with an SPI or a I2C interface.
-
-```cpp
-
-... a configure routine for the SPI select pins ?, the I2C pins ?
-
-```
-
-// ??? **note** what to set, e.g. chip select for SPI ...
-// ??? **note** there is a library for it
-// ??? **note** should we have a chapter on the NVM bus lib ?
 
 ### *Extension Connector and hardware pins*
 <a id="markdown-*extension-connector-and-hardware-pins*" name="*extension-connector-and-hardware-pins*"></a>
@@ -2478,9 +2429,7 @@ A key idea of designing the firmware is that there is no need to update the firm
 
 Node variables are accessed via "items". An item is just a number that refers to the variable. Besides a set of fixed, i.e. reserved, items that the system itself offers, a set of items allow to access a variable in memory or NVM. Any values that you want to keep across a power cycle can be stored in these variables. The idea is that during startup the values are simply copied form NVM to memory for usage. In the opposite way, there is a set of items that when used, will store a new value in memory and NVM. So, while the memory value can change quite a bit during operation, startup always used a known fixed value.
 
-A node has up to 64 such variables. That is not a lot, you might say. Well, in addition there are local attributes. They are variables following the same principle of memory and NVM, but are not mapped to items. You can only access them local to node.
-
-Well, not quite. The item range has a set of 64 user definable items. These are items that when accessed will result in a callback to the node firmware. And in such a callback function, you can do anything you like, including accessing these local attributes of course. Beyond this way of using a user definable callback, these callbacks offers a very flexible to directly access firmware functions without going through kludges of writing a value to a variable that is interpreted as a functions. Since accessing local attributes is such a common scenario, you will find in the reserved item section also items that allows to directly read and write to local attributes.
+A node has up to 64 such variables. That is not a lot, you might say. Well, not quite. The item range has a set of 64 user definable items. These are items that when accessed will result in a callback to the node firmware. And in such a callback function, you can do anything you like, including accessing these local attributes of course. Beyond this way of using a user definable callback, these callbacks offers a very flexible to directly access firmware functions without going through kludges of writing a value to a variable that is interpreted as a functions. Since accessing local attributes is such a common scenario, you will find in the reserved item section also items that allows to directly read and write to local attributes.
 
 Finally, think about where these variable values would come from. There will be the day where a hardware piece breaks down and needs to be restored. It is rather easy to load the node variables and attributes from a central database, as well as to first of all store these values in such a place.
 
@@ -2492,11 +2441,6 @@ Ports are the higher level endpoints on a node. They too features variables acce
 But ports are also the endpoint for events. Remember each node can broadcast an event observable by all nodes on the system. Events are created to represent an, well, event that somebody would be interested in. For example a track power shortage. Or a block section is occupied event. Or whatever you see as a reasonable event to broadcast to the world. And again these the event map data can be queried and loaded from another node.
 
 When configuring a node, that node can register its interest in an event by adding an event ID / port ID combo to the event map. How to do this? Well, there is a reserved item function to just do that. A matching incoming event will result in a callback registered for the port. A node offers up to 15 ports. Since they also serve as a logical grouping of physical things on the layout, having 15 ports is a good compromise between number and resources needed by a port. When designing a firmware, the first thinking should be what a node manages and what ports will mange portions controlled by that node.
-
-### *Local Attributes*
-<a id="markdown-*local-attributes*" name="*local-attributes*"></a>
-
-There is nothing to really say more about the local attributes. Just think of them as variables that behave like the variables you will find on a node or a port. There are just many more and you can use them as needed for the firmware. For example, they can be used by nodes and port callbacks for further storage of data.
 
 ### *Command Line and Display*
 <a id="markdown-*command-line-and-display*" name="*command-line-and-display*"></a>
@@ -2530,7 +2474,13 @@ The main code is just a set of firmware specific code and callback routines that
 ### *Summary*
 <a id="markdown-*summary*" name="*summary*"></a>
 
-This chapter gave a brief overview how one would go after writing node firmware. In short it is writing functions that can be registered as callbacks to the core library and that will in turn use the core library functions for implementing their purpose. It also introduced a more detailed picture of the overall software layers.  The heavy lifting of message handling, event handling, node data management, extension board management and overall processing is handled by the LCS library. All the firmware programmer has to do is to write the node and specific functions. The following chapters will give several examples of how the firmware for the common nodes such as a base station, a cab handheld and a block controller is designed using the principles and guidelines mentioned in this chapter.
+This chapter gave a brief overview how one would go after writing node firmware. In short it is writing functions that can be registered as callbacks to the core library and that will in turn use the core library functions for implementing their purpose. It also introduced a more detailed picture of the overall software layers. The heavy lifting of message handling, event handling, node data management, extension board management and overall processing is handled by the LCS library. All the firmware programmer has to do is to write the node and specific functions. 
+
+
+// ??? GitHub has all the source code of the nodes i wrote ...
+
+
+The following chapters will give several examples of how the firmware for the common nodes such as a base station, a cab handheld and a block controller is designed using the principles and guidelines mentioned in this chapter.
 
 
 <!--------------------------------------------------------------------------------------------------------->
@@ -2632,7 +2582,7 @@ The RailCom channel was an important addition to the DCC standard. With RailCom 
 ## *The Base Station*
 <a id="markdown-*the-base-station*" name="*the-base-station*"></a>
 
-We are about to put together out first major LCS hardware module. The previous chapters introduced the message format and protocols and the core library for implementing the event system as well as the running equipment based on the DCC signal standards. Next, we took a closer look on the major hardware building blocks and power module designs. Just like the LCS core library allows to build a node specific firmware on top, the hardware building blocks are the foundation to build the required hardware modules. We also looked at how one would go after designing the node firmware in general. So here is the first and most important hardware module putting it all together. The base station. Every layout needs to have some kind of a base station that acts as the central place for layout control and signal generation.
+Take a deep breath. We are about to put together out first major LCS hardware module. The previous chapters introduced the message format and protocols and the core library for implementing the event system as well as the running equipment based on the DCC signal standards. Next, we took a closer look on the major hardware building blocks and power module designs. Just like the LCS core library allows to build a node specific firmware on top, the hardware building blocks are the foundation to build the required hardware modules. We also looked at how one would go after designing the node firmware in general. So here is the first and most important hardware module putting it all together. The base station. Every layout needs to have some kind of a base station that acts as the central place for layout control and signal generation.
 
 Looking at the market, there are plenty of so called base stations. They typically offer support for several standards and communication protocols, such as DCC, mfx, LocoNet, a Can Bus, a S88 sensor bus, and so on. Most base station also have the power module directly integrated. They support the configuration of locomotive and stationary decoders. In short, a one stop all round solution. Their price range is around few hundred Euros. With the advent of Arduino, Raspberry and other controllers there are numerous do it yourself solutions. Just to name one, the DCC\+\+ Arduino base station with a motor shield as a power unit, gets you a base station for well under hundred Euros. The excellent work of the JMRI community to provide a DCC\+\+ interface for configuration software and other utilities to use this inexpensive base station hardware. The DCC-EX group extended and stabilized the original DCC\+\+ work for a wider range of controllers but also with new capabilities. There are many such great projects. The appendix provides some links and pointers to this work.
 
@@ -2700,7 +2650,7 @@ The base station was also the first major LCS node with a considerable amount of
 ## *Base Station Firmware*
 <a id="markdown-*base-station-firmware*" name="*base-station-firmware*"></a>
 
-With the base station hardware in place, let's look at the firmware. First of all, the base station is just another LCS node and rests on the LCS core library. On top there is the locomotive session management, the DCC track power management, the DCC signal generation logic, and finally the RailCom communication interface. Being an LCS node, there are attributes and functions to control the base station through node and port items.
+With the base station hardware in place, let's look at the firmware. First of all, the base station is just another LCS node and rests on the LCS runtime library. On top there is the locomotive session management, the DCC track power management, the DCC signal generation logic, and finally the RailCom communication interface. Being an LCS node, there are attributes and functions to control the base station through node and port items.
 
 The base station is rather complex node. Especially the DCC signal generation requires the node to be very close to the controller chip capabilities. The individual parts will be described in the following sections. From an overall firmware perspective, the base station does its work in a functions that is called periodically from the LCS core library. The difference to other nodes is that the key work of producing the DCC signal is interrupt driven. There is a central timer that interrupts whenever the signals need to change their value is the central heartbeat of the node. Also, analog values are read with a start routine and an interrupt completer. The same is the case for the RailCom UART input. Everything that is part of the interrupt driven signal path will also just use interrupts for asynchronous execution. All else takes place outside the interrupt routines and is rather straightforward.
 
@@ -2850,7 +2800,9 @@ In addition to the LCS core library serial commands available to any node, the b
 
 Just like any other LCS node, the base station firmware offers through node and port attributes status and control functions. However, there is only one on the layout.
 
-The base station was also the first major LCS node with a considerable amount of hardware and software. Initial work started with the main controller and power module extension board based on the Atmega processor family. From there, a monolithic version using the Raspberry PI PICO was developed and the is the latest recommended base station offering.
+The base station was also the first major LCS node with a considerable amount of hardware and software. Initial work started with the main controller and power module extension board based on the Atmega processor family. From there, a monolithic version using the Raspberry PI PICO was developed and that is the latest recommended base station offering.
+
+// ??? we would need a handheld of some kind , also booster... the next chapter is block controllers, you may wat to skip ahead to handhelds and then comes back...
 
 
 <!--------------------------------------------------------------------------------------------------------->
@@ -3009,6 +2961,9 @@ While all this may sound like a hardware overkill, the occupancy detectors the t
 
 ## *Block Controller Board*
 <a id="markdown-*block-controller-board*" name="*block-controller-board*"></a>
+
+
+// ??? we have a combo and a quad controller .... how to best present them ?
 
 This chapter presents a quad block controller board. It can manage as the name suggests four blocks. While not every layout will favor a quad block controller, scaling the design down to two or even one block is rather straightforward. The following figure introduces the quad controller overall design. It is built around the Raspberry PI Pico and the L6205 dual H-Bridge. The block controller is also the first module that will not run on an Atmega platform. There are simply not enough features to build such a complex module.
 
@@ -3838,6 +3793,8 @@ Actually, there is none. Nevertheless, the board decoding logic and the local NV
 ## *The Cab Handheld*
 <a id="markdown-*the-cab-handheld*" name="*the-cab-handheld*"></a>
 
+// ??? should the handheld chapters rather be earlier ? base station and handheld are teh minimal system ...
+
 Cab handhelds are used to control a locomotive. Depending on the other capabilities they can also configure a decoder device or set a turnout. Handhelds are connected to the bus, for example LocoNet, sometimes there is a separate bus for just the handhelds. Traditionally a cable connects the handheld to access points on the layout. Just like it is the case for base stations and boosters there is no shortage of cab handhelds. Lately, wireless handhelds have become very popular. And not to forget, some base station integrate handhelds directly in their front panel.
 
 This chapter will describe a general handheld to just control locomotives. It directly connects via cable to the LCS bus and provides the generic elements to specify the locomotive to operate, set the speed and direction as well as the function keys. Implementing a base station and a handheld is all you would need to run an engine and finally see something for your hard work of building a layout system. The cab handheld described first is a board for developing the firmware. Nevertheless it can be used as a full functioning cab handheld. Later version will build upon the firmware but use a more handy form factor.
@@ -3884,14 +3841,14 @@ The board is a 12x10cm PCB with all the necessary buttons and switches and resem
 
 <!--------------------------------------------------------------------------------------------------------->
 <!--------------------------------------------------------------------------------------------------------->
-<!-- Chapter - A Cab Handheld ----------------------------------------------------------------------------->
+<!-- Chapter - A basic Cab Handheld ----------------------------------------------------------------------------->
 <!--------------------------------------------------------------------------------------------------------->
 <!--------------------------------------------------------------------------------------------------------->
 
 <div style="page-break-before: always;"></div>
 
-## *A Cab Handheld*
-<a id="markdown-*a-cab-handheld*" name="*a-cab-handheld*"></a>
+## *A basic Cab Handheld*
+<a id="markdown-*a-basic-cab-handheld*" name="*a-basic-cab-handheld*"></a>
 
 As the name already suggests, the cab handheld is a handheld device with several buttons and a display. To keep it a compact design, we will use both sides of the PCB. The upper side contains the buttons, switches and display, the lower side contains the controller components. The cab handheld will connect via a cable to the LCS bus. Power comes from the LCS bus power lines and the CAN bus interface is used to transmit the messages. Perhaps a later version will also add some WLAN capabilities. While WLAN would come pretty much for free with the PICO W, the power supply side needs to include a battery.
 
@@ -4256,6 +4213,24 @@ If you take a picture from the Apollo space program days, it looks very much the
 
 ### *Summary*
 <a id="markdown-*summary*" name="*summary*"></a>
+
+
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!-- Chapter - Utility boards  --------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+
+<div style="page-break-before: always;"></div>
+
+## *Utility boards*
+<a id="markdown-*utility-boards*" name="*utility-boards*"></a>
+
+// ??? adatpter PCB
+
+// ??? experimental breadboard stuff
+
+// ??? DCC bus to digital IO 
 
 
 <!--------------------------------------------------------------------------------------------------------->
@@ -7170,6 +7145,8 @@ The right part of the schematic shows how the power input lines are switched dep
 <a id="markdown-*notes-for-making-this-book*" name="*notes-for-making-this-book*"></a>
 
 // how to format, etc.
+
+// it is on GitHub and a note how to produce a PDF from the files...
 
 
 
