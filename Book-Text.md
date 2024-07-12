@@ -52,7 +52,7 @@
       font-size: 12px;
       line-height: 17px;
       orphans:3;
-      widow:2;
+      widow:3;
     }
     @media print {
       code, blockquote, figure {
@@ -62,9 +62,11 @@
          break-inside: auto;
       }
       html, body {
-         text-align: justify;
-         height: auto;
-         font-size: 14pt;
+        text-align: justify;
+        height: auto;
+        font-size: 14pt;
+        orphans:3;
+        widow:3;
       }
       h1, h2, h3, h4, h5, h6 { 
          page-break-after:avoid; 
@@ -4576,6 +4578,10 @@ The LCS library routines return a status code. In general, the status coders are
 
 ## *Appendix n - Core Library Routines Reference*
 <a id="markdown-*appendix-n---core-library-routines-reference*" name="*appendix-n---core-library-routines-reference*"></a>
+
+
+// ??? **note* this is a battle you cannot win. I would like to include the constants and functions. But syncing source and this book is a tedious task. Doxygen would not really help other than you have a html version somehwere else. Perhaps allso useful. But not in this book. So, how about just including the include file ? We could also comment groups of functions, to save comment overhead..
+
 
 This appendix lists all the LCS core library library methods available to the firmware programmer. The core methods primarily implement the management of node and port attributes, event management and callback function registration. Each method is described with the method signature, the parameter description, the return values and additional notes.
 
