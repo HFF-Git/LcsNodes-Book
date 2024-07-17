@@ -1,18 +1,11 @@
 #
-# A simple program to help produce the book. There is the requirment to include a source file. For example,
+# A simple program to help produce the book. There is the requirement to include a source file. For example,
 # the include files are very helpfull to have as an appendix. So that they look a bit nicer, there need
 # to be C++ comment lines that are actually commands to the markdown formatter. We will have a simple
 # processer of text lines that recognizes those special lines. 
 # 
-# A comment line starts with ( "//!--" ) and is a line that is not added to the text output file.
-#
-# An include line starts with ( "//!include " ) and is a line that has a file path of a text file that
-# should be processed recursively. The content is added to the text output file.
-#
-# A markdown line starts with ( "//! " ) and is just added to the text output file.
-#
-# Any other line is also just added to the text output file.
-# 
+# A comment line starts with a special token is processed as described for the tokens defined below. Any 
+# other line is just copied to the output text file.
 #
 # Yes, I know there is doxygen for generating documentation. However, it does support processing markdown,
 # it does not generate markdown output. You would need yet another tool. Granted, it genrates a ton of 
@@ -22,36 +15,61 @@
 import re
 import argparse
 
-# the defined tokens
-comment_token   = "//!--"
-include_token   = "//!include "
-process_token   = "//! "
+#
+# The defined tokens. A "//!-" followed by zero or more "_" is considered a comment line not to appear
+# in the output file. Just to make the include comment look nicer in the C-Code.
+#
+# A line that begines with "//! " is stripped of the token, the leading blank is removed and the line 
+# found is added to the output file. If the line had just that token, a blank line is added.
+#
+# A line that begins with "//!include " will include the file found under the file path. This is a 
+# recursive call to the line processing routine.
+#
+# The "//!block-begin-+" and "//!block-end-+" bracket a code block with the respective markdown tokens.
+#
+process_token       = "//!"
+comment_token       = "//!-+"
+include_token       = "//!include "
+block_begin_token   = "//!block-begin-*"
+block_end_token     = "//!block-end-*"
 
-# process the file
+#
+# Process the file
+#
 def process_file(input_file ):
     
-    with open(input_file, 'r') as infile:
+    with open( input_file, 'r') as infile:
 
-        print ( "processing infile\n ")
+        print ( "processing infile: ", infile.name, "\n" )
         
         for line in infile:
 
-            if comment_token in line:
+            if re.search( comment_token, line ):
                 continue
+  
+            elif re.search( block_begin_token, line ):
+                outfile.write( "```cpp \n")   
+            
+            elif re.search( block_end_token, line ):
+                outfile.write( "``` \n") 
 
-            elif include_token in line:
+            elif re.search( include_token, line ):
                 tokens = re.split( r'\s+', line )
                 process_file( tokens[ 1 ] )
 
-            elif process_token in line:
-                outfile.write( "\n" )
-                outfile.write( line.replace( process_token, '' ))
-                outfile.write( "\n" )
-            
+            elif re.search( process_token, line ):
+
+                if ( line.strip( ) == process_token ):
+                    outfile.write( "\n" )
+                else: 
+                    outfile.write( line.strip( ' ' ).replace( process_token + " ", '' ))
+
             else:
                 outfile.write(line)
 
+#
 # here we go ...
+#
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="Process a text file by removing lines with a special token.")
