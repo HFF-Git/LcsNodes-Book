@@ -102,7 +102,7 @@ June, 2024
 <br> <br>
 <br> <br>
 
- <img src="./Figures/Frontpage-Picture.png" width="600" height="800" >  
+<img src="./Figures/Frontpage-Picture.png" width="600" height="800" >  
  
 <br> <br>
 <br> <br>

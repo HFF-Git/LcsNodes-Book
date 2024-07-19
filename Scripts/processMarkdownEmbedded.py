@@ -30,11 +30,18 @@ import argparse
 process_token       = "//!"
 comment_token       = "//!-+"
 include_token       = "//!include "
+new_page_token      = "//!new-page"
 block_begin_token   = "//!block-begin-*"
 block_end_token     = "//!block-end-*"
 
 #
 # Process the file
+#
+# The routine opens a text file and processes it for the special toens defined. Note that the order of
+# checking for tokens is important. We first check the tokens with a command word, e.g. "//!include".
+# When there is no match for a comand word, the next check is just for the token indicator "//!". If 
+# found the indicator and the blank following the indicator is removed in the resuting output line. 
+# Finally, any other line is just copied to the output file.
 #
 def process_file(input_file ):
     
@@ -46,10 +53,15 @@ def process_file(input_file ):
 
             if re.search( comment_token, line ):
                 continue
-  
+
+            elif re.search( new_page_token, line ):
+                outfile.write( "\n" )
+                outfile.write( '<div style="page-break-before: always;"></div> \n' )
+                outfile.write( "\n" )
+
             elif re.search( block_begin_token, line ):
                 outfile.write( "```cpp \n")   
-            
+           
             elif re.search( block_end_token, line ):
                 outfile.write( "``` \n") 
 
@@ -68,7 +80,7 @@ def process_file(input_file ):
                 outfile.write(line)
 
 #
-# here we go ...
+# Here we go. Get the input and output file name and process the input. 
 #
 if __name__ == "__main__":
     
