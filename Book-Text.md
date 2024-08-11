@@ -300,6 +300,30 @@ August, 2024
         - [*LocoNet Support*](#loconet-support)
         - [*Base Station Serial Commands*](#base-station-serial-commands)
         - [*Summary*](#summary)
+    - [*The Cab Handheld*](#the-cab-handheld)
+        - [*Requirements*](#requirements)
+    - [*Cab Handheld Firmware Development Platform*](#cab-handheld-firmware-development-platform)
+    - [*A basic Cab Handheld*](#a-basic-cab-handheld)
+        - [*Summary*](#summary)
+    - [*Cab Handheld Firmware*](#cab-handheld-firmware)
+        - [Concepts](#concepts)
+        - [Screen Layout](#screen-layout)
+        - [Screen Navigation](#screen-navigation)
+        - [Operate Screen](#operate-screen)
+        - [Engine On/off Screen](#engine-onoff-screen)
+        - [Engine Lights Screen](#engine-lights-screen)
+        - [New Cab Screen](#new-cab-screen)
+        - [Select Cab Screen](#select-cab-screen)
+        - [Save Cab Screen](#save-cab-screen)
+        - [Set DCC Function](#set-dcc-function)
+        - [Config Cab Handheld Functions](#config-cab-handheld-functions)
+        - [Options](#options)
+        - [Diag](#diag)
+        - [*Summary*](#summary)
+        - [*Requirements*](#requirements)
+        - [*Module hardware*](#module-hardware)
+        - [*Module firmware*](#module-firmware)
+        - [*Summary*](#summary)
     - [*Signaling Block Control*](#signaling-block-control)
         - [*Requirements*](#requirements)
         - [*Block Element Concept*](#block-element-concept)
@@ -387,30 +411,6 @@ August, 2024
         - [*Connectors and Logic*](#connectors-and-logic)
         - [*PCB*](#pcb)
         - [*Firmware*](#firmware)
-    - [*The Cab Handheld*](#the-cab-handheld)
-        - [*Requirements*](#requirements)
-    - [*Cab Handheld Firmware Development Platform*](#cab-handheld-firmware-development-platform)
-    - [*A basic Cab Handheld*](#a-basic-cab-handheld)
-        - [*Summary*](#summary)
-    - [*Cab Handheld Firmware*](#cab-handheld-firmware)
-        - [Concepts](#concepts)
-        - [Screen Layout](#screen-layout)
-        - [Screen Navigation](#screen-navigation)
-        - [Operate Screen](#operate-screen)
-        - [Engine On/off Screen](#engine-onoff-screen)
-        - [Engine Lights Screen](#engine-lights-screen)
-        - [New Cab Screen](#new-cab-screen)
-        - [Select Cab Screen](#select-cab-screen)
-        - [Save Cab Screen](#save-cab-screen)
-        - [Set DCC Function](#set-dcc-function)
-        - [Config Cab Handheld Functions](#config-cab-handheld-functions)
-        - [Options](#options)
-        - [Diag](#diag)
-        - [*Summary*](#summary)
-        - [*Requirements*](#requirements)
-        - [*Module hardware*](#module-hardware)
-        - [*Module firmware*](#module-firmware)
-        - [*Summary*](#summary)
     - [*Layout Connector Panel*](#layout-connector-panel)
         - [*Requirements*](#requirements)
         - [*Implementation*](#implementation)
@@ -450,54 +450,11 @@ August, 2024
         - [GPIO extension items](#gpio-extension-items)
         - [Occupancy detect extension items](#occupancy-detect-extension-items)
         - [Servo extension items](#servo-extension-items)
-    - [*Appendix n - Core Library Status Code*](#appendix-n---core-library-status-code)
-    - [*Appendix n - Core Library Routines Reference*](#appendix-n---core-library-routines-reference)
-        - [Setup](#setup)
-        - [*getCoreLibConfigDescDefaults*](#getcorelibconfigdescdefaults)
-        - [*init*](#init)
-        - [*run*](#run)
-        - [Control and Information](#control-and-information)
-        - [*nodeControl*](#nodecontrol)
-        - [*nodeInfo*](#nodeinfo)
-        - [*getAttr*](#getattr)
-        - [*setAttr*](#setattr)
-        - [*getAttrAdr*](#getattradr)
-        - [Callbacks](#callbacks)
-        - [*registerLcsMsgCallback*](#registerlcsmsgcallback)
-        - [*registerDccMsgCallback*](#registerdccmsgcallback)
-        - [*attachCommandHandler*](#attachcommandhandler)
-        - [*registerReqRepCallback*](#registerreqrepcallback)
-        - [*attachPortEventHandler*](#attachporteventhandler)
-        - [*registerInitCallback*](#registerinitcallback)
-        - [*registerInfoCallback*](#registerinfocallback)
-        - [*registerCtrlCallback*](#registerctrlcallback)
-        - [*registerPeriodicTask*](#registerperiodictask)
-        - [General Bus Management Messages](#general-bus-management-messages)
-        - [*sendRawLcsMsg*](#sendrawlcsmsg)
-        - [Node and Port Management Messages](#node-and-port-management-messages)
-        - [*sendNodeReset*](#sendnodereset)
-        - [*sendQueryNode*](#sendquerynode)
-        - [Event Management Messages](#event-management-messages)
-        - [DCC Track Management Messages](#dcc-track-management-messages)
-        - [*sendTrackOn*](#sendtrackon)
-        - [*sendReqTrackOff*](#sendreqtrackoff)
-        - [*sendTrackOff*](#sendtrackoff)
-        - [DCC Subsystem Management Messages](#dcc-subsystem-management-messages)
-        - [*sendSetLocSpDir*](#sendsetlocspdir)
-        - [*sendSetLocFuncOff*](#sendsetlocfuncoff)
-        - [*sendSetLocFgroup*](#sendsetlocfgroup)
-        - [*sendSetLocCvMain*](#sendsetloccvmain)
-        - [*sendSetLocCvProg*](#sendsetloccvprog)
-        - [Extension Driver Management](#extension-driver-management)
-        - [*drvControl*](#drvcontrol)
-        - [*drvInfo*](#drvinfo)
-        - [*drvRead*](#drvread)
-        - [*drvWrite*](#drvwrite)
+    - [*Appendix Overview*](#appendix-overview)
     - [*Appendix n - Library Serial Commands Reference*](#appendix-n---library-serial-commands-reference)
-    - [*Appendix n - Controller Dependent Code Library Routines Reference*](#appendix-n---controller-dependent-code-library-routines-reference)
-        - [*Overview*](#overview)
-        - [*yyy*](#yyy)
     - [*Appendix n - DCC++ Serial Commands Reference*](#appendix-n---dcc-serial-commands-reference)
+    - [*Appendix n - Core Library Routines Reference*](#appendix-n---core-library-routines-reference)
+    - [*Appendix n - Controller Dependent Code Library Routines Reference*](#appendix-n---controller-dependent-code-library-routines-reference)
     - [*Appendix n - LCS Nodes and EasyEda*](#appendix-n---lcs-nodes-and-easyeda)
         - [*Symbols and Footprints*](#symbols-and-footprints)
         - [Links](#links)
@@ -508,13 +465,7 @@ August, 2024
     - [*Appendix n - A generic power supply*](#appendix-n---a-generic-power-supply)
     - [*Notes for making this book*](#notes-for-making-this-book)
 
-<!-- /TOC -->
-
-
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!-- Chapter - Introduction ------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
+<!-- TOC -->
 <!--------------------------------------------------------------------------------------------------------->
 
 <div style="page-break-before: always;"></div>
@@ -788,7 +739,7 @@ Model railroads run on tracks. Imagine that. While on a smaller layout, there is
 |ESTP|||||||||
 |||||||||
 
-// ??? the ESTP message here is for specific enegine ?
+// ??? the ESTP message here is for specific engine ?
 
 // ??? the track on/off should apply to a section or all ?
 
@@ -893,11 +844,11 @@ The messages defined for the DCC locomotive session management are also used for
 
 ### Summary
 
-The layout system is a system of nodes that talk to each other. At the heart are consequently messages. The message format is built upon an 8-byte message format that is suitable for the industry standard CAN bus. Although there are many other standards and communication protocols, the CAN bus is a widely used bus. Since all data is encoded in teh message, there is no reason to select another communication media. But right now, it is CAN.
+The layout system is a system of nodes that talk to each other. At the heart are consequently messages. The message format is built upon an 8-byte message format that is suitable for the industry standard CAN bus. Although there are many other standards and communication protocols, the CAN bus is a widely used bus. Since all data is encoded in the message, there is no reason to select another communication media. But right now, it is CAN.
 
 <!--------------------------------------------------------------------------------------------------------->
 <!--------------------------------------------------------------------------------------------------------->
-<!-- Chapter - Message Protocols------------------------------------------------------------------------->
+<!-- Chapter - Message Protocols  ------------------------------------------------------------------------->
 <!--------------------------------------------------------------------------------------------------------->
 <!--------------------------------------------------------------------------------------------------------->
 
@@ -1340,7 +1291,7 @@ The example shows that a node item is not only used to read or write a data item
 
 ### *Controlling extension functions*
 
-// ??? the extensio and drivr stuiff....
+// ??? the extension and driver stuff....
 
 ### *Reacting to events*
 
@@ -2070,7 +2021,9 @@ And here is the PCB for the PICO based main controller. Note that there is quite
 
 By now we have a core library which can handle the basics of just about any node and we have a main controller board that will form the heart of many projects to come for the layout control system. However, while LCS boards will all run the same core library, there are still differences how for example the controller pins are assigned on the boards. It is very likely that new software versions and perhaps different processors and boards layouts will require that the core library is adapted to each processor / board combination. This is especially true for monolithic board designs, where there is a great freedom which pins to use for what. At this point, many projects found on the web will now start a symphony of "ifdefs" in their coding. The conditional compiles often reach up to the highest layers of the firmware programming. 
 
-Perhaps there is a way to shield all these differences at a lower layer such that higher level libraries and firmware just refer to symbolic names for controller functions and pins. A mapping structure will translate between the symbolic names and the actual HW cunterpart. This **controller dependent layer** will be the topic of the next chapte
+Perhaps there is a way to shield all these differences at a lower layer such that higher level libraries and firmware just refer to symbolic names for controller functions and pins. A mapping structure will translate between the symbolic names and the actual HW counterpart. This **controller dependent layer** will be the topic of the next chapter.
+
+
 <!--------------------------------------------------------------------------------------------------------->
 <!--------------------------------------------------------------------------------------------------------->
 <!-- Chapter - Controller Dependent Code ------------------------------------------------------------------>
@@ -2213,7 +2166,7 @@ Some of the routines can also be found in the Arduino IDE and its libraries for 
 The main controller board features optional power failure detection. The power supply provides a signal line to the controller which goes low when power drops. The power fail input pin is set in the configuration structure and just passed as an input to the configure routine. 
 
 
-// ??? has chang...
+// ??? has changed...
 
 
 
@@ -2228,7 +2181,7 @@ The CDC library offers a set of routines for handling an external interrupt. Whi
 
 The main controller board features two LEDs. They are the ready and the activity LED. They are accessed via the **writeDio** routine. The LCS core library will use the ready LED to indicate that the node is ready. The activity LED is used to show library activities such as receiving a LCS message. The recommended colors for the LEDs are a green for the READY LED and yellow for the ACTIVE LED. The following just shows an example how to control the LEDs.
 
-// ??? this is done via nodeCOntrol calls ...
+// ??? this is done via nodeControl calls ...
 
 
 ### *Timer*
@@ -2726,9 +2679,234 @@ In addition to the LCS core library serial commands available to any node, the b
 
 Just like any other LCS node, the base station firmware offers through node and port attributes status and control functions. However, there is only one on the layout.
 
-The base station was also the first major LCS node with a considerable amount of hardware and software. Initial work started with the main controller and power module extension board based on the Atmega processor family. From there, a monolithic version using the Raspberry PI PICO was developed and that is the latest recommended base station offering.
+The base station was also the first major LCS node with a considerable amount of hardware and software. Initial work started with the main controller and power module extension board based on the Atmega processor family. From there, a monolithic version using the Raspberry PI PICO was developed and that is the latest base station offering.
 
-// ??? we would need a handheld of some kind , also booster... the next chapter is block controllers, you may wat to skip ahead to handhelds and then comes back...
+What is next ?. Well, we have a base station and with the simple command interface it is possible to open a loco session and control that engine. But this command interface is rather for software development and debugging. What we really want is of course a handheld of some form with buttons and levers. So, before building boosters, block controller and extension boards and firmware, the next chapters will develop a handheld. 
+
+
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!-- Chapter - The Cab Handheld --------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+
+<div style="page-break-before: always;"></div>
+
+## *The Cab Handheld*
+
+Cab handhelds are used to control a locomotive. Depending on the other capabilities they can also configure a decoder device or set a turnout. Handhelds are connected to the bus, for example LocoNet, sometimes there is a separate bus for just the handhelds. Traditionally a cable connects the handheld to access points on the layout. Just like it is the case for base stations and boosters there is no shortage of cab handhelds. Lately, wireless handhelds have become very popular. And not to forget, some base station integrate handhelds directly in their front panel.
+
+This chapter will describe a general handheld to just control locomotives. It directly connects via cable to the LCS bus and provides the generic elements to specify the locomotive to operate, set the speed and direction as well as the function keys. Implementing a base station and a handheld is all you would need to run an engine and finally see something for your hard work of building a layout system. The cab handheld described first is a board for developing the firmware. Nevertheless it can be used as a full functioning cab handheld. Later version will build upon the firmware but use a more handy form factor.
+
+### *Requirements*
+
+A cab handheld needs to be able to control the loco. This implies that there is a local non-volatile memory that allows to remember locomotives once controlled. This way one can easily switch between a small set of locomotives and their characteristics. A display will show the actual state of cab handheld and allows together with the configuration buttons to configure the cab handheld. Looking at commercially available handhelds, they all seem to resemble TV controls. A numeric keyboard, some up and down buttons and the speed knob. ( No offense ). In all fairness, they are built to control not only the engines but also the rest of the layout.
+
+But how about a cab handheld that features instead of all the functions to control an entire layout just the features to control an engine. Our cab handheld will have dedicated buttons and levers for let's say a horn or whistle, a bell, and so on. There are also configuration buttons, dedicated buttons and switches, and a very small set of buttons to map to loco specific functions. Furthermore, there is of course the rotary knob for setting the locomotive speed. The following figure shows a rough sketch of the cab handheld elements.
+
+![Cab-Handheld-Sketch.png](./Figures/Cab-Handheld-Sketch.png )
+
+Configuration and part of operation takes place with four buttons. The MENU button allows to toggle through the menus defined. To select a menu, the SELECT button is used. The menu toggle and select scheme can be nested. Within a menu screen, the MENU, UP and DOWN buttons are used screen specific and the SELECT button typically confirms the selected action. The direction switch ( REV-NEUTRAL-FWD ) and the SPEED knob set the speed and direction of the locomotive or consist. F1 to F4 are four general buttons that can be mapped to special functions of the particular locomotive. The Horn and Bell button are rounding up the initial design.
+
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!-- Chapter - Cab Handheld Firmware Development Platform ------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+
+<div style="page-break-before: always;"></div>
+
+## *Cab Handheld Firmware Development Platform*
+
+A cab handheld as shown in the sketch above consists of the controller portion and a set of buttons and dials. Usually, for the very first steps in firmware design a breadboard implementation of the hardware is used. But why not just create a PCB with all the user elements on it? From experience with breadboards, this setup is by far more robust and you will not chase firmware bugs that turn out to be just a loose connection on a breadboard. This is by the way a lesson learned. With the very reasonable prices for a PCB board, it is almost easier to build a PCB rather early in the design phase and if it has an error, just correct it and order another set of PCBs. Although one could also build the module on a an experimental PCB board, having the schematics done, it is a small step to a dedicated PCB. Definitively worth the small extra effort of making a robust prototype PCB. The following schematic shows the extension board developed for the can handheld firmware development. First, here is the block diagram.
+
+![Schematic_LcsNodes-Cab-Dev-B.01.00-1.png](./Schematics/Schematic_LcsNodes-Cab-Dev-B.01.00-1.png )
+
+There is essentially a main controller part with the Raspberry Pi Pico, a CAN bus interface and the non-volatile memory. This part should be very familiar by now. Besides the two I2C connections and the CAN bus pins, almost all GPIO pins are dedicated to a button or encoder. Since the GPIOs can be configured with internal pull-up, no external resistors are necessary. The power supply will be fed from the LCS bus. The whole board can also be fed from the USB port of the PICO. Again, this is very handy for initial debugging the firmware. The LCS Bus connector will connect the cab handheld to the LCS layout. We use only the CAN Bus lines and optional the power line input.
+
+![Schematic_LcsNodes-Cab-Dev-B.01.00-2.png](./Schematics/Schematic_LcsNodes-Cab-Dev-B.01.00-2.png )
+
+Finally, there is the part with all the buttons, encoders and the OLED Display. The following schematic completes the cap handheld schematic for firmware development.
+
+![Schematic_LcsNodes-Cab-Dev-B.01.00-3.png](./Schematics/Schematic_LcsNodes-Cab-Dev-B.01.00-3.png )
+
+Granted, it is not really a cab handheld to hold in your hands. Although the final version will have pretty much the same hardware ingredients, the form factor needs to be different. But for development, the setup will be quite helpful and robust. You will avoid chasing software problems that turn out to be just a loose connection on a breadboard. The following figure shows the development cab handheld as a nice 3D picture to show the components.
+
+![LCS-NODES-PCB-CAB-DEV-B.01.00.png](./Boards/LCS-NODES-PCB-CAB-DEV-B.01.00.png )
+
+The board is a 12x10cm PCB with all the necessary buttons and switches and resembles roughly the initial sketch shown before. The right side contains the electronics and the left side arranges the elements just like a handheld would roughly look like. All elements are labelled with their function. Again, it is a full functioning cab handheld, although a bit clumsy for holding in our hands. The next section will show how the cab handheld truly becomes a handheld device.
+
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!-- Chapter - A basic Cab Handheld ----------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+
+<div style="page-break-before: always;"></div>
+
+## *A basic Cab Handheld*
+
+As the name already suggests, the cab handheld is a handheld device with several buttons and a display. To keep it a compact design, we will use both sides of the PCB. The upper side contains the buttons, switches and display, the lower side contains the controller components. The cab handheld will connect via a cable to the LCS bus. Power comes from the LCS bus power lines and the CAN bus interface is used to transmit the messages. Perhaps a later version will also add some WLAN capabilities. While WLAN would come pretty much for free with the PICO W, the power supply side needs to include a battery.
+
+- a 8x12cm board, used from both sides (?)
+- block diagram...
+- power supply from the LCS bus lines
+- controller, a PICO
+- small display
+- rotary encoder, switches, buttons, etc.
+- a subset for analog ?
+
+// ??? **note** to do ..... focus on the firmware first ...
+
+### *Summary*
+
+As always, there are many options to build a cab handheld. Although this version connects via cable to the LCS Bus, a wireless version is not hard to build. Having more buttons or fewer buttons, having a set of numeric keypad style input, are all quite valid options. It is a matter of what is preferred. Currently, the cab handheld will not offer any controls for accessories, such as turnouts. This is a subject better left to the layout control panels and controlling software. Our cab handheld favors the approach to model more of a locomotive control stand rather than a TV remote style handheld. Since this is a matter of taste and preference, go build your own.
+
+There is certainly the option to connect commercially available handhelds. This would require to provide a gateway from let's say a LocoNet protocol based handheld to the LCS protocol. Refer to the base station part where is shows an optional LocoNet interface. Well, one day you should be able to connect such handhelds via the LocoNet bus. But right now the topic is on the backlog list.
+
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!-- Chapter - Cab Handheld Firmware ---------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+
+<div style="page-break-before: always;"></div>
+
+## *Cab Handheld Firmware*
+
+Now that the development platform is in place, lets have a look at the firmware design. As you perhaps have guessed it, the hardware was already developed with a certain mode in mind. First of all, a cab handheld is nothing else than just another node on the LCS bus. The firmware sits on top of the LCS core library. In addition, there is another key library we have not talked about yet. A cab handheld and also any other device that allows for users to interact, needs software to work with buttons, encoders, displays and so on. This the tasks of the **UI Elements ** library. We will look at this library in a later chapter in great detail.
+
+// ??? note perhaps a picture ?
+
+- SW architecture on top of the LCS library
+- UI is key to build a handheld
+- firmware to handle the buttons, switches, display, etc. Refer to UIElements.
+- issues LCS messages to the base station for speed, direction and functions
+- menu descriptions
+
+### Concepts
+
+- a current cab and a stack of cabs to select from
+- base station has the ultimate data about a cab, loaded into the cab handheld
+- CabHandheld functions and DCC functions
+
+### Screen Layout
+
+- display has 4 lines up to 16 characters. Two fonts
+- four navigation buttons, use top and bottom line, 8x8 font
+- two data lines between, 8x16 font.
+
+### Screen Navigation
+
+- inherent in the UI Elements Screen Object design
+- MENU
+- SELECT
+- UP
+- DOWN
+
+### Operate Screen
+
+- main screen, workhorse
+- speed, dir, functions
+
+### Engine On/off Screen
+
+- for diesels only
+
+### Engine Lights Screen
+
+- front and back lights...
+
+### New Cab Screen
+
+There needs to be a way to set an engine cab number. The NEW CAB screen is used to enter a cab Id and engine type. We will display 4 digits and the engine type among we can toggle with the MENU button. The UP/DOWN buttons advance the current digit position. The encoder knob offers a fast way to scroll a digit. The high value digit allows to set an "S" instead of the number to indicate a short loco DCC address. The SELECT button completes the number entering and the current cab becomes this new cab. Note, that it would need to be explicitly saved.
+
+- works on current cab setting
+
+### Select Cab Screen
+
+A cab handheld maintains a stack of known cabs. That is cabs the handheld has used before and saved in the cab stack. This menu will toggle through them and select the new current cab. The UP/DOWN button is used to scroll around. In addition, the encoder knob allows to scroll a bit faster. The SELECT button will make the entry shown the current loco.
+
+- SELECT scrolls through the cab stack and sets the cab selected as current cab.
+
+### Save Cab Screen
+
+The current cab can be saved in the cab stack. This menu will toggle through them and select the cab slot for saving the current cab data. The UP/DOWN button is used to scroll around. In addition, the encoder knob allows to scroll a bit faster. The SELECT button will perform the action.
+
+- SAVE scrolls through the cab stack and saves the current cab to this slot.
+- any previous entry used for the same cabId is cleared.
+
+### Set DCC Function
+
+The DCC standard defines a list of 69 functions, F0 to F68.
+
+- allows to set any DCC function ( F0 to F68 )
+- encoder knob for fast scrolling
+
+### Config Cab Handheld Functions
+
+- connects a cab handheld function to a DCC function
+
+### Options
+
+- all kinds of screen for configuration settings
+
+### Diag
+
+- all kinds of screen for technical checks and tests
+
+### *Summary*
+
+Phew. The cab handheld is another big step toward controlling a layout. After all, a layout control system without some form cab handhelds is not very useful. As said, there are many ways to build a cab.
+
+- design of UI elements and firmware was greatly influenced by a handheld called ***Protothrottle***.
+- The next chapter will present a diesel cab handheld that resembles a diesel cab stand from the 1950s.
+
+
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!-- Chapter - The Diesel Cab Handheld -------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+
+<div style="page-break-before: always;"></div>
+
+##*The Diesel Cab Handheld*
+
+The general handheld for controlling a locomotive is just one possible implementation. There is a company, Iowa Scale Engineering, that has built a handled called the ***Protothrottle***. This wireless handheld implements as the control elements the cab of a diesel engine. Wow. There is a lever for the diesel engine prime mover, a level for the direction and one for the brakes. You operate the engine with setting the prime mover notch, release the brakes and then the engine moves. When putting the prime mover to "idle", the engine just roll until you apply the brakes. In short, a much more realistic way to operate a diesel locomotive.
+
+![Diesel-Cab-Handheld-Sketch.png](../Figures/Diesel-Cab-Handheld-Sketch.png )
+
+Leveraging the cab handheld hardware from the previous chapter, the diesel cab handheld just differs in the lever for throttle and brake instead of the speed knob. All else is fairly the same. Let's get started.
+
+### *Requirements*
+
+- Very similar to the previous cab handheld ( see the red line ? :-) )
+- instead of speed knob, it features throttle and brake.
+- all else is about the same...
+
+### *Module hardware*
+
+- Leverage the generic cab handheld
+- Controller with CanBus interface
+- power supply from the LCS bus lines
+- small display
+- rotary encoder, buttons, etc.
+
+### *Module firmware*
+
+- UI elements are key again, leverage many screen built before
+- new part is how throttle and brake interplay to run the engine
+
+
+### *Summary*
+
+- now we have a generic cab handheld and a diesel cab handheld.
+- one could come up with a steam or electric engine handheld. 
+- the firmware already goes a long way to quickly realize further cab handhelds.
+
+- would we ever build a handheld with other non-engine functionality... who knows... not right now.
+- would we build a version that can be integrated into a "Stellwerk" table ? perhaps... just a main controller and an cab UI Elements extension
 
 
 <!--------------------------------------------------------------------------------------------------------->
@@ -3621,231 +3799,6 @@ The prototyping board is a 10cm x 12cm board with all connectors and a bread boa
 Actually, there is none. Nevertheless, the board decoding logic and the local NVM memory can be used according to the prototype needs.
 
 
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!-- Chapter - The Cab Handheld --------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-## *The Cab Handheld*
-
-// ??? should the handheld chapters rather be earlier ? base station and handheld are teh minimal system ...
-
-Cab handhelds are used to control a locomotive. Depending on the other capabilities they can also configure a decoder device or set a turnout. Handhelds are connected to the bus, for example LocoNet, sometimes there is a separate bus for just the handhelds. Traditionally a cable connects the handheld to access points on the layout. Just like it is the case for base stations and boosters there is no shortage of cab handhelds. Lately, wireless handhelds have become very popular. And not to forget, some base station integrate handhelds directly in their front panel.
-
-This chapter will describe a general handheld to just control locomotives. It directly connects via cable to the LCS bus and provides the generic elements to specify the locomotive to operate, set the speed and direction as well as the function keys. Implementing a base station and a handheld is all you would need to run an engine and finally see something for your hard work of building a layout system. The cab handheld described first is a board for developing the firmware. Nevertheless it can be used as a full functioning cab handheld. Later version will build upon the firmware but use a more handy form factor.
-
-### *Requirements*
-
-A cab handheld needs to be able to control the loco. This implies that there is a local non-volatile memory that allows to remember locomotives once controlled. This way one can easily switch between a small set of locomotives and their characteristics. A display will show the actual state of cab handheld and allows together with the configuration buttons to configure the cab handheld. Looking at commercially available handhelds, they all seem to resemble TV controls. A numeric keyboard, some up and down buttons and the speed knob. ( No offense ). In all fairness, they are built to control not only the engines but also the rest of the layout.
-
-But how about a cab handheld that features instead of all the functions to control an entire layout just the features to control an engine. Our cab handheld will have dedicated buttons and levers for let's say a horn or whistle, a bell, and so on. There are also configuration buttons, dedicated buttons and switches, and a very small set of buttons to map to loco specific functions. Furthermore, there is of course the rotary knob for setting the locomotive speed. The following figure shows a rough sketch of the cab handheld elements.
-
-![Cab-Handheld-Sketch.png](./Figures/Cab-Handheld-Sketch.png )
-
-Configuration and part of operation takes place with four buttons. The MENU button allows to toggle through the menus defined. To select a menu, the SELECT button is used. The menu toggle and select scheme can be nested. Within a menu screen, the MENU, UP and DOWN buttons are used screen specific and the SELECT button typically confirms the selected action. The direction switch ( REV-NEUTRAL-FWD ) and the SPEED knob set the speed and direction of the locomotive or consist. F1 to F4 are four general buttons that can be mapped to special functions of the particular locomotive. The Horn and Bell button are rounding up the initial design.
-
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!-- Chapter - Cab Handheld Firmware Development Platform ------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-## *Cab Handheld Firmware Development Platform*
-
-A cab handheld as shown in the sketch above consists of the controller portion and a set of buttons and dials. Usually, for the very first steps in firmware design a breadboard implementation of the hardware is used. But why not just create a PCB with all the user elements on it? From experience with breadboards, this setup is by far more robust and you will not chase firmware bugs that turn out to be just a loose connection on a breadboard. This is by the way a lesson learned. With the very reasonable prices for a PCB board, it is almost easier to build a PCB rather early in the design phase and if it has an error, just correct it and order another set of PCBs. Although one could also build the module on a an experimental PCB board, having the schematics done, it is a small step to a dedicated PCB. Definitively worth the small extra effort of making a robust prototype PCB. The following schematic shows the extension board developed for the can handheld firmware development. First, here is the block diagram.
-
-![Schematic_LcsNodes-Cab-Dev-B.01.00-1.png](./Schematics/Schematic_LcsNodes-Cab-Dev-B.01.00-1.png )
-
-There is essentially a main controller part with the Raspberry Pi Pico, a CAN bus interface and the non-volatile memory. This part should be very familiar by now. Besides the two I2C connections and the CAN bus pins, almost all GPIO pins are dedicated to a button or encoder. Since the GPIOs can be configured with internal pull-up, no external resistors are necessary. The power supply will be fed from the LCS bus. The whole board can also be fed from the USB port of the PICO. Again, this is very handy for initial debugging the firmware. The LCS Bus connector will connect the cab handheld to the LCS layout. We use only the CAN Bus lines and optional the power line input.
-
-![Schematic_LcsNodes-Cab-Dev-B.01.00-2.png](./Schematics/Schematic_LcsNodes-Cab-Dev-B.01.00-2.png )
-
-Finally, there is the part with all the buttons, encoders and the OLED Display. The following schematic completes the cap handheld schematic for firmware development.
-
-![Schematic_LcsNodes-Cab-Dev-B.01.00-3.png](./Schematics/Schematic_LcsNodes-Cab-Dev-B.01.00-3.png )
-
-Granted, it is not really a cab handheld to hold in your hands. Although the final version will have pretty much the same hardware ingredients, the form factor needs to be different. But for development, the setup will be quite helpful and robust. You will avoid chasing software problems that turn out to be just a loose connection on a breadboard. The following figure shows the development cab handheld as a nice 3D picture to show the components.
-
-![LCS-NODES-PCB-CAB-DEV-B.01.00.png](./Boards/LCS-NODES-PCB-CAB-DEV-B.01.00.png )
-
-The board is a 12x10cm PCB with all the necessary buttons and switches and resembles roughly the initial sketch shown before. The right side contains the electronics and the left side arranges the elements just like a handheld would roughly look like. All elements are labelled with their function. Again, it is a full functioning cab handheld, just not for holding in our hands. The next section will show how the cab handheld truly becomes a handheld device.
-
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!-- Chapter - A basic Cab Handheld ----------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-## *A basic Cab Handheld*
-
-As the name already suggests, the cab handheld is a handheld device with several buttons and a display. To keep it a compact design, we will use both sides of the PCB. The upper side contains the buttons, switches and display, the lower side contains the controller components. The cab handheld will connect via a cable to the LCS bus. Power comes from the LCS bus power lines and the CAN bus interface is used to transmit the messages. Perhaps a later version will also add some WLAN capabilities. While WLAN would come pretty much for free with the PICO W, the power supply side needs to include a battery.
-
-- a 8x12cm board, used from both sides (?)
-- block diagram...
-- power supply from the LCS bus lines
-- controller, a PICO
-- small display
-- rotary encoder, switches, buttons, etc.
-- a subset for analog ?
-
-// ??? **note** to do ..... focus on the firmware first ...
-
-### *Summary*
-
-As always, there are many options to build a cab handheld. Although this version connects via cable to the LCS Bus, a wireless version is not hard to build. Having more buttons or fewer buttons, having a set of numeric keypad style input, are all quite valid options. It is a matter of what is preferred. Currently, the cab handheld will not offer any controls for accessories, such as turnouts. This is a subject better left to the layout control panels and controlling software. Our cab handheld favors the approach to model more of a locomotive control stand rather than a TV remote style handheld. Since this is a matter of taste and preference, go build your own.
-
-There is certainly the option to connect commercially available handhelds. This would require to provide a gateway from let's say a LocoNet protocol based handheld to the LCS protocol. Refer to the base station part where is shows an optional LocoNet interface. Well, one day you should be able to connect such handhelds via the LocoNet bus. But right now the topic is on the backlog list.
-
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!-- Chapter - Cab Handheld Firmware ---------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-## *Cab Handheld Firmware*
-
-Now that the development platform is in place, lets have a look at the firmware design. As you perhaps have guessed it, the hardware was already developed with a certain mode in mind. First of all, a cab handheld is nothing else than just another node on the LCS bus. The firmware sits on top of the LCS core library. In addition, there is another key library we have not talked about yet. A cab handheld and also any other device that allows for users to interact, needs software to work with buttons, encoders, displays and so on. This the tasks of the **UI Elements ** library. We will look at this library in a later chapter in great detail.
-
-// ??? note perhaps a picture ?
-
-- SW architecture on top of the LCS library
-- UI is key to build a handheld
-- firmware to handle the buttons, switches, display, etc. Refer to UIElements.
-- issues LCS messages to the base station for speed, direction and functions
-- menu descriptions
-
-### Concepts
-
-- a current cab and a stack of cabs to select from
-- base station has the ultimate data about a cab, loaded into the cab handheld
-- CabHandheld functions and DCC functions
-
-### Screen Layout
-
-- display has 4 lines up to 16 characters. Two fonts
-- four navigation buttons, use top and bottom line, 8x8 font
-- two data lines between, 8x16 font.
-
-### Screen Navigation
-
-- inherent in the UI Elements Screen Object design
-- MENU
-- SELECT
-- UP
-- DOWN
-
-### Operate Screen
-
-- main screen, workhorse
-- speed, dir, functions
-
-### Engine On/off Screen
-
-- for diesels only
-
-### Engine Lights Screen
-
-- front and back lights...
-
-### New Cab Screen
-
-There needs to be a way to set an engine cab number. The NEW CAB screen is used to enter a cab Id and engine type. We will display 4 digits and the engine type among we can toggle with the MENU button. The UP/DOWN buttons advance the current digit position. The encoder knob offers a fast way to scroll a digit. The high value digit allows to set an "S" instead of the number to indicate a short loco DCC address. The SELECT button completes the number entering and the current cab becomes this new cab. Note, that it would need to be explicitly saved.
-
-- works on current cab setting
-
-### Select Cab Screen
-
-A cab handheld maintains a stack of known cabs. That is cabs the handheld has used before and saved in the cab stack. This menu will toggle through them and select the new current cab. The UP/DOWN button is used to scroll around. In addition, the encoder knob allows to scroll a bit faster. The SELECT button will make the entry shown the current loco.
-
-- SELECT scrolls through the cab stack and sets the cab selected as current cab.
-
-### Save Cab Screen
-
-The current cab can be saved in the cab stack. This menu will toggle through them and select the cab slot for saving the current cab data. The UP/DOWN button is used to scroll around. In addition, the encoder knob allows to scroll a bit faster. The SELECT button will perform the action.
-
-- SAVE scrolls through the cab stack and saves the current cab to this slot.
-- any previous entry used for the same cabId is cleared.
-
-### Set DCC Function
-
-The DCC standard defines a list of 69 functions, F0 to F68.
-
-- allows to set any DCC function ( F0 to F68 )
-- encoder knob for fast scrolling
-
-### Config Cab Handheld Functions
-
-- connects a cab handheld function to a DCC function
-
-### Options
-
-- all kinds of screen for configuration settings
-
-### Diag
-
-- all kinds of screen for technical checks and tests
-
-### *Summary*
-
-Phew. The cab handheld is another big step toward a layout. After all, a layout control system without some form cab handhelds is not very useful. As said, there are many ways to build a cab.
-
-- design of UI elements and firmware was greatly influenced by a handheld called ***Protothrottle***.
-- The next chapter will present a diesel cab handheld that resembles a diesel cab stand from the 1950s.
-
-
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!-- Chapter - The Diesel Cab Handheld -------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-##*The Diesel Cab Handheld*
-
-The general handheld for controlling a locomotive is just one possible implementation. There is a company, Iowa Scale Engineering, that has built a handled called the ***Protothrottle***. This wireless handheld implements as the control elements the cab of a diesel engine. Wow. There is a lever for the diesel engine prime mover, a level for the direction and one for the brakes. You operate the engine with setting the prime mover notch, release the brakes and then the engine moves. When putting the prime mover to "idle", the engine just roll until you apply the brakes. In short, a much more realistic way to operate a diesel locomotive.
-
-![Diesel-Cab-Handheld-Sketch.png](../Figures/Diesel-Cab-Handheld-Sketch.png )
-
-Leveraging the cab handheld hardware from the previous chapter, the diesel cab handheld just differs in the lever for throttle and brake instead of the speed knob. All else is fairly the same. Let's get started.
-
-### *Requirements*
-
-- Very similar to the previous cab handheld ( see the red line ? :-) )
-- instead of speed knob, it features throttle and brake.
-- all else is about the same...
-
-### *Module hardware*
-
-- Leverage the generic cab handheld
-- Controller with CanBus interface
-- power supply from the LCS bus lines
-- small display
-- rotary encoder, buttons, etc.
-
-### *Module firmware*
-
-- UI elements are key again, leverage many screen built before
-- new part is how throttle and brake interplay to run the engine
-
-
-### *Summary*
-
-- now we have a generic cab handheld and a diesel cab handheld.
-- one could come up with a steam or electric engine handheld. 
-- the firmware already goes a long way to quickly realize further cab handhelds.
-
-- would we ever build a handheld with other non-engine functionality... who knows... not right now.
-- would we build a version that can be integrated into a "Stellwerk" table ? perhaps... just a main controller and an cab UI Elements extension
 
 
 <!--------------------------------------------------------------------------------------------------------->
@@ -4022,7 +3975,7 @@ If you take a picture from the Apollo space program days, it looks very much the
 
 ## *Utility boards*
 
-// ??? adatpter PCB
+// ??? adapter PCB
 
 // ??? experimental breadboard stuff
 
@@ -4276,2333 +4229,16 @@ LCS Nodes offer access via **nodeInfo** and **nodeControl** library functions. T
 
 <!--------------------------------------------------------------------------------------------------------->
 <!--------------------------------------------------------------------------------------------------------->
-<!-- Appendix - Core Library Status Code ------------------------------------------------------------------>
+<!-- Appendix - Appendix Overview  ------------------------------------------------------------------------>
 <!--------------------------------------------------------------------------------------------------------->
 <!--------------------------------------------------------------------------------------------------------->
 
 <div style="page-break-before: always;"></div>
 
-## *Appendix n - Core Library Status Code*
+## *Appendix Overview*
 
-The LCS library routines return a status code. In general, the status coders are grouped into functional categories. The number range is further divided into the library reserved status code range and a user defined status code range that can be assigned to node specific status codes.
+// ??? **note** talk about what is in the
 
-// **note** convert the rest to table when fixed ...
-
-```
-    ALL_OK                              = 0,
-    ERR_NOT_IMPLEMENTED                 = 1,
-    ERR_NOT_SUPPORTED                   = 2,
-
-    ERR_SETUP_CDC                       = 10,
-    ERR_CREATE_LCS_OBJ                  = 11,
-    ERR_INVALID_CONFIG_DESC             = 12,
-    ERR_NVM_SETUP                       = 13,
-    ERR_NVM_SIZE_EXCEEDED               = 14,
-    ERR_MEM_SIZE_EXCEEDED               = 15,
-    ERR_NVM_OP_FAILED                   = 16,
-    ERR_SETUP_CAN_BUS                   = 17,
-    ERR_NODE_NOT_OPS_STATE              = 18,
-    ERR_NODE_NOT_CONFIG_STATE           = 19,
-    ERR_NODE_OUTSTANDING_REQ_LIMIT      = 20,
-    ERR_TASK_MAP_SIZE_EXCEEDED          = 21,
-
-    ERR_INVALID_NODE_ID                 = 30,
-    ERR_INVALID_NODE_INFO_ITEM          = 31,
-    ERR_INVALID_NODE_CTRL_ITEM          = 32,
-
-    ERR_INVALID_ATTR_ID                 = 35,
-    ERR_INVALID_ATTR_MODE_ERR           = 36,
-    ERR_INVALID_ATTR_ARG_ERR            = 37,
-
-    ERR_INVALID_PORT_ID                 = 40,
-    ERR_INVALID_PORT_INFO_ITEM          = 41,
-    ERR_INVALID_PORT_CTRL_ITEM          = 42,
-
-    ERR_INVALID_EVENT_ID                = 50,
-    ERR_INVALID_EVENT_MAP_INDEX         = 51,
-    ERR_EVENT_MAP_FULL                  = 52,
-    ERR_PENDING_REQ_MAP_FULL            = 53,
-
-    ERR_INVALID_SESSION_ID              = 60,
-    ERR_INVALID_CAB_ID                  = 61,
-    ERR_INVALID_LOCO_SPEED              = 62,
-    ERR_INVALID_FGROUP_ID               = 63,
-    ERR_INVALID_FUNC_ID                 = 64,
-    ERR_INVALID_CV_ID                   = 65,
-    ERR_INVALID_CV_MODE                 = 66,
-    ERR_CV_OP_NO_ACK                    = 67,
-    ERR_INVALID_BIT_POS                 = 68,
-    ERR_INVALID_PACKET_LEN              = 69,
-    ERR_INVALID_REPEATS                 = 70,
-
-    ERR_CODE_CAN_BUS_BASE               = 80,
-    ERR_NODE_SPECIFIC_BASE              = 128
-
-```
-
-
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!-- Appendix - Core Library Routines Reference ----------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-## *Appendix n - Core Library Routines Reference*
-
-
-// ??? **note* this is a battle you cannot win. I would like to include the constants and functions. But syncing source and this book is a tedious task. Doxygen would not really help other than you have a html version somehwere else. Perhaps allso useful. But not in this book. So, how about just including the include file ? We could also comment groups of functions, to save comment overhead..
-
-
-This appendix lists all the LCS core library library methods available to the firmware programmer. The core methods primarily implement the management of node and port attributes, event management and callback function registration. Each method is described with the method signature, the parameter description, the return values and additional notes.
-
-// ??? **note** mention the grouping of pages to come...
-// ??? **note** carefully check to match the implementation ...
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### Setup
-
-|Routine| Purpose |
-|:----|:----|
-| getCoreLibConfigDescDefaults | returns a configuration descriptor with default values. |
-|init| the LCS core library initialization routine. To be called first.|
-|run| the LCS core library processing loop. To be called last. |
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *getCoreLibConfigDescDefaults*
-
-<hr>
-
-...
-
-#### Syntax
-
-```cpp
- static LcsCoreLibConfigDesc getCoreLibConfigDescDefaults( );
-```
-
-#### Parameters
-
-None.
-
-#### Configuration descriptor
-The configuration descriptor is a structure that is passed to the library init method. It contains all the data necessary for configuring the library. For setting up the library, the configuration is passed. Items not used contain a default value. You only have to specify the ones you will need.
-
-|ConfigDesc Parameter| Purpose|
-|:---|:---|
-|options | options to guide the node startup. The options are listed below.|
-|nodeType | the node type. This is set by the firmware on node startup and cannot be changed.|
-|nodeId | nodeId to set in NVM and then use in the nodeId protocol.  |
-|nodeMajorVersion| the node firmware major version. This is set by the firmware on node startup and cannot be changed. |
-|nodeMinorVersion| the node firmware minor version. This is set by the firmware on node startup and cannot be changed. |
-|nodePatchLevel| the node firmware patch level. This is set by the firmware on node startup and cannot be changed. |
-|numOfEvents | the number of events that this node can be configured for. The range is between MIN_EVENT_ID and MAX_EVENT_ID. |
-|numOfPorts| the number of ports on this node. The range is between MIN_PORT_ID and MAX_PORT_ID. |
-|numOfAttrs| the number of global attributes on this node. The range is between MIN_ATTR_ID and MAX_ATTR_ID. |
-|numOfPendingReq | the number of outstanding requests to other nodes. The maximum size is internally set to MAX_PENDING_REQ_MAP_ENTRIES (32). |
-
-#### Options
-The options are passed via the configuration descriptor to the node init routine. The options are simply ORed.
-
-|ConfigDesc Parameter| Purpose|
-|:---|:---|
-|NOPT_SKIP_NODE_ID_CONFIG | the node will on startup not request a nodeId and use the one already stored in the non-volatile memory version of the nodeMap.|
-|NOPT_SKIP_NODE_INIT_STEP | the node will not invoke the node initialization callback on node startup. |
-|NOPT_SKIP_PORT_INIT_STEP | the node will not invoke the port initialization callback on node startup. |
-|NOPT_USE_EXT_NVM| the node uses an external non-volatile memory. Normally, the controller features an internal EEPROM. If the controller does not offer such an EEPROM or the requested NVM size is larger than this EEPROM, an external NVM can be used.||
-
-#### Return
-The function returns the status code of the operation. If there is no error, the pointer to the library object and a status of ALL_OK is returned. Refer to the appendix containing the error codes for possible error return values.
-
-#### Notes
-
-None.
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *init*
-
-<hr>
-
-The init routine is the very first call to the LCS core library. After successful completion, the library data structures are initialized, and further calls such as registering callbacks or accessing attributes can be invoked. The routine is passed a configuration descriptor with all relevant data for node initialization. On a node there will be exactly one instance of the library object.
-
-#### Syntax
-```cpp
-static uint8_t init( LcsConfigDesc *cPtr, LcsLib **libPtr );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|cPtr|lcsConfigDesc\*| A pointer to the configuration descriptor. The descriptor is shown below |
-|libPtr|LcsLib\*\*| A pointer to the LCS core library object to be used in further library method calls. |
-
-#### Return
-The function returns the status code of the operation. If there is no error, the pointer to the library object and a status of ALL_OK is returned. Refer to the appendix containing the error codes for possible error return values.
-
-#### Notes
-If a node is started with the NOPT_SKIP_NODE_ID_CONFIG option, it will not ask for a nodeId validation. This also means that there is no way of knowing that the node exist or conflicts with an exiting nodeId. It is recommend to always start with this option disabled. However, for firmware debugging purposes it maybe quite useful. When skipping the node validation, nodes will detect a nodeId collision and go into a halt state, waiting for a manual resolution.
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *run*
-
-<hr>
-
-"run" is the main routine of the node activity processing. It is the last method called after all setup is done and starts the node initialization activities. After all initialization work, the routine will enter the internal node processing loop. Note that this design will make the "run" routine the last to call in a node firmware. The routine will not return.
-
-#### Syntax
-```cpp
-void  run( );
-```
-
-#### Parameters
-None
-
-#### Notes
-The inner workings of the core library is essentially a loop which performs the various duties. The previously registered callbacks are the key method to communicate from the library to the node firmware. Since the library code will not run when executing a user callback, all internal activities are on hold. For example an incoming CAN bus message will not be detected while outside the core library. Node firmware callbacks should therefore be rather short and quick.
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### Control and Information
-
-|Routine| Purpose |
-|:----|:----|
-|nodeControl| issues control commands to the node / port.|
-|nodeInfo| retrieves information about the node / port. |
-|getAttr| returns the value of a global attribute. |
-|setAttr| set the global attribute to a value. |
-|getAttrAdr| returns a pointer to the global attribute memory location.|
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *nodeControl*
-<hr>
-
-The routine issues a control operation to the node or port. Depending on the control item, there are up to two arguments passed. The control item range is divided into a reserved item range and the user defined range. The reserved items are directly executed within the library. For user defined control item the node control item callback is invoked.
-
-#### Syntax
-```cpp
-uint8_t nodeControl( uint8_t portId, uint8_t item, uint16_t val1 = 0, uint16_t val2 = 0 );
-```
-
-#### Parameters
-|Parameter|Type|Comment|
-|:--------|:---|:------|
-|portId|uint8_t| the port on the node. If the portId is NIL, the operation refers to the node.|
-|item|uint8_t| the item defined for the nodeControl method. Refer to the table below for valid items.|
-|val1| uint16_t | the data value. This parameter is optional and if omitted set to a value of 0. Consult the item table for the item specific meaning. |
-|val2| uint16_t | the data value. This parameter is optional and if omitted set to a value of 0. Consult the item table for the item specific meaning. |
-
-#### Node Control Items
-
-// **note** think of a better way to describe what is passed
-
-|item|val1|val2|Comment|
-|:---|:---|:---|:------|
-|NC_SET_NODE_ID | nodeId | - | set the nodeId attribute of the node. |
-|NC_SET_READY_LED | val | -  |set the ready LED on or off. A value <> 0 turns the LED on.|
-|NC_SET_ACTIVITY_LED | val |-| set the activity LED on or off. A value <> 0 turns the LED on.|
-|NC_TOGGLE_READY_LED |-|-| toggle the ready LED. |
-|NC_TOGGLE_ACTIVITY_LED |-|-| toggle the activity LED. |
-|NC_SET_NODE_NAME_1 |val|val| character 1 - 4 of the node name. Writing to this item causes the complete node name to be written to the nodeMap. |
-|NC_SET_NODE_NAME_2 |val|val| character 5 - 8 of the node name. The data is written to a temporary place and only stored to the node map name when the first part, characters 1 - 4 are written.|
-|NC_SET_NODE_ATTR_n | val|val| set the global attribute "n". |
-|NC_FLUSH_NODE_ATTR_n |-|-| flush the node attribute "n" data value to NVM. |
-
-#### Notes
-The ready and activity LEDs are normally set by the LCS core library.
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *nodeInfo*
-<hr>
-
-The routine issues a information request operation to the node. Depending on the info item, there are up to two arguments passed. On input they contain information for the routine, on return they contain the data values returned. The info item range is divided into a reserved item range and the user defined range. The reserved items are directly executed within the library. For user defined control item the port info item callback is invoked.
-
-#### Syntax
-```cpp
-uint8_t nodeInfo( uint8_t portId, uint8_t item, uint16_t *arg1, uint16_t *arg2 = nullptr );
-```
-
-#### Parameters
-|Parameter|Type|Comment|
-|:--------|:---|:------|
-|portId|uint8_t| the port on the node. If the portId is NIL, the operation refers to the node.|
-|item|uint8_t| the item defined for the nodeInfo method. Refer to the table below for valid items.|
-|arg1| uint16_t\* | a reference to the first data value. This parameter is optional and if omitted set to a value of < nullptr >. Consult the item table for the item specific meaning. |
-|arg2| uint16_t\* | a reference to the optional second data value. This parameter is optional and if omitted set to a value of < nullptr >. Consult the item table for the item specific meaning. |
-
-####nodeInfo Items
-
-// **note** think of a better way to describe what is passed, we have in and out arguments
-
-|Item|Arg1|Arg2|Comment|
-|:---|:----|:----|:----|
-|NI_NODE_OPTIONS ||| the node option word.|
-|NI_NODE_FLAGS ||| the node flags word.|
-|NI_NODE_TYPE ||| the node type. |
-|NI_NODE_ID ||| the node Id.|
-|NI_PORT_MAP_ENTRIES |||-|
-|NI_EVENT_MAP_ENTRIES |||-|
-|NI_EVENT_MAP_ENTRY |||-|
-|NI_ATTR_MAP_ENTRIES ||| - |
-|NI_NODE_VERSION |||-|
-|NI_NODE_MAJOR_VERSION |||-|
-|NI_NODE_MINOR_VERSION |||-|
-|NI_NODE_PATCH_LEVEL |||-|
-|NI_NODE_UID_1 |||-|
-|NI_NODE_UID_2 |||-|
-|NI_NODE_NAME_1 ||| returns characters 1 - 4 of the node name.|
-|NI_NODE_NAME_2 ||| returns characters 5 - 8 of the node name.|
-|NI_NODE_ATTR_n ||| returns global node attribute "n". |
-
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *getAttr*
-<hr>
-
-The routine returns an attribute value from the attribute map. A mode parameter allows to specify whether a word,  byte or a bit is requested. Attributes are a local concept. They are accessed from the firmware on a node.
-
-#### Syntax
-```cpp
-uint8_t getAttr( uint16_t attrId, uint16_t *val, uint8_t mode = ACC_MEM );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|attrId|uint16_t|The attribute identifier. An attrId starts with one. The number global attributes can be found in the nodeMap.|
-|val|uint16_t *|A reference to a variable where the data access result from port variable is to be returned. If there is an access error, a zero value is returned.|
-|mode|uint8_t|The access mode to use. There are memory, non-volatile and a synced access.|
-
-The table below shows the mode options:
-
-|Mode|Comment|
-|:---|:------|
-|ACC_MEM| the value is read from the memory map. |
-|ACC_NVM| the value is read from the non-volatile memory map. |
-|ACC_SYNC| The value is first copied from the non-volatile memory to the memory map and then returned.|
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix containing the error codes for possible error return values.
-
-#### Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *setAttr*
-<hr>
-
-The routine sets an attribute value in the attribute map. A mode parameter allows to specify whether a word,  byte or a bit is modified. Attributes are a local concept. They are accessed from the firmware on a node.
-
-#### Syntax
-```cpp
-uint8_t setAttr( uint16_t attrId, uint16_t val, uint8_t mode = ACC_MEM );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|attrId|uint16_t| The attribute identifier. |
-|val|uint16_t | The value to be written to the port variable. |
-|mode|uint8_t| The access mode to use. There are memory, non-volatile and a synced access.|
-
-The table below shows the mode options:
-
-|Mode|Comment|
-|:---|:------|
-|ACC_MEM| the value is written to the memory map. |
-|ACC_NVM| the value is written to the non-volatile memory map. |
-|ACC_SYNC| The value is written to both memory types.|
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix containing the error codes for possible error return values.
-
-#### Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *getAttrAdr*
-<hr>
-
-The getAttrAdr routine returns a pointer to the attribute value location in memory. This method is useful when a firmware needs constant access to the attribute value to read or write to it. Attributes are a local concept. They are accessed from the firmware on a node.
-
-#### Syntax
-```cpp
-uint8_t getAttrAdr( uint16_t attrId, uint16_t **attrAdr );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|attrId|uint16_t|The attribute identifier. An attrId starts with one. The number global attributes can be found in the nodeMap.|
-|attrAdr| \*\*uint16_t| a pointer to the pointer where the address will be returned.|
-
-#### Return
-The function returns the status code of the operation. If there is no error, the pointer to the library object and a status of ALL_OK is returned. Refer to the appendix containing the error codes for possible error return values.
-
-#### Notes
-
-This routine set the passed pointer to the address of the attribute. There is however no further checking when using this pointer. For example, using this pointer with an index it could point to any location in allocated memory. Care needs to be taken that this pointer does not corrupt memory.
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### Callbacks
-
-|Routine| Purpose |
-|:----|:----|
-|registerLcsMsgCallback| register the LCS core library general messages handler. |
-|registerDccMsgCallback| register the handler for DCC subsystem messages. |
-|registerCommandCallback| register the external serial command handler. |
-|registerReqRepCallback| register the handler for the reply to a node item request. |
-|registerPortEventCallback| register the handler for event processing. |
-|registerInitCallback| register the handler for the node / port initialization callback. |
-|registerInfoCallback| register the handler for a node / port item info request. |
-|registerCtrlCallback| register the handler for a node item control request. |
-|registerPeriodicTask| register the LCS core library periodic task handler. |
-
-<!---------------------------------------------------------------------------->
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *registerLcsMsgCallback*
-<hr>
-
-The routine registers a callback function for LCS core library messages such general acknowledgement or error messages.
-
-#### Syntax
-```cpp
-void registerLcsMsgCallback( LcsMsgCallBack functionId );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|functionId|LcsMsgCallBack| A reference to the callback function. The signature type is shown below. |
-
-#### Callback signature
-```cpp
-typedef void (*LcsMsgCallBack) ( uint8_t *msg );
-```
-
-The callback routine is passed a pointer to the message buffer. The the buffer contains the LCS management message, the first byte contains the LCS message opCode.
-
-#### Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *registerDccMsgCallback*
-
-<hr>
-
-The routine registers the callback function to handle incoming DCC LCS messages. As with any LCS message, the first byte contains the OpCode. This OpCode contains the DCC commands received.
-
-#### Syntax
-
-```cpp
-void attachDccMsgHandler( LcsMsgCallBack functionId );
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|functionId|LcsMsgCallBack| A reference to the callback function. The signature type is shown below. |
-
-#### Callback signature
-```cpp
-typedef void (*LcsMsgCallBack) ( uint8_t *msg );
-```
-
-The callback routine is passed a pointer to the message buffer. The the buffer contains the DCC message, the first byte contains the LCS message opCode, which represents the DCC command.
-
-#### Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *attachCommandHandler*
-
-<hr>
-
-This method will set a command line handler. The LCS core library implements a loop that scans the serial console I/O interface for serial command input. Serial commands for the core library itself are handled inside the library. If a command is not recognized and there is a function registered, the command line buffer will be passed to it.
-
-#### Syntax
-
-```cpp
-void registerCommandCallback( LcsCommandCallBack functionId );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|functionId|LcsCommandCallBack| A reference to the callback function. The signature type is shown below. |
-
-#### Callback signature
-```cpp
-typedef uint8_t (*LcsCommandCallBack) ( char *cmdLine );
-```
-
-The callback is passed the command line as it was received by the LCS core library command handler. The callback routine is expected to pass back a return code. Anything other than the ALL_OK constant will be considered an error by the serial command handler callback routine.
-
-#### Notes
-
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *registerReqRepCallback*
-
-<hr>
-
-This routine registers a callback function to be invoked for a node or port item request reply message. When a message (NODE-REQ) was sent to the target node, the target node will reply with a (NODE-REP) message. The receiving node will invoke the callback with the data returned.
-
-#### Syntax
-
-```cpp
-void attachNodeItemReqHandler( LcsNodeItemReqCallBack functionId );
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|functionId|LcsNodeItemReqCallBack| A reference to the callback function. The signature type is shown below.|
-
-#### Callback signature
-
-```cpp
-typedef uint8_t ( *LcsNodeItemReqCallBack ) ( uint16_t nodeId, uint8_t item, uint16_t val1, uint16_t val2 );
-```
-
-The callback function is passed the actual nodeId, the requested item and the two return arguments. Not all items will use the return arguments. An unused argument will be passed as a zero value.
-
-#### Notes
-
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *attachPortEventHandler*
-
-<hr>
-
-The routine registers the event handler.  Event/Port combinations are entered in the event map. The sorted map is searched when an event is received. When the node receives an event and a port is configured to react to this event, the callback function will be invoked.
-
-#### Syntax
-
-```cpp
-uint8_t attachPortEventHandler( LcsPortEventCallBack functionId );
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|functionId|LcsPortEventCallBack| A reference to the callback function. The signature type is shown below. |
-
-#### Callback signature
-
-```cpp
-typedef void (*LcsPortEventCallBack) ( uint16_t nodeId,
-									   uint8_t  portId,
-							           uint8_t  eAction,
-                                       uint16_t eventId,
-                                       uint16_t eData );
-```
-
-The callback function is passed the broadcasting nodeId, the portId registered in the event map for this event. If the event is an event that has a value, the values is passed in the eData parameter. The eAction parameter holds the event action, i.e. ON, OFF or a value event.
-
-|eAction| Comment |
-|:------|:--------|
-|PEA_EVENT_ON | On event. |
-|PEA_EVENT_OFF | Off event. |
-|PEA_EVENT_EVT | Event with an optional data value. The data is passed through the eData argument |
-
-#### Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix containing the error codes for possible error return values.
-
-#### Notes
-
-Like all other callbacks, the handler runs to completion. During execution of the callback routine, no other message processing or internal housekeeping will take place. Event handlers should therefore be rather short and non-blocking.
-
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *registerInitCallback*
-
-<hr>
-
-This routine registers a callback function to be invoked when a node or port is initialized or restarted.
-
-#### Syntax
-
-```cpp
-void attachNodeInitHandler( LcsNodeInitCallBack functionId );
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|functionId|LcsNodeInitCallBack| A reference to the callback function. The signature type is shown below. |
-
-#### Callback signature
-
-```cpp
-typedef void (*LcsNodeInitCallBack) ( uint16_t nodeId );
-```
-
-The callback function is passed the actual nodeId assigned to the node.
-
-#### Notes
-
-The node init callback is intended for setting up firmware specific items when a node is started. Technically, the setup could also take place between the node init call and the node loop call. However, if there are actions that need to be done at first initialization and whenever a RESET command is received, they should be placed into a callback function.
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *registerInfoCallback*
-
-<hr>
-
-This routine registers a callback function to be invoked when a user defined node or port info item is requested. Node info items are divided into two categories. The first range is reserved for predefined LCB library items. The rest of the number range can be assigned by the firmware programmer. See the include file for the exact numeric values. When a user defined item is received, the item number and the arguments are passed to the callback routine.
-
-#### Syntax
-
-```cpp
-void attachNodeInfoItemHandler( LcsNodeInfoItemCallBack functionId );
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|functionId|LcsNodeInfoItemCallBack| A reference to the callback function. The signature type is shown below.|
-
-#### Callback signature
-
-```cpp
-typedef uint8_t ( *LcsNodeInfoItemCallBack ) ( uint8_t item, uint16_t *arg1, uint16_t *arg2 );
-```
-
-The callback function is passed the item number and references to the argument locations. A node info item can specify to pass data through the two arguments to the callback and the callback can pass data back through the arguments.
-
-#### Notes
-
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *registerCtrlCallback*
-
-<hr>
-
-This routine registers a callback function to be invoked when a user defined node or port control item request is received. Control items are divided into two categories. The first range is reserved for predefined LCB library items. The rest of the number range can be assigned by the firmware programmer. See the include file for the exact numeric values. When a user defined item is received, the item number and the arguments are passed to the callback routine.
-
-#### Syntax
-
-```cpp
-void attachNodeCtrlItemHandler( LcsNodeCtrlItemCallBack functionId );
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|functionId|LcsNodeCtrlItemCallBack| A reference to the callback function. The signature type is shown below.|
-
-#### Callback signature
-
-```cpp
-typedef uint8_t ( *LcsNodeCtrlItemCallBack ) ( uint8_t item, uint16_t arg1, uint16_t arg2 );
-```
-
-The callback function is passed the item number and the two argument values.
-
-#### Notes
-
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *registerPeriodicTask*
-
-<hr>
-
-The routine registers the callback function for the general loop callback. The LCS core library implements a loop that periodically manages the  internal activities. To allow the node firmware to periodically execute its tasks, a handler needs to be registered.
-
-#### Syntax
-
-```cpp
-void attachLoopHandler( LcsCoreLibLoopCallBack functionId );
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|functionId|LcsCoreLibLoopCallBack| A reference to the callback function. The signature type is shown below. |
-
-#### Callback signature
-
-```cpp
-typedef void (*LcsCoreLibLoopCallBack) ( );
-```
-
-There are no arguments and no return result defined.
-
-#### Notes
-
-none
-
-<div style="page-break-before: always;"></div>
-
-### General Bus Management Messages
-
-|Routine| Purpose |
-|:----|:----|
-|sendReset|Broadcasts a LCS bus reset command |
-|sendBusOn| Broadcasts the Bus On command |
-|sendBusOff| Broadcasts the Bus Off command |
-|sendPing| Sends a ping command to a target node or node group |
-|sendAck| Sends an acknowledgement for a request previously received |
-|sendErr| Sends an error return for a request previously received  |
-|sendRawLcsMsg|sends a raw LCS message. Mainly for debugging purposes.|
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendReset*
-<hr>
-
-Sending a reset message caused all nodes to perform a restart. It is equivalent to turning on power on for the entire layout.
-
-####Syntax
-```cpp
-uint8_t sendReset( uint16_t nodeId, uint8_t portId );
-```
-
-####Parameters
-None
-
-####Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|||||||||
-
-####Notes
-
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendBusOn*
-
-<hr>
-
-The sendBusOn message turns the bus message processing on. All nodes can now use the bus to send messages. If the bus was not in the BUS-OFF state, this message can be ignored by the nodes on the bus.
-
-####Syntax
-
-```cpp
-uint8_t sendBusOn( );
-```
-
-####Parameters
-
-None
-
-####Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-
-|Opcode(len=x)|Hex|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_BON||||||||||
-
-None
-
-####Notes
-
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendBusOff*
-
-<hr>
-
-The routine turns off the LCS message bus. All receiving nodes should stop sending messages until a (BUS-ON) message is received.
-
-####Syntax
-
-```cpp
-uint8_t sendBusOff( );
-```
-
-####Parameters
-
-None
-
-####Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_BOF|||||||||
-
-####Notes
-
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendPing*
-
-<hr>
-
-The send a ping message will send a ping signal to a node or a group of nodes. The pinged node will reply with a generic ACK message. The message could be used by a base station to ensure that all nodes are still responding.
-
-####Syntax
-
-```cpp
-uint8_t sendPing( uint16_t nodeId );
-```
-
-####Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|nodeId|uint16_t| the node Id of the target node. If the node Id is NIL_NODE_ID, all nodes will reply. |
-
-####Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_PING|nId-H| nId-L|||||||
-
-####Notes
-
-Sending a PING message with a NIL_NODE_ID will cause a flood of ACK reply messages from each node in the layout.
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendAck*
-
-<hr>
-
-The sendAck message send an acknowledgment to indicate a successful operation for a previous request to the node.
-
-####Syntax
-
-```cpp
-uint8_t sendAck( uint16_t nodeId );
-```
-
-####Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|nodeId|uint16_t| the node Id of the sending node. Upon LCS library initialization, the nodeID is set and can be retrieved through call to the getNodeId( ) method. |
-
-####Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|LCS_OP_ACK|nodeId-H|nodeId-L|-|-|-|-|-|
-
-####Notes
-
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendDccErr*
-
-<hr>
-
-// ??? **note** rather called sendErr ?
-
-The sendDccEr message is used for a DCC subsystem to send an error for a requested operation. In addition to the error code, optional data arguments further qualifying the error can be transmitted.
-
-####Syntax
-
-```cpp
-uint8_t sendDccErr( uint8_t errCode, uint8_t arg1 = 0, uint8_t arg2 = 0 );
-```
-
-####Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|errCode|uint8_t| the error code. refer to the appendix for possible DCC error codes.|
-|arg1|uint8_t| an optional argument for the error code. Refer to the error appendix for possible argument values.|
-|arg2|uint8_t| an optional argument for the error code. Refer to the error appendix for possible argument values.|
-
-####Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|errCode|arg1|arg2||||||
-
-####Notes
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *sendRawLcsMsg*
-<hr>
-
-The sendRawLcsMsg just sends the message buffer, which contains am LCS message. No checking on the validity of the message content is done. This routine is primarily intended for debugging purposes.
-
-#### Syntax
-```cpp
-uint8_t sendRawLcsMsg( uint8_t *msgBuf, uint8_t msgLen );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|msgBuf| char *| the message buffer. |
-|msgLen|uint8_t| the length of the message. The maximum size of a message is 8. |
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### Node and Port Management Messages
-
-|Routine| Purpose |
-|:----|:----|
-|sendReqNodeId| Send the request nodeId command at node startup |
-|sendRepNodeId| Send the reply nodeId command to a request node Id command |
-|sendSetNodeId| Send the set a new node Id command |
-|sendNodeCollision| Send the node collision detected message.|
-|sendNodeReset| Issues a node reset command to the target node |
-|sendQueryNode| Requests a data item from the target node |
-|sendRepNode| Sends the reply with the data item to a query node request |
-|sendControlNode| Executes an action specified by item in the target node |
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendReqNodeId*
-<hr>
-
-At node startup time, the node will reads its current nodeId from the non-volatile version of the node map and broadcast its unique Id and node Id. A central node, typically the base station will check that this node is unique across the layout. The node enters the wait state until that response is received.
-
-####Syntax
-```cpp
-uint8_t sendReqNodeId( uint16_t nodeId, uint32_t nodeUID, uint8_t flags );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|nodeId|uint16_t| the node Id of the sending node. Upon LCS library initialization, the nodeID is set and can be retrieved through call to the getNodeId( ) method. |
-|nodeUID|uint132_t| the node UID of the sending node. |
-|flags| uint8_t | reserved, not used yet and should be set to zero. |
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_REQ_NID|nId-H|nId-L|nUID-4|nUID-3|nUID-2|nUID-1|flags||
-
-####Notes
-
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendRepNodeId*
-<hr>
-
-At node startup time, the node will reads its current nodeId from the non-volatile version of the node map and broadcast its unique Id and node Id. A central node, typically the base station will check that this node is unique across the layout. The node enters the wait state until that response is received. If the node Id is not unique across the layout, the central node can send a new nodeId or just send back the current one, if there is no conflict.
-
-####Syntax
-```cpp
-uint8_t sendRepNodeId( uint16_t nodeId, uint32_t nodeUID );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|nodeId|uint16_t| the node Id. This nodeId could be the same that was sent in the request or a new one in case there was a conflict. |
-|nodeUID|uint32_t| the nodeUId of the requesting node to which this reply is intended for. Note that the nodeId could have changed. The only way for the requesting node to identify this answer is the nodeUID, which will not change.|
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|nId-H|nId-L|nUID-4|nUID-3|nUID-2|nUID-1|||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendSetNodeId*
-<hr>
-
-For a node in configuration mode, the nodeId can be changed. Since the nodeId will most likely be another nodeId than the one currently used by the target node, the nodeUID is used to uniquely identify the node to target. The node must be in configuration mode.
-
-####Syntax
-```cpp
-uint8_t sendSetNodeId( uint16_t nodeId, uint32_t nodeUID );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|nodeId|uint16_t| the node Id to set for the node identified by the node UID. |
-|nodeUID|uint32_t| the unique ID of the node.|
-
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|nId-H|nId-L|nUID-4|nUID-3|nUID-2|nUID-1|||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendNodeCollision*
-<hr>
-
-Every message received is check for a potential node id collision. When such a collision is detected, the node sends a node collision message and goes into a halt state.
-
-####Syntax
-```cpp
-uint8_t sendNodeCollision( uint16_t nodeId, uint32_t nodeUID );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|nodeId|uint16_t| the node Id. |
-|nodeUID|uint32_t| the node UID. |
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_NCOL| nId-H| nId-L |nUID-1 |nUID-2|nUID-3|nUID-4|||
-
-####Notes
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *sendNodeReset*
-
-<hr>
-
-// ??? **note** sendNodeReset
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *sendQueryNode*
-
-<hr>
-
-...
-
-####Syntax
-```cpp
-uint8_t sendQueryNode( uint16_t nodeId, uint8_t portId, uint8_t item, uint16_t val1 = 0, uint16_t val2 = 0 );
-```
-
-#### Parameters
-The sendQueryNode routine accepts the control item identifier and up to two argument values. If the values are omitted they are transmitted as a zero value. See the "nodeInfo" core library routine for a detailed description of defined items and arguments.
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Message Format
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_QRY_NODE|nId-H|nId-L|item|val1-H|val1-L|val2-H|val2-L||
-
-#### Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendRepNode*
-<hr>
-
-...
-
-####Syntax
-```cpp
-uint8_t senRepNode( uint16_t nodeId, uint8_t portId, uint8_t item, uint16_t val1 = 0, uint16_t val2 = 0 );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_REP_NODE|nId-H|nId-L|item|val1-H|val1-L|val2-H|val2-L||
-
-####Notes
-
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendControlNode*
-
-<hr>
-
-...
-
-#### Syntax
-
-```cpp
-uint8_t sendControlNode( uint16_t nodeId, uint8_t item, uint16_t val1 = 0, uint16_t val2 = 0 );
-```
-
-#### Parameters
-
-The sendControlNode routine accepts the control item identifier and up to two argument values. If the values are omitted they are transmitted as a zero value. See the "nodeControl" core library routine for a detailed description of defined items and arguments.
-
-####Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_CTL_NODE|nId-H|nId-L|item|val1-H|val1-L|val2-H|val2-L||
-
-####Notes
-
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### Event Management Messages
-
-|Routine| Purpose |
-|:----|:----|
-|sendEventOn| Broadcasts an Event ON message |
-|sendEventOff| Broadcasts an Event OFF message |
-|sendEvent| Broadcasts an Event message with an optional value |
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendEventOn*
-<hr>
-
-The sendEventOn routine broadcasts an event ON message. All nodes registered to react to this event will process this event.
-
-####Syntax
-```cpp
-uint8_t sendEventOn( uint16_t nodeId, uint16_t eventId );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|nodeId|uint16_t| the node Id of the sending node. Upon LCS library initialization, the nodeID is set and can be retrieved through call to the getNodeId( ) method. |
-|eventId|uint16_t| the eventId. Event Ids are assigned to events at configuration time.|
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|nId-H|nId-L|evId-H|evId-L|||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendEventOff*
-<hr>
-
-The sendEventOn routine broadcasts an event OFF message. All nodes registered to react to this event will process this event.
-
-####Syntax
-```cpp
-uint8_t sendEventOff( uint16_t nodeId, uint16_t eventId );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|nodeId|uint16_t| the node Id of the sending node. Upon LCS library initialization, the nodeID is set and can be retrieved through call to the getNodeId( ) method. |
-|eventId|uint16_t| the eventId. Event Ids are assigned to events at configuration time.|
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|nId-H|nId-L|evId-H|evId-L|||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendEvent*
-<hr>
-
-The sendEvent message broadcasts an event to all nodes along with an event value. All nodes registered to react to this event will process this event.
-
-####Syntax
-```cpp
-uint8_t sendEvent( uint16_t nodeId, uint16_t eventId, uint16_t arg );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|nodeId|uint16_t| the node Id of the sending node. Upon LCS library initialization, the nodeID is set and can be retrieved through call to the getNodeId( ) method. |
-|eventId|uint16_t| the eventId. Event Ids are assigned to events at configuration time.|
-|arg|uint16_t| the argument value for the event.|
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|nId-H|nId-L|evtId-H|evId-L|arg-h|arg-L|||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### DCC Track Management Messages
-
-|Routine| Purpose |
-|:----|:----|
-|sendReqTrackOn| Issues a request to turn on the DCC track |
-|sendTrackOn| Broadcasts the DCC track on message |
-|sendReqTrackOff| Issues a request to turn off the DCC track |
-|sendTrackOff| Broadcasts the DCC track off message |
-|sendReqEstop| Issues an emergency stop request |
-|sendEstop| Broadcasts the emergency stop message |
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendReqTrackOn*
-<hr>
-
-Any node can send a request to turn on the main track signal. The base station will typically process this message and turn on the main DCC track signal.
-
-#### Syntax
-```cpp
-uint8_t sendReqTrackOn( );
-```
-
-#### Parameters
-None
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Message Format
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|||||||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *sendTrackOn*
-<hr>
-
-Any node can request to turn the main track on again. The base station upon receiving this message will take appropriate action and also send the track on message using this routine.
-
-#### Syntax
-```cpp
-uint8_t sendTrackOn( );
-```
-
-#### Parameters
-None
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Message Format
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|||||||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *sendReqTrackOff*
-<hr>
-
-Any node can send a request to turn off the main track signal. The base station will typically process this message and turn off the main DCC track signal.
-
-#### Syntax
-```cpp
-uint8_t sendReqTrackOff( );
-```
-
-#### Parameters
-None
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Message Format
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|||||||||
-
-#### Notes
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *sendTrackOff*
-<hr>
-
-Any node can request to turn the main track off. The base station upon receiving this message will take appropriate action and also send the track off message using this routine.
-
-#### Syntax
-```cpp
-uint8_t sendTrackOff( );
-```
-
-#### Parameters
-None
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|||||||||
-
-#### Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendReqEstop*
-
-<hr>
-
-
-// ??? **note** sendReqEstop...
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendEstop*
-<hr>
-
-The sendEstop message is part of the DCC subsystem. The base station sends this message to all nodes to indicate an emergency halt of all DCC operations.
-
-####Syntax
-```cpp
-uint8_t sendEstop( );
-```
-
-####Parameters
-None
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|||||||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### DCC Subsystem Management Messages
-
-|Routine| Purpose |
-|:----|:----|
-|sendReqLoc| Sends the locomotive session creation request |
-|sendRelLoc| Sends the locomotive session release request|
-|sendRepLoc| Sends the reply to a locomotive session creation, query or consist management request |
-|sendLocConsist| Sends a consist management message |
-|sendQueryLoc| Sends a query request for a locomotive session |
-|sendKeepLoc| Sends a keep alive message for the locomotive session |
-|sendSetLocSpDir| Sends the speed/direction command to a locomotive session |
-|sendSetLocMode| Sends locomotive session options to the session |
-|sendSetLocFuncOn| Sends the function on command for a locomotive session function |
-|sendSetLocFuncOff| Sends the function off command for a locomotive session function |
-|sendSetLocFgroup| Sends the function data byte command for a locomotive session function group |
-|sendSetLocCvMain| Sends the CV set command on the main DCC track |
-|sendSetLocCvProg| Sends the CV set command on the programming DCC track |
-|sendReqLocCvProg| Sends the CV request command on the programming DCC track |
-|sendRepLocCvProg| Sends the CV request reply command from the programming DCC track |
-|sendBacc| Sends the a command to the basic accessory decoder |
-|sendEacc| Sends the a command to the extended accessory decoder |
-|sendDccPacket| Sends a raw DCC packet, 3 - 6 bytes |
-|sendDccErr| Sends a DCC error reply to a previous request |
-
-
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendReqLoc*
-<hr>
-
-A cab handheld sends the sendReqLoc message for requesting a locomotive session for the loco address.
-
-####Syntax
-```cpp
-uint8_t sendReqLoc( uint16_t locAdr, uint8_t flags );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|locAdr|uint16_t| the locomotive address. It is a value between 1 and MAX_.... |
-|flags|uint8_t| Reserved, set to 0. |
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|locAdr-H|locAdr-L|flags||||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendRelLoc*
-<hr>
-
-Sends a message to the base station to release the locomotive session.
-
-####Syntax
-```cpp
-uint8_t sendRelLoc( uint8_t sId  );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|sId|uint8_t| the allocated locomotive session Id.|
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx| sId ||||||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendRepLoc*
-<hr>
-
-The status of an active locomotive session can be queried. This routines returns the information about locomotive address, speed, direction and the first DCC function group values.
-
-####Syntax
-```cpp
-uint8_t sendRepLoc( uint8_t sId, uint16_t locAdr, uint8_t spDir, uint8_t fn1 = 0, uint8_t fn2 = 0, uint8_t fn3 = 0 );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|sId|uint8_t| the allocated cab session Id.|
-|locAdr| uint16_t | the cab address. |
-|spDir| uint8_t | the speed and direction bytes. |
-|fn1 | uint8_t | the DCC function group 1. |
-|fn2 | uint8_t | the DCC function group 2. |
-|fn3 | uint8_t | the DCC function group 3. |
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx| sId | locAdr-H | locAdr-L | spDir | fn1 | fn2 | fn3 |
-
-####Notes
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendLocConsist*
-<hr>
-
-Locomotives can run in a consist. The sendLocConsist routines manages the setup of a consist. To run a consist, one has to first allocate a consist session as well as sessions for all locomotives in the consist. The flags parameter specifies options about the consist operation.
-
-####Syntax
-```cpp
-uint8_t sendLocConsist( uint8_t sId, uint8_t consId, uint8_t flags );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|sId|uint8_t| the allocated cab session Id.|
-|sId|uint8_t| the allocated consists session Id.|
-|flags|uint8_t| reserved, set to 0. |
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|sId|consId|flags||||||
-
-####Notes
-None
-
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendQueryLoc*
-
-<hr>
-
-// ??? **note** sendQueryLoc
-
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendKeepLoc*
-<hr>
-
-A cab handheld is required to send periodically to the base station an alive signal for the locomotive session it currently manages. The sendKeepLoc routine will broadcast such a message for the allocated locomotive session.
-
-####Syntax
-```cpp
-uint8_t sendKeepLoc( uint8_t sId  );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|sId|uint8_t| the allocated cab session Id.|
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|sId||||||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *sendSetLocSpDir*
-<hr>
-
-The sendSetLocSpDir sends a message to the base station with the speed and direction information for the locomotive session. The base station in turn will send the DCC command to the main track.
-
-#### Syntax
-```cpp
-uint8_t sendSetLocSpDir( uint8_t sId, uint8_t spDir );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|sId|uint8_t| the allocated cab session Id.|
-|spDir| uint8_t| the speed and direction. The leftmost bit represents the direction, the remaining 7 bits the speed steps from 0 to 127. Speed step 1 has special meaning as requesting an emergency stop from the locomotive.|
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|sId|spDir|||||||
-
-####Notes
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendSetLocMode*
-<hr>
-
-The sendSetLocMode routine sends a message to the base station for setting attributes on the locomotive session.
-
-#### Syntax
-```cpp
-uint8_t sendSetLocMode( uint8_t sId, uint8_t mode );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|sId|uint8_t| the allocated cab session Id.|
-|mode|uint8_t| reserved, to be defined, set to zero. |
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|sId|mode|||||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendSetLocFuncOn*
-<hr>
-
-A mobile decoder supports up to 69 functions, labelled F0 to F68. The sendSetLocFuncOff routines will send a message to the base station to request turning on a function.
-
-####Syntax
-```cpp
-uint8_t sendSetLocFuncOn( uint8_t sId, uint8_t fNum );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|sId|uint8_t| the allocated cab session Id.|
-|fNum|uint8_t| the function number. The range is from 0 to 68.|
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|sId|fNum|||||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *sendSetLocFuncOff*
-<hr>
-
-A mobile decoder supports up to 69 functions, labelled F0 to F68. The sendSetLocFuncOff routines will send a message to the base station to request turning off a function.
-
-#### Syntax
-```cpp
-uint8_t sendSetLocFuncOff( uint8_t sId, uint8_t fNum );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|sId|uint8_t| the allocated cab session Id.|
-|fNum|uint8_t| the function number. The range is from 0 to 68.|
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Message Format
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|sId|fNum|||||||
-
-####Notes
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *sendSetLocFgroup*
-<hr>
-
-A mobile decoder supports up to 69 functions, labelled F0 to F68. The DCC standard groups them in 10 groups. The sendSetLocFgroup routines will send a message to the base station to request sending the function group byte.
-
-#### Syntax
-```cpp
-uint8_t sendSetLocFgroup( uint8_t sId, uint8_t fGrp, uint8_t val );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|sId|uint8_t| the allocated cab session Id.|
-|fGrp|uint8_t| the function group. The range is from 1 to 10.|
-|val|uint8_t|the value in DCC byte format for the group. |
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Message Format
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_FGRP|sId|fGrp|val||||||
-
-####Notes
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *sendSetLocCvMain*
-<hr>
-
-The sendSetLocCvMain routine will send a request to the base station to set a CV value for a locomotive on the main track. There must be a session active for this locomotive.
-
-#### Syntax
-```cpp
-uint8_t sendSetLocCvMain( uint8_t sId, uint16_t cvId, uint8_t mode, uint8_t val );
-```
-
-#### Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|sId|uint8_t| the allocated cab session Id.|
-|cvId| uint16_t| the configuration variable. The number range is from 1 to 1024.|
-|mode| uint8_t | Mode = 0 -> byte access, Mode = 1 -> bit access. For bit access the val parameter contains on input the bit value (bit4) and bit offset (bit 3..0). |
-|val| uint8_t | the data value to write. Depending on the mode it is a byte or a bit. |
-
-#### Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Message Format
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|sId|cvId-H|cvId-L|mode|val||||
-
-#### Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *sendSetLocCvProg*
-<hr>
-
-The CVs of a decoder on the programming track can be set by sending a request message to the base station.
-
-####Syntax
-```cpp
-uint8_t sendSetLocCvProg( uint16_t cvId, uint8_t mode, uint8_t val );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|cvId|uint16_t| the configuration variable. The number range is from 1 to 1024.|
-|mode| uint8_t | Mode = 0 -> byte access, Mode = 1 -> bit access. For bit access the val parameter contains on input the bit value (bit4) and bit offset (bit 3..0). |
-|val| uint8_t | the data value to write. Depending on the mode it is a byte or a bit. |
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|cvId-H|cvId_L|mode|val|||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendReqLocCvProg*
-<hr>
-
-The base station sends a reply message to CV query to a decoder on the programming track.
-
-// **note** we need the val parameter to indicate which bit for bit access ? or should we just set the mode 0xF0 for bit or byte, and bits 0x0F to the bit offset for bit access ?
-
-####Syntax
-```cpp
-uint8_t sendReqLocCvProg( uint16_t cvId, uint8_t mode );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|cvId|uint16_t| the configuration variable. A value between 1 and 1024. |
-|mode|uint8_t| the data access mode. The routine supports bytes access ( CVM_BYTE ) and bit access ( CVM_BIT ).
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_REQ_CVS|cvId-H|cvId-L|mode||||||
-
-####Notes
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendRepLocCvProg*
-<hr>
-
-A DCC decoder offers a set of configuration variables (CV) which can be queried. The base station upon receiving such a request transmits a CV programming packet to the track. The response gotten back will be translated by the base station into this reply message.
-
-####Syntax
-```cpp
-uint8_t sendRepLocCvProg( uint16_t cvId, uint8_t val );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|cvid| uint16_t| the configuration variable. |
-|val| uint8_t | the configuration variable value. |
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_REP_CVS|cvId-H|cvId-L|val||||||
-
-####Notes
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendBacc*
-
-<hr>
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendEacc*
-
-<hr>
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendDccErr*
-
-<hr>
-
-// ??? **note** rather called sendErr ?
-
-The sendDccEr message is used for a DCC subsystem to send an error for a requested operation. In addition to the error code, optional data arguments further qualifying the error can be transmitted.
-
-####Syntax
-
-```cpp
-uint8_t sendDccErr( uint8_t errCode, uint8_t arg1 = 0, uint8_t arg2 = 0 );
-```
-
-####Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|errCode|uint8_t| the error code. refer to the appendix for possible DCC error codes.|
-|arg1|uint8_t| an optional argument for the error code. Refer to the error appendix for possible argument values.|
-|arg2|uint8_t| an optional argument for the error code. Refer to the error appendix for possible argument values.|
-
-####Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_xxx|errCode|arg1|arg2||||||
-
-####Notes
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*sendDccPacket*
-<hr>
-
-The sendDccPacket routines request the base station to send a DCC packet. There are function signatures for sending three to six byte data packets. The packet content will not be validated before sending.
-
-####Syntax
-```cpp
-uint8_t sendDccPacket( uint8_t arg1, uint8_t arg2, uint8_t arg3 );
-uint8_t sendDccPacket( uint8_t arg1, uint8_t arg2, uint8_t arg3, uint8_t arg4 );
-uint8_t sendDccPacket( uint8_t arg1, uint8_t arg2, uint8_t arg3, uint8_t arg4, uint8_t arg5 );
-uint8_t sendDccPacket( uint8_t arg1, uint8_t arg2, uint8_t arg3, uint8_t arg4, uint8_t arg5, uint8_t arg6 );
-```
-
-####Parameters
-|Parameter| Type | Comment |
-|---------|------|---------|
-|arg n|uint8_t| the data byte n for the DCC message|
-
-####Return
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####*Message Format*
-|Opcode|Data1|Data2|Data3|Data4|Data5|Data6|Data7|
-|--------|--|---|-----|-----|-----|-----|-----|-----|
-|LCS_OP_DCC3|arg1|arg2|arg3|||||
-|LCS_OP_DCC4|arg1|arg2|arg3|arg4||||
-|LCS_OP_DCC4|arg1|arg2|arg3|arg4|arg5|||
-|LCS_OP_DCC6|arg1|arg2|arg3|arg4|arg5|arg6|||
-
-####Notes
-The LCS bus message size allows for sending DCC packets of up to 6 bytes payload. The XPOM functionality however specifies DCC packets up to 10 bytes of payload. In the current library version these packets are not supported so far.
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### Extension Driver Management
-
-|Routine| Purpose |
-|:----|:----|
-|drvInit| Initializes a driver object |
-|drvReset| resets an extension driver|
-|drvControl| Sends a control request to the driver |
-|drvInfo| Send an information request to the driver |
-|drvRead| Reads data from the driver |
-|drvWrite| Writes data to the driver |
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*drvInit*
-
-<hr>
-
-...
-
-
-####Syntax
-
-```cpp
-      uint8_t drvInit( uint8_t boardId, uint16_t flags );
-```
-
-####Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-
-
-####Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####Notes
-
-None
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-###*drvReset*
-
-<hr>
-
-...
-
-
-####Syntax
-
-```cpp
-      uint8_t drvReset( uint8_t boardId, uint16_t flags );
-```
-
-####Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-
-
-####Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-####Notes
-
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *drvControl*
-
-<hr>
-
-...
-
-
-#### Syntax
-
-```cpp
-      uint8_t drvControl( uint8_t boardId, uint8_t padId, uint8_t item, uint16_t arg1, uint16_t arg2 = 0 );
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-
-
-#### Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Notes
-
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *drvInfo*
-
-<hr>
-
-...
-
-
-#### Syntax
-
-```cpp
-      uint8_t drvInfo( uint8_t boardId, uint8_t padId, uint8_t item, uint16_t *arg1, uint16_t *arg2 = nullptr );
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-
-
-#### Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Notes
-
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *drvRead*
-
-<hr>
-
-...
-
-
-#### Syntax
-
-```cpp
-       uint8_t drvRead( uint8_t boardId, uint8_t padId, uint16_t *arg );
-	   uint8_t drvRead( uint8_t boardId, uint8_t padId, uint8_t *buf, uint8_t *len );
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-
-
-#### Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Notes
-
-None
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *drvWrite*
-
-<hr>
-
-...
-
-#### Syntax
-
-```cpp
-      uint8_t drvWrite( uint8_t boardId, uint8_t padId, uint16_t arg );
-      uint8_t drvWrite( uint8_t boardId, uint8_t padId, uint8_t *buf, uint8_t len );
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-
-
-#### Return
-
-The function returns the status code of the operation. If there is no error, a status of ALL_OK is returned. Refer to the appendix for possible error return values.
-
-#### Notes
-
-None
 
 
 <!--------------------------------------------------------------------------------------------------------->
@@ -6638,58 +4274,6 @@ This appendix contains the list of LCS core library commands. The command line i
 |:---|:---|:---|
 
 // ??? **note** add some text to each entry rather than a single page for each command.
-
-
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!-- Appendix - Controller Dependent Code Library Routines Reference -------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-<!--------------------------------------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-## *Appendix n - Controller Dependent Code Library Routines Reference*
-
-// ??? **note** under construction ....
-
-This appendix lists all the routines available in the controller dependent code library. Each routine is described with the method signature, the parameter description, the return values and additional notes.
-
-### *Overview*
-
-The following section lists the library routines grouped by their purpose.
-
-|Routine| Purpose |
-|:----|:----|
-| ... | ... ||
-
-
-
-<!---------------------------------------------------------------------------->
-
-<div style="page-break-before: always;"></div>
-
-### *yyy*
-
-<hr>
-
-text ...
-
-#### Syntax
-
-```cpp
-yyy
-```
-
-#### Parameters
-
-|Parameter| Type | Comment |
-|---------|------|---------|
-|yyy|yyy| yyy |
-
-
-#### Notes
-
-None
 
 
 <!--------------------------------------------------------------------------------------------------------->
@@ -6731,6 +4315,37 @@ None
 | L | | | list base station session table |
 | D | | | enter diagnostics mode - need to restart later! |
 | ? | | | list this help |
+
+
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!-- Appendix - Core Library Routines Reference ----------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+
+<div style="page-break-before: always;"></div>
+
+## *Appendix n - Core Library Routines Reference*
+
+// ??? **note** this appendix will not repeat what is documented in the source. This is a battle you cannot win. I have a small utility that takes an augmented C-source include file and makes it a markdown document. 
+
+// ??? **note** we could just include this file, or keep a reference to it for the utility to include. The result of the utility is a markdown file with all the text in this file and the included files, which is then the base for PDF creation.
+
+
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!-- Appendix - Controller Dependent Code Library Routines Reference -------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------------------------->
+
+<div style="page-break-before: always;"></div>
+
+## *Appendix n - Controller Dependent Code Library Routines Reference*
+
+// ??? **note** this appendix will not repeat what is documented in the source. This is a battle you cannot win. I have a small utility that takes an augmented C-source include file and makes it a markdown document. 
+
+// ??? **note** we could just include this file, or keep a reference to it for the utility to include. The result of the utility is a markdown file with
+// all the text in this file and the included files, which is then the base for PDF creation.
 
 
 <!--------------------------------------------------------------------------------------------------------->
@@ -6807,6 +4422,8 @@ For me, work on this layout system started with getting my hands on an Arduino U
 
 ### Standards
 
+The most relevant standard to read the DCC standard. There is the NMRA which owns it and their web site has all the relevant document. In Germany, the RailCommunity is also offering the DCC standard documents in close alignment with the NMRA.
+
 |Organization|Link|Comment|
 |:--|:--|:--|
 |NMRA|(http://www.nmra.org)||
@@ -6814,12 +4431,13 @@ For me, work on this layout system started with getting my hands on an Arduino U
 
 ### Projects
 
+There are many projects on the subject of layout control and DCC electronics. Below is a list of just a few of them. The list contains also the external libraries used in our runtime.
+
 |Project|Link|Comment|
 |:--|:--|:--|
 |DCC++|https://sites.google.com/site/dccppsite/|DCC++ is a full-function open-source hardware and software system for the operation of DCC-equipped model railroads.|
 |DCC-EX|https://dcc-ex.com|DCC-EX is a team of dedicated enthusiasts producing open source DCC solutions for you to run your complete model railroad layout. |
 |MERG CBUS|http://www.merg.org| A system for comprehensive layout control based on a general purpose Layout Control Bus (LCB). |
-|mcp_can|https://github.com/coryjfowler/MCP_CAN_lib| the CAN bus library for the MCP2515 controller version. |
 |can2040|https://github.com/KevinOConnor/can2040| the CAN bus software implementation for the Raspberry Pi Pico. |
 |JMRI|http://www.jmri.org|The JMRI project is building tools for model railroad computer control.|
 |OpenDCC|http://www.opendcc.de|The OpenDCC web page contains a lots of useful information about model railroading and digital control. Definitively worth a visit.|
@@ -6868,6 +4486,8 @@ The right part of the schematic shows how the power input lines are switched dep
 ## *Notes for making this book*
 
 // how to format, etc.
+
+// the utility...
 
 // it is on GitHub and a note how to produce a PDF from the files...
 
