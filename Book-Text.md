@@ -664,6 +664,8 @@ The general management message group contains commands for dealing with the layo
 |RESET|npId-H|npId-L|flags|||||
 |BUS-ON||||||||
 |BUS-OFF||||||||
+|SYS-TIME|arg1|arg2|arg3|arg4||||||
+|LCS-INFO|arg1|arg2|arg3|arg4||||||
 |PING|nId-H|nId-L||||||
 |ACK|nId-H|nId-L||||||
 |ERR|nId-H|nId-L|code|arg1|arg2||||
@@ -680,7 +682,6 @@ The general management message group contains commands for dealing with the layo
 |:-------|:----|:----|:----|:----|:----|:----|:----|
 |||||||||
 
-
 ### *Node and Port Management*
 
 When a hardware module is powered on, the first task is to establish the node Id in order to broadcast and receive messages. The (REQ-NID) and (REP-ID) messages are the messages used to implement the protocol for establishing the nodeId. More on this in the chapter on message protocols. A virgin node has the hardware module specific node type and a node Id of NIL_NODE_ID. All nodes have a unique node UID, expected to be created by the hardware or firmware means. After a node Id is established, the node Id can also be set directly through the (SET-NID) command. This is typically done by a configuration tool.
@@ -695,16 +696,17 @@ When a hardware module is powered on, the first task is to establish the node Id
 
 All nodes monitor the message flow to detect a potential node collision. This could be for example the case when a node from one layout is installed in another layout. When a node detects a collision, it will broadcast the (NCOL) message and enter a halt state. Manual interaction is required. A node can be restarted with the (RES-NODE) command, given that it still reacts to messages on the bus. All ports on the node will also be initialized. In addition a specific port on a node can be initialized. The hardware module replies with an (ACK) message for a successful node Id and completes the node Id allocation process. As the messages hows, node and port ID are combined. LCS can accommodate up to 4095 nodes, each of which can host up to 15 ports. A Node ID 0 is the NIL node. Depending on the context, a port Id of zero refers all ports on the node or just the node itself.
 
-The query node (QRY-NODE) and node reply messages (REP-NODE) are available to obtain configuration information from the node map about the node or port. The (SET-NODE) allows to set control items for the targeted node. Items are numbers assigned to a data location or an activity. There are reserved items such as getting the number of ports, or setting an LED. In addition, the firmware programmer can also define items with node specific meaning.
+The query node (QRY-NODE) and node reply messages (REP-NODE) are available to obtain attribute data from the node or port. The (SET-NODE) allows to set attributes for a node or port for the targeted node. Items are numbers assigned to a data location or an activity. There are reserved items such as getting the number of ports, or setting an LED. In addition, the firmware programmer can also define items with node specific meaning. The firmware programmer defined items are accessible via the REQ-NODE and REP-NODE messages.
 
 | Opcode |Data1|Data2|Data3|Data4|Data5|Data6|Data7|
 |:-------|:----|:----|:----|:----|:----|:----|:----|
 |QRY-NODE|npId-H|npId-L|item|arg1-H|arg1-L|arg2-H|arg2-L|
-|REP-NODE|npId-H|npId-L|item|val1-H|val1-L|val2-H|val2-L|
-|SET-NODE|npId-H|npId-L|item|arg1-H|arg1-L|arg2-H|arg2-L|
+|SET-NODE|npId-H|npId-L|item|val1-H|val1-L|val2-H|val2-L|
+|REQ-NODE|npId-H|npId-L|item|arg1-H|arg1-L|arg2-H|arg2-L|
+|REP-NODE|npId-H|npId-L|item|arg1-H|arg1-L|arg2-H|arg2-L|
 |||||||||
 
-Nodes do not react to configuration messages when in operation mode. The (OPS) and (CFG) commands are used to put a node into configuration mode or operation mode. Not all messages are supported in operations mode and vice versa. For example, to set a new nodeId, the node first needs to be put in configuration mode. During configuration mode, no operational messages are processed.
+Nodes do not react to attribute and user defined request messages when in operations mode. To configure a node, the node needs to be put into configuration mode. The (OPS) and (CFG) commands are used to put a node into configuration mode or operation mode. Not all messages are supported in operations mode and vice versa. For example, to set a new nodeId, the node first needs to be put in configuration mode. During configuration mode, no operational messages are processed.
 
 | Opcode |Data1|Data2|Data3|Data4|Data5|Data6|Data7|
 |:-------|:----|:----|:----|:----|:----|:----|:----|
@@ -727,21 +729,14 @@ Events are broadcasted by the producer when the assigned situation on the node o
 
 ### *DCC Track Management*
 
-Model railroads run on tracks. Imagine that. While on a smaller layout, there is just the track, the track on a larger layout is typically divided into several sections, each controlled by a booster or block controller node. These nodes can accept events to turn on and off a section or send an event for power overload and so on. The DCC Track management messages deal with managing the track sections as a whole. Any node can request turning the track power on and off (REQ-TON) and (REQ-TOF). The request messages are handled by the base station, which in turn will issue the (TON) or (TOF) command, then handled by all booster nodes. Any node can also request an emergency stop (REQ_ESTP), which causes the base station to send the emergency stop message to all boosters (ESTP).
+Model railroads run on tracks. Imagine that. While on a smaller layout, there is just the track, the track on a larger layout is typically divided into several sections, each controlled by a booster or block controller node. These nodes can accept events to turn on and off a section or send an event for power overload and so on. The track management messages TON and TOF deal with managing the individual track sections or the whole layout. The ESTP message will cause all engines or an individual loco to stop in emergency mode.  Any node can issue these commands.
 
 | Opcode |Data1|Data2|Data3|Data4|Data5|Data6|Data7|
 |:-------|:----|:----|:----|:----|:----|:----|:----|
-|REQ-TON||||||||
-|TON||||||||
-|REQ-TOF||||||||
-|TOF||||||||
-|REQ-ESTP||||||||
-|ESTP|||||||||
+|TON|npId-H|npId-L||||||
+|TOF|npId-H|npId-L||||||
+|ESTP|sid||||||||
 |||||||||
-
-// ??? the ESTP message here is for specific engine ?
-
-// ??? the track on/off should apply to a section or all ?
 
 ### *DCC Locomotive Decoder Management*
 
@@ -840,7 +835,7 @@ Some DCC commands return an acknowledgment or an error for the outcome of a DCC 
 
 ### *Analog Engines*
 
-The messages defined for the DCC locomotive session management are also used for the analog engines. An analog engine will just like its digital counterpart have an allocated locomotive session and the speed/dir command is supported. All other commands will of course not be applicable. The speed/dir command will be sent out on the bus and whoever is in control of the track section where the analog engine is supposed to be, will manage that locomotive. In the following chapters we will answer the question of how exactly multiple analog engines can run on a layout.
+The messages defined for the DCC locomotive session management as outlined above are also used for the analog engines. An analog engine will just like its digital counterpart have an allocated locomotive session and the speed/dir command is supported. All other commands will of course not be applicable. The speed/dir command will be sent out on the bus and whoever is in control of the track section where the analog engine is supposed to be, will manage that locomotive. In the following chapters we will answer the question of how exactly multiple analog engines can run on a layout.
 
 ### Summary
 
@@ -869,19 +864,18 @@ After sending the (REQ-NID) message the node awaits the reply (REP-NID). The rep
 |**REQ-NID**( nodeId, nodeUID ) --> | |
 | |<-- **REP-NID**( nodeId, nodeUID ) or timeout|
 
-The nodeUID plays an important role to detect nodeId conflicts. If there are two modules with the same nodeId, the nodeUID is still different. A requesting node will check the (REP-NID) answer, comparing the nodeUID in the message to its own nodeUID. If the UID matches, the nodeId in the message will be the nodeId to set. Note that it can be the one already used, or a new nodeId.
+The nodeUID plays an important role to detect nodeId conflicts. If there are two modules with the same nodeId, the nodeUID is still different. A requesting node will check the (REP-NID) answer, comparing the nodeUID in the message to its own nodeUID. If the UID matches, the nodeId in the message will be the nodeId to set. Note that it can be the one already used, or a new nodeId. If the UIDs do not match, we have two nodes assigned the same nodeId. Both nodes will enter the collision and await manual resolution.
 
-// ??? **note** what happens of the UID does not match ? Halt and block the node ? both nodes halt and blink their LEDS ?
-
-The above nodeId setup scheme requires the presence of a central node, such a base station, to validate and assign node identifiers. In addition, the nodeId can also be assigned by the firmware programmer and passed to the library setup routine. Once assigned, the node is accessible and the node number can be changed anytime later with the (SET_NID) command. All nodes are able to detect a nodeId conflict. If two or more nodes have the same nodeId, each node will send an (NCOL) message and go into halted state. Manual intervention is required to resolve the conflict through explicitly assigning a new nodeId.
+The above nodeId setup scheme requires the presence of a central node, such a base station, to validate and assign node identifiers. In addition, the nodeId can also be assigned by the firmware programmer and passed to the library setup routine. Once assigned, the node is accessible and the node number can be changed anytime later with the (SET-NID) command. All nodes are always able to detect a nodeId conflict. If two or more nodes have the same nodeId, each node will send an (NCOL) message and go into halted state, repeating the collision message. Manual intervention is required to resolve the conflict through explicitly assigning a new nodeId.
 
 ###*Switching between Configuration and Operations mode*
 
-After node startup, a node enters the operation state. During configuration, certain commands are available and conversely some operational commands are disabled. A node is put into the respective mode with the (CFG) and (OPS) message command.
+After node startup, a node normally enters the operation state. During configuration, certain commands are available and conversely some operational commands are disabled. A node is put into the respective mode with the (CFG) and (OPS) message command.
 
 |Base Station| Target Node|
 |:---|:-----------|
-|**CFG/OPS**( nodeId ) -> | node enters the config / operations state |
+| **CFG/OPS**( nodeId ) -> | node enters the config / operations state  |
+|| <- **ACK/ERR**( nodeId ) |
 
 ### *Setting a new Node Id*
 
@@ -889,16 +883,18 @@ A configuration tool can also set the node Id to a new value. This can only be d
 
 |Base Station|Node|
 |:---|:-----------|
-|**CFG ** ( nodeId ) ->| node enters config mode |
-|**SET-NID**( nodeId, nodeUID ) -->| |
+| **CFG** ( nodeId ) -> | node enters config mode |
+|| <- **ACK/ERR**( nodeId ) |
+| **SET-NID**( nodeId, nodeUID ) -->| |
 ||<-- **ACK/ERR**( nodeId ) |
 |**OPS** ( nodeId )-> | node enters operations mode |
+|| <- **ACK/ERR**( nodeId ) ||
 
 It is important to note that the assignment of a node Id through a configuration tool will not result in a potential node Id conflict resolution or detection. This is the responsibility of the configuration tool when using this command. The node Id, once assigned on one way or another, is the handle to address the node. There is of course an interest to not change these numbers every time a new hardware module is added to the layout.
 
 ### *Node Ping*
 
-Any node can ping any other node. The target node responds with an (ACK) message. If the nodeId is NIL, all nodes are requested to send an acknowledge (ACK). A nodeId of 0 will prompt all nodes. This command can be used to enumerate which nodes are out there. However, the receiver has to be able to handle the flood of (ACK) messages coming in.
+Any node can ping any other node. The target node responds with an (ACK) message. If the nodeId is NIL, all nodes are requested to send an acknowledge (ACK). This command can be used to enumerate which nodes are out there. However, the receiver has to be able to handle the flood of (ACK) messages coming in.
 
 |Requesting Node | Target Node |
 |:---|:-----------|
@@ -911,26 +907,34 @@ A node or individual port can be restarted. This command can be used in configur
 
 |Requesting Node | Target Node |
 |:---|:-----------|
-|**RES-NODE**( npId, flags ) ->| node is restarted  |
+|**RES-NODE**( npId, flags ) ->| node or port is restarted  |
 
 ### *Node and Port Access*
 
-A node can interact with any other node on the layout. The same is true for the ports on a node. Any port can be directly addressed. The nodeMap contains a set of defined items such as software version, nodeId, canId and configuration flags. The query node message specifies the target node and port item to retrieve from there. The reply node message will return the requested data.
+A node can interact with any other node on the layout. The same is true for the ports on a node. Any port can be directly addressed. Node/port attributes and functions are addressed via items. The are reserved item numbers such as software version, nodeId, canId and configuration flags. Also, node or port attributes have an assigned item number range. Finally, there are reserved item numbers available for the firmware programmer.
+
+The query node message specifies the target node and port atrribute to retrieve from there. The reply node message will return the requested data.
 
 |Requesting Node | Target Node |
 |:---|:-----------|
 |**QRY-NODE**( npId, item ) ->| |
 | |<-- **REP-NODE**( npId, item, val1, va12 ) if successful, else **ERR**( nodeId ) |
 
-A node can also modify a node/port item at another node. Obviously, not all items can be modified. For example, one cannot change the nodeId on the fly or change the software version of the node firmware. The (SET-NODE) command is used to modify the attributes that can be modified for nodes and ports. To indicate success, the target node replies by echoing the command sent.
+A node can also modify a node/port attribute at another node. Obviously, not all attributes can be modified. For example, one cannot change the nodeId on the fly or change the software version of the node firmware. The (SET-NODE) command is used to modify the attributes that can be modified for nodes and ports. To indicate success, the target node replies by echoing the command sent.
 
 |Requesting Node | Target Node |
 |:---|:-----------|
 |**SET-NODE**( npId, item, arg1, arg2 ) ->| |
-| |<-- **REP-NODE**( npId, item, arg1, arg2 ) if successful, else **ERR**( nodeId ) |
+|| <-- **ACK/ERR**( nodeId ) |
 |||
 
-Node items are divided into a reserved and user definable item numbers. The same is true for the port items. If the item number is a user defined number, a callback function needs to be supplied to handle the item action. Node and port items also need not necessarily represent a data value to get or set. For the user defined items, an item could also just result in an action such as turning on an LED and so on.
+Some item numbers refer to functions rather than attributes. In addition, all firmware programmer defined items are functions.  The (REQ-NODE) message is used to send such a request, the (REP-NODE) is the reply message.
+
+|Requesting Node | Target Node |
+|:---|:-----------|
+|**REQ-NODE**( npId, item, arg1, arg2 ) ->| |
+|| <-- **REP-NODE**( npId, item, val1, va12 ) if successful, else **ERR**( nodeId ) |
+|||
 
 ### *Layout Event management*
 
@@ -967,15 +971,22 @@ General bus management messages are message such as (RESET), (BUS-ON), (BUS-OFF)
 
 ### *DCC Track Management*
 
-DCC track management messages are commands sent by the base station such as turning the track power on or off. Any node can request such an operation, the base station is the only node that issues the actual DCC command upon receipt of such a message. DCC commands are broadcasted on the bus from any node to any node. These commands will not include a nodeId for identification purposes.
+DCC track management messages are commands sent by the base station such as turning the track power on or off. Any node can request such an operation by issuing the (TON) or (TOF) command.
 
 |Any node( e.g. config tool )| Base station |
 |:-----|:-----|
-|**REQ-TOF**| the base station receives the request and issues a (TOF) command |
-| all nodes receive the TOF command | <- **TOF** |
+|**TON**( npId )| all nodes or an individual node/port for a track section execute the TON command |
+|**TOF**( npId )| all nodes or an individual node/port for a track section execute the TOF command |
 |||
 
-Another command is the emergency stop (ESTP). It follows the same logic. Any node can request an emergency stop of all running equipment. The base station, upon receipt of such a request, issues the actual emergency stop command (ESTP). In addition, the LCS nodes that actually manage the track will have a set of node/port attributes for current consumptions, limits, and so on. They are accessed via the node info and control messages.
+Another command is the emergency stop (ESTP). It follows the same logic. Any node can issue an emergency stop of all running equipment or an individual locomotive session. The base station, detecting such a request, issues the actual DCC emergency stop command. 
+
+|Any node( e.g. config tool )| Base station |
+|:-----|:-----|
+|**ESTP**( npId )| all engine or a locomotive session will enter emergency stop mode. |
+|||
+
+In addition, LCS nodes that actually manage the track will have a set of node/port attributes for current consumptions, limits, and so on. They are accessed via the node info and control messages.
 
 ### *Locomotive Session Management*
 
