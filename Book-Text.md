@@ -716,7 +716,7 @@ Nodes do not react to attribute and user defined request messages when in operat
 
 ### *Event Management*
 
-The event management group contains the messages to configure the node event map and messages to broadcast an event and messages to read out event data. The (SET-NODE) with the item value to set and remove an event map entry from the event map is used to manage the event map. An inbound port can register for many events to listen to, an outbound port will have exactly one event to broadcast. Ports and Events are numbered from 1 onward. When configuring, the portId NIL_PORT_ID has a special meaning in that it refers to all portIds on the node. For inbound ports, the event map will store the event / portId combinations. A configuration tool can query the event map by using the (QRY-NODE) command with the appropriate item number. The number of event map entries configured is available through the (QRY-NODE) command.
+The event management group contains the messages to configure the node event map and messages to broadcast an event and messages to read out event data. The (SET-NODE) with the item value to set and remove an event map entry from the event map is used to manage the event map. An inbound port can register for many events to listen to, an outbound port will have exactly one event to broadcast. Ports and Events are numbered from 1 onward. When configuring, the portId NIL_PORT_ID has a special meaning in that it refers to all portIds on the node. For inbound ports, the event map will store the event / portId combinations. A configuration tool can query the event map by using the (QRY-NODE) command with the appropriate item number. The number of event map entries configured is available through the (NODE-GET) command.
 
 Events are broadcasted by the producer when the assigned situation on the node occurs. There are three event messages. Since the ON and OFF event is a very often used event type, there are two message op codes dedicated to it. The third event type is the general event with an event data field.
 
@@ -820,7 +820,7 @@ The above messages can send a packet with up to six bytes. With the evolving DCC
 
 | Opcode |Data1|Data2|Data3|Data4|Data5|Data6|Data7|
 |:-------|:----|:----|:----|:----|:----|:----|:----|
-|SEND_DCCM|ctrl|arg1|arg2|arg3|arg4||||
+|SEND-DCCM|ctrl|arg1|arg2|arg3|arg4||||
 |||||||||
 
 ### *DCC errors and status*
