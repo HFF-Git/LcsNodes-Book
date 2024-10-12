@@ -696,22 +696,22 @@ When a hardware module is powered on, the first task is to establish the node Id
 
 All nodes monitor the message flow to detect a potential node collision. This could be for example the case when a node from one layout is installed in another layout. When a node detects a collision, it will broadcast the (NCOL) message and enter a halt state. Manual interaction is required. A node can be restarted with the (RES-NODE) command, given that it still reacts to messages on the bus. All ports on the node will also be initialized. In addition a specific port on a node can be initialized. The hardware module replies with an (ACK) message for a successful node Id and completes the node Id allocation process. As the messages hows, node and port ID are combined. LCS can accommodate up to 4095 nodes, each of which can host up to 15 ports. A Node ID 0 is the NIL node. Depending on the context, a port Id of zero refers all ports on the node or just the node itself.
 
-The query node (QRY-NODE) and node reply messages (REP-NODE) are available to obtain attribute data from the node or port. The (SET-NODE) allows to set attributes for a node or port for the targeted node. Items are numbers assigned to a data location or an activity. There are reserved items such as getting the number of ports, or setting an LED. In addition, the firmware programmer can also define items with node specific meaning. The firmware programmer defined items are accessible via the REQ-NODE and REP-NODE messages.
+The query node (NODE-GET) and node reply messages (NODE-REP) are available to obtain attribute data from the node or port. The (NODE-SET) allows to set attributes for a node or port for the targeted node. Items are numbers assigned to a data location or an activity. There are reserved items such as getting the number of ports, or setting an LED. In addition, the firmware programmer can also define items with node specific meaning. The firmware programmer defined items are accessible via the (NODE-REQ) and (NODE-REP) messages.
 
 | Opcode |Data1|Data2|Data3|Data4|Data5|Data6|Data7|
 |:-------|:----|:----|:----|:----|:----|:----|:----|
-|QRY-NODE|npId-H|npId-L|item|arg1-H|arg1-L|arg2-H|arg2-L|
-|SET-NODE|npId-H|npId-L|item|val1-H|val1-L|val2-H|val2-L|
-|REQ-NODE|npId-H|npId-L|item|arg1-H|arg1-L|arg2-H|arg2-L|
-|REP-NODE|npId-H|npId-L|item|arg1-H|arg1-L|arg2-H|arg2-L|
+|NODE-GET|npId-H|npId-L|item|arg1-H|arg1-L|arg2-H|arg2-L|
+|NODE-SET|npId-H|npId-L|item|val1-H|val1-L|val2-H|val2-L|
+|NODE-REQ|npId-H|npId-L|item|arg1-H|arg1-L|arg2-H|arg2-L|
+|NODE-REP|npId-H|npId-L|item|arg1-H|arg1-L|arg2-H|arg2-L|
 |||||||||
 
 Nodes do not react to attribute and user defined request messages when in operations mode. To configure a node, the node needs to be put into configuration mode. The (OPS) and (CFG) commands are used to put a node into configuration mode or operation mode. Not all messages are supported in operations mode and vice versa. For example, to set a new nodeId, the node first needs to be put in configuration mode. During configuration mode, no operational messages are processed.
 
 | Opcode |Data1|Data2|Data3|Data4|Data5|Data6|Data7|
 |:-------|:----|:----|:----|:----|:----|:----|:----|
-|OPS|nId-H|nId-L||||||
-|CFG|nId-H|nId-L|||||||
+|OPS|npId-H|npId-L||||||
+|CFG|npId-H|npId-L|||||||
 |||||||||
 
 ### *Event Management*
