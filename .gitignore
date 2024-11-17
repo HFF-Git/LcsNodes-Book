@@ -30,7 +30,6 @@ Book-Text_tmp.html
 *.lot
 *.nav
 *.snm
-*.pdf
 
 # Ignore specific directories if needed
 */_minted*  # If you use minted
