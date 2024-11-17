@@ -1,11 +1,37 @@
 
+# Mac specifics
 .DS_Store
 **/.DS_Store
 **/_.DS_Store
 **/._.DS_Store
+
+# old book ignores
 /Boards
 /Figures
 /Schematics
 /zzz Old Book content
 Book-Text.pdf
 Book-Text_tmp.html
+
+# Ignore LaTeX build files
+*.aux
+*.log
+*.out
+*.toc
+*.gz
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.dvi
+*.ps
+*.lof
+*.lot
+*.nav
+*.snm
+*.pdf
+
+# Ignore specific directories if needed
+*/_minted*  # If you use minted
+build/      # Example build directory
