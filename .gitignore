@@ -1,17 +1,17 @@
 
 # Mac specifics
 .DS_Store
-**/.DS_Store
-**/_.DS_Store
-**/._.DS_Store
+*/.DS_Store
+*/_.DS_Store
+*/._.DS_Store
 
 # old book ignores
-/Boards
-/Figures
-/Schematics
-/zzz Old Book content
-Book-Text.pdf
-Book-Text_tmp.html
+*/Boards
+*/Figures
+*/Schematics
+*/zzz Old Book content
+*Book-Text.pdf
+*Book-Text_tmp.html
 
 # Ignore LaTeX build files
 *.aux
@@ -30,6 +30,8 @@ Book-Text_tmp.html
 *.lot
 *.nav
 *.snm
+
+*/main.pdf
 
 # Ignore specific directories if needed
 */_minted*  # If you use minted
