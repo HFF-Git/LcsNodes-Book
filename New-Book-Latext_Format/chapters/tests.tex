@@ -54,3 +54,19 @@ float barrier command to ensure that text stays close to the picture but no text
 \end{itemize}
 
 
+
+\subsection{An instruction word layout}
+
+A little test for an instruction word layout ... will be a bit fiddling work ... 
+
+\begin{tikzpicture}
+    \draw[thick] (0, 0) rectangle (8, 1); % Simple rectangle
+    \node at (1, 0.5) {Test};   % Centered text
+    \draw[thick] (2, 0) -- (2, 1);
+
+    \foreach \x in {1, 3, 6} {
+        \draw[thick] (\x, 0) -- (\x, 1); % Vertical line
+        \node[above] at (\x + 0.125, 1) {\x}; % a number above the field
+    }
+
+\end{tikzpicture}
