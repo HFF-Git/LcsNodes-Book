@@ -97,7 +97,7 @@ The first set of item numbers are reserved by the core library itself for node a
 
 The event map is an array of event map entries, each containing the eventId that node is interested in and the port Id to inform when the event is encountered. The maximum number of event map entries is set through the node configuration descriptor values set by the firmware programmer. When a new node is configured, this value is used to construct the empty event map. Any change of this value results in a node re-initialization of the node, rebuilding the event map with all non-volatile event map data lost.
 
-\lstset{style=listingstyle}
+\lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
 struct LcsEventMapEntry {
 
@@ -178,9 +178,8 @@ The LCS runtime is initialized with the **init** routine. After successful runti
 
 While there are many library functions to call, the only way for the library to communicate back to the module firmware when a message is received are the callbacks registered for. Callbacks will be described in the next chapter. A key task therefore is to register call back functions for all events and messages the node is interested. The following code fragment illustrates the basic library initialization.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
-
     #include "LcsRuntimeLib.h"
 
     // code to initialize HW structures ( to be discussed later... )
@@ -197,7 +196,6 @@ While there are many library functions to call, the only way for the library to 
     // ... other node specific things to do
     // ... invoke the run method. We never return from it ...
     LcsRuntimeLib::run( );
-
 \end{lstlisting}
 
 
@@ -210,7 +208,7 @@ Obtaining node or port information is an interface to query basic information ab
 The return result is stored in one or two 16-bit variables and is request item specific. The nodeInfo and nodeControl routines allow for local access, the \texttt{(QRY-NODE)} and \texttt{(REP-NODE)} messages allow for remote access. The following example shows how the number of configured ports is retrieved from the nodeMap.
 
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
   int 		rStat;
   uint16_t	value;
@@ -223,7 +221,7 @@ The return result is stored in one or two 16-bit variables and is request item s
 
 Very similar to how we retrieve node data, the nodeControl routine allows for setting node attribute. A node attribute does not necessarily mean that there is a data value associated with the attribute. For example, turning on the "ready" LED is a control item defined for the nodeControl routine. There is a detailed routine description in the appendix that contains the items that are defined. The following example turns on the ready LED on the module hardware.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
   int 		rStat = ALL_OK;
   uint16_t	value = 1;
@@ -248,7 +246,7 @@ The example shows that a node item is not only used to read or write a data item
 
 Sending a message represent a large part of the available library functions. For each message defined in the protocol, there is a dedicated convenience function call, which will take in the input arguments and assemble the message buffer accordingly. As an example, the following code fragment will broadcast the ON event for event "200".
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
   int 	   rStat      = ALL_OK;
   uint16_t nodeId     = LCS::getNodeId( );
@@ -277,7 +275,7 @@ One key idea in LCS library message processing is the idea of a callback method 
 
 The general callback routine invokes the registered handler with messages that concern the general working of the node. Those are for example \texttt{(RESET)}, \texttt{(BUS\_ON)}, \texttt{(BUS\_OFF)}, but also \texttt{(ACK)} and \texttt{(ERR)}.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
 // ... the busMgt msg handler routine
 void busMgtMsgHandler( uint8_t *msgBuf ) {
@@ -292,7 +290,7 @@ lcsLib -> registerMsgHandler( busMgtMsgHandler )
 
 Once the library is initialized the various handlers can be registered and all other firmware specific initialization can be done. The last step is the call to the **run** method, which will never return. The very first thing the **run** method does after some internal setup is to invoke the node and port initialization callback if registered. The callbacks are also invoked whenever a node is restarted with the (RES-NODE) command or the (RESET) command for nodes and ports. The following code snippet shows how to register such a callback.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
 // ... the node init msg handler routine
 void nodeInitHandler( uint16_t nodeId ) { ... }
@@ -307,7 +305,7 @@ Note that a portID or \texttt{NIL\_PORT\_ID} will refer to the node. Registering
 
 Node and port attributes can be queried from other nodes. The reply from sending a (QRY-NODE) command to the target node, the (REP-NODE) message, is passed back to the requesting firmware through the node request callback.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
 // ... the node query handler routine
 void nodeReqHandler( uint16_t nodeId, uint8_t portId, uint8_t item, uint16_t val1, uint16_t val2 ) { ... }
@@ -322,7 +320,7 @@ The callback returns in addition to the arguments, the node and port ID of the r
 
 The nodeControl and nodeInfo routines offer callbacks for user defined items. There is a callback function for user defined control items and one for the info items.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
 uint8_t ( *infoHandler ) ( uint8_t portId, uint8_t item, uint16_t *arg1, uint16_t *arg2 ) { ... }
 uint8_t ( *ctrlHandler ) ( uint8_t portId, uint8_t item, uint16_t arg1, uint16_t arg2 ) { ... }
@@ -338,7 +336,7 @@ All the callback routines return a status code. When the item is not found or th
 
 The event callback function is invoked when an event was received and the node has an inbound port that is interested in the event. The eventId / portId was previously configured in the event map. A port reaction to the incoming event can be configured to have a delay between the receipt of the event and the actual invocation of the port event callback routine. The callback function is passed the actual event information.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
 // ... the inbound event handler routine
 void eventHandler ( uint16_t nodeId, uint8_t portId, uint8_t eAction, uint16_t eId, uint16_t eData ) { ... }
@@ -355,7 +353,7 @@ The LCS library implements a console command interface. Although not typically u
 
 In addition to the serial commands defined for the LCS  core library, the firmware programmer can implement an additional command interface. Any command not recognizes by the library is passed to the registered command line callback. The callback itself returns a status code about the successful command execution. Any status other than ALL-OK will result in an error message listed to the serial command device connected.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
 // ... the command line handler routine
 uint8_t commandLineHandler( char *line ) { ... }
@@ -370,7 +368,7 @@ Why implementing a serial command handler on top of the core library serial comm
 
 The LCS Library defines a set of DCC related LCS messages to configure and operate the running equipment and track. These messages are typically used by cab handhelds and the base station, which is in charge to produce the DCC signals for the tracks. The DCC message callbacks are used to communicate these messages to the node firmware. The callback routines are all passed the message buffer. The following code snippet shows the declaration for a DCC type callback.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
 // ... the DCC message handler routine for DCC messages
 void dccMsgHandler( uint8_t *msg ) { ... }
@@ -383,7 +381,7 @@ lcsLib -> registerDccMsgCallback( dccTrackMsgHandler )
 
 Railcom is a concept for the DCC decoders to communicate back. DCC is inherently a broadcast protocol just like a radio station. There was no way to communicate back.  Railcom was design to allow for a decoder to send back data when the DCC channel is told to "pause". The chapter on the DCC subsystem will explain DCC and RailCom in greater detail. The Railcom Message callback is the function callback that will be invoked when a RailCom Messages is received.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
 // ... the Railcom message handler routine for DCC messages
 void railComMsgHandler( uint8_t *msg ) { ... }
@@ -396,7 +394,7 @@ lcsLib -> registerRailComMsgCallback( dccTrackMsgHandler )
 
 The LCS core library attempts to handle as much as possible of message and event processing transparent to the user developed firmware. The core library ***run*** method, called last in the firmware setup sequence, will do the internal housekeeping and periodically scan for messages and serial commands. In addition, the run loop will also handle periodic activities outside the library. For example, a booster needs to periodically monitor the current consumption. The library therefore offers a callback registration function for periodic tasks. The example shown below registers a task to be executed every 1000 milliseconds.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
 // ... a periodic task to be registered
 void aTask( ) { ... }
@@ -422,7 +420,7 @@ The primary communication method of the layout control system are LCS messages s
 
 Perhaps the most important command is the help command, which lists all available command and  their basic syntax.
 
-\lstset{style=listingstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
 <!?>
 <#?>
@@ -517,11 +515,3 @@ The command line interface provides a way to interact with a node at the command
 \chapter{ RtLib Usage Example}
 
 ??? what is a good comprehensive example ?
-
-
-
-
-
-
-
-

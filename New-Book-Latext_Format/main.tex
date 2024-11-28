@@ -25,6 +25,8 @@
 \usepackage{float}
 \usepackage{placeins}
 \usepackage{tikz}
+\usepackage{relsize}
+\usepackage{pdflscape}
 
 %-------------------------------------------------------------------------------------------------------
 % Directory paths used for included files
@@ -70,10 +72,11 @@
 %-------------------------------------------------------------------------------------------------------
 \lstdefinestyle{listingstyle}{ 
     backgroundcolor=\color{gray!10}, 
-    basicstyle=\ttfamily\tiny,
+   % basicstyle=\ttfamily\tiny,
+    basicstyle={\ttfamily\tiny}, 
     keywordstyle=\color{magenta},
     identifierstyle=\ttfamily\color{blue},
-    numberstyle=\tiny\color{gray},
+    numberstyle={\ttfamily\tiny\color{gray}},
     commentstyle=\ttfamily\color{teal},
     showstringspaces=false,
     numbers=left,
@@ -82,6 +85,22 @@
     alsoletter={\#},
     morekeywords={\#include, \#define, \#ifdef, \#endif, \#pragma}
 } 
+
+\lstdefinestyle{codesnippetstyle}{ 
+    backgroundcolor=\color{gray!10}, 
+    basicstyle={\ttfamily\relsize{-1}}, 
+    keywordstyle=\color{magenta},
+    identifierstyle={\ttfamily\color{blue}}, 
+    numberstyle={\ttfamily\relsize{-1}\color{gray}}, 
+    commentstyle={\ttfamily\color{teal}}, 
+    showstringspaces=false,
+    numbers=left,
+    frame=single,
+    texcl=false,
+    alsoletter={\#},
+    morekeywords={\#include, \#define, \#ifdef, \#endif, \#pragma}
+}
+
 
 %-------------------------------------------------------------------------------------------------------
 % Document start
