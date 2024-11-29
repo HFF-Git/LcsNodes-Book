@@ -1,4 +1,4 @@
-
+%-------------------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------------------
 \chapter{The LCS Runtime Library RtLib}
 
@@ -8,8 +8,13 @@ The key design objective for the runtime library is to relief the LCS nodes firm
 
 The following figure depicts the overall structure of a LCS hardware module and node. At the bottom is the hardware module, which contains the communication interfaces, the controller and the node specific functions. The core library offers a set of APIs and callbacks to the node firmware. The firmware programmer can perform functions such as sending a message or accessing a node attribute through the APIs provided. The library in turn communicates with the firmware solely via registered callbacks.
 
-Picture.
-% ![Schematic_LcsNodes-Core-Library-Overview.png](./Figures/Schematic_LcsNodes-Core-Library-Overview.png )
+picture 
+
+\begin{figure}[h]
+    \centering
+   % \includegraphics[page=1, width=\textwidth]{./figures/Schematic_LcsNodes-Layout-Overview.pdf}
+   %![Schematic_LcsNodes-Core-Library-Overview.png](./Figures/Schematic_LcsNodes-Core-Library-Overview.png )
+\end{figure}
 
 The firmware has of course also direct access to the hardware module capabilities. This is however outside the scope for the LCS core library. As we will see in the coming chapters, the library has a rich set of functions and does also perform many actions resulting form the protocol implementation transparently to the firmware programmer. It is one of the key ideas, that the firmware programmer can concentrate on the module design and not so much on the inner workings of the LCS layout system. Events, ports, nodes and attributes form a higher level foundation for writing LCS control system firmware. Not all of the functionality will of course be used by every node. A base station and a handheld cab control will for example make heavy use of the DCC commands. A turnout device node will use much more of the port and event system. Size and functions of the various library components can be configured for a node.
 
@@ -17,6 +22,7 @@ As a consequence, the library is not exactly a small veneer on top of the hardwa
 
 The appendix contains the detailed description of all library interfaces. If a picture says more than a thousands words, an excerpt of the data declarations from the implementation says even more to the firmware programmer. At the risk of some minor differences on what is shown in the book and the actual firmware, you will find a lot of declarations directly taken from the "LcsRuntimeLib.h" include file.
 
+%-------------------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------------------
 \chapter{RtLib Storage}
 
@@ -30,10 +36,14 @@ This chapter presents a high level overview of the available maps and their purp
 
 The node map is a node private data structure only accessible to the library firmware. It contains the information about the configured maps, the node options, nodeId, canId and other data such as the library version. When a node is initially created the configuration descriptor contains all the required information to set up a node map. Nodes need volatile and non-volatile storage. Our design implements a mirroring scheme. For the LCS storage there is a memory and an EEPROM version with the same layout. When a node is running the memory version is the storage to use for performance reasons. Also, it can be expected that the memory contents changes very often during operation. EEPROMs do have a limited number of writes in their lifetime and are not that performant for a write cycle. On the other the other hand the data is stored non-volatile. Information that needs to be changed and available across a restart is therefore synced from MEM to NVM. On restart, the NVM data is just copied to MEM. We always start with a defined state. The following figure shows the nodeMap data structure.
 
-% picture
-Picture: ??? the high level structure of the node map...
 
-??? struct of nodeMap ?
+picture: the high level structure of the node map...
+
+\begin{figure}[h]
+    \centering
+   % \includegraphics[page=1, width=\textwidth]{./figures/Schematic_LcsNodes-Layout-Overview.pdf}
+   %![Schematic_LcsNodes-Core-Library-Overview.png](./Figures/Schematic_LcsNodes-Core-Library-Overview.png )
+\end{figure}
 
 Most of the data items deal with the location and entry sizes of the key maps. In addition, there are the nodeId, the node name, creation options, actual status flags and the set of node map attributes. Finally, the software version of the node version is kept here. For the firmware programmer there are methods to read from and write an item to the node. The library the \textbf{nodeGet}, \textbf{nodePut} and \textbf{nodeReq} routines offer a controlled access to the node map and other node data for node firmware programmers. They both use an item / value concept. Each routine passed an item Id for the data of interest and the data value. We will see an example later in this chapter. There are also three LCS messages, \texttt{(QRY-NODE)}, \texttt{(REP-NODE)} and \texttt{(SET-NODE)} which allow for access from another node. Since these messages come from another node, there is also the option to register a callback for access control checks to node data before the operation is performed.
 
@@ -41,24 +51,11 @@ Most of the data items deal with the location and entry sizes of the key maps. I
 
 The port map is an array of port map entries. The maximum number of ports are set through the node configuration descriptor values set by the firmware programmer. Changing the number of ports results in a node re-initialization, rebuilding the port map and all non-volatile port map data lost. During runtime there is a non-volatile and a memory version of this map. On node startup or reset, the non volatile port map entries are copied to their memory counterpart.
 
-??? old map, replace 
-
-\lstset{style=listingstyle}
+\lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
 struct LcsPortMapEntry {
 
-    uint16_t                  flags                         = 0;
-    uint8_t                   portType                      = 0;
-
-    uint16_t                  eventNodeId                   = NIL_NODE_ID;
-    uint16_t                  eventId                       = NIL_EVENT_ID;
-    uint8_t                   eventAction                   = PEA_EVENT_IDLE;
-    uint16_t                  eventValue                    = 0;
-    uint32_t                  eventTimeStamp                = 0L;
-    uint8_t                   eventDelayTime                = 0;
-
-    char                      portName[ MAX_NODE_NAME_SIZE ]          = { 0 };
-    uint16_t                  portAttrMap[ MAX_PORT_ATTR_MAP_SIZE ]   = { 0 };
+  
 };
 \end{lstlisting}
 
@@ -120,11 +117,10 @@ In addition to the runtime maps for node, ports, and events, the LCS runtime off
 
  \section{Periodic task Map}
 
-
-\lstset{style=listingstyle}
+\lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
 
-... code snippet here ...
+    User map \dots
 
 \end{lstlisting}
 
@@ -136,7 +132,7 @@ The pending request map, is a small map that keeps track of outstanding reply me
 
 \section{Driver function map}
 
-\lstset{style=listingstyle}
+\lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
 
 ... code snippet here ...
@@ -147,7 +143,7 @@ The pending request map, is a small map that keeps track of outstanding reply me
 
 for extension boards to be explained later...
 
-\lstset{style=listingstyle}
+\lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
 
 ... code snippet here ...
@@ -165,6 +161,7 @@ There is the node map, which is the global place for locating all other areas in
 Any change to the structure of the maps, for example changing the number of entries in a map, but also a different size of a data structure caused by a new library version, will result in a rebuilding of the non-volatile memory area with all previous data lost. The layout configuration data, such as the mapping of events to the node and port needs to be stored for example in a computer system so that can be reloaded once a node is re-created. A node has no way of keeping stored data across structural changes to its map layout.
 
 %-------------------------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------------
 \chapter{RtLib Call Interface}
 
 ??? this chapter needs to be reworked for new library call interface....
@@ -178,24 +175,11 @@ The LCS runtime is initialized with the **init** routine. After successful runti
 
 While there are many library functions to call, the only way for the library to communicate back to the module firmware when a message is received are the callbacks registered for. Callbacks will be described in the next chapter. A key task therefore is to register call back functions for all events and messages the node is interested. The following code fragment illustrates the basic library initialization.
 
-\lstset{style=codesnippetstyle}
+\lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
-    #include "LcsRuntimeLib.h"
+   
+    code snippet here \dots
 
-    // code to initialize HW structures ( to be discussed later... )
-    CDC::CdcConfigInfo cfg;
-
-    ...
-
-    int rStat;
-
-    // ... create the LCS library object and startup
-    rStat = LCS::initRuntime( &cfg );
-
-    // ... register callbacks with lcsLib
-    // ... other node specific things to do
-    // ... invoke the run method. We never return from it ...
-    LcsRuntimeLib::run( );
 \end{lstlisting}
 
 
@@ -208,26 +192,22 @@ Obtaining node or port information is an interface to query basic information ab
 The return result is stored in one or two 16-bit variables and is request item specific. The nodeInfo and nodeControl routines allow for local access, the \texttt{(QRY-NODE)} and \texttt{(REP-NODE)} messages allow for remote access. The following example shows how the number of configured ports is retrieved from the nodeMap.
 
 
-\lstset{style=codesnippetstyle}
+\lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
-  int 		rStat;
-  uint16_t	value;
-  
-  rStat = LCS::nodeInfo( 0, NPI_PORT_MAP_ENTRIES, &value );
-  if ( rStat != ALL_OK ) { ... }
+   
+    code snippet here \dots
+    
 \end{lstlisting}
 
 \section{Controlling a node aspect}
 
 Very similar to how we retrieve node data, the nodeControl routine allows for setting node attribute. A node attribute does not necessarily mean that there is a data value associated with the attribute. For example, turning on the "ready" LED is a control item defined for the nodeControl routine. There is a detailed routine description in the appendix that contains the items that are defined. The following example turns on the ready LED on the module hardware.
 
-\lstset{style=codesnippetstyle}
+\lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
-  int 		rStat = ALL_OK;
-  uint16_t	value = 1;
-
-  rStat = LCS::nodeControl(  0, NPC_SET_READY_LED, &value );
-  if ( rStat != ALL_OK ) { ... }
+   
+    code snippet here \dots
+    
 \end{lstlisting}
 
 The example shows that a node item is not only used to read or write a data item. It can also be used to execute a defined command, such as turning on an LED. In addition to the predefined node items, there is room for user defined items. In order to use them, a callback function that handles these items needs to be registered. This concept allows for a very flexible scheme how to interact with a node.
@@ -246,16 +226,11 @@ The example shows that a node item is not only used to read or write a data item
 
 Sending a message represent a large part of the available library functions. For each message defined in the protocol, there is a dedicated convenience function call, which will take in the input arguments and assemble the message buffer accordingly. As an example, the following code fragment will broadcast the ON event for event "200".
 
-\lstset{style=codesnippetstyle}
+\lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
-  int 	   rStat      = ALL_OK;
-  uint16_t nodeId     = LCS::getNodeId( );
-  uint16_t eventId    = 200;
-
-  ...
-  
-  rStat = sendEventOn( nodeId, eventId );
-  if ( rStat != ALL_OK ) { ... }
+   
+    code snippet here \dots
+    
 \end{lstlisting}
 
 All message sending routines follow the above calling scheme. The data buffer is assembled and out we go. Transparent to the node specific firmware, each message starts with a predefined messages priority. If there is send timeout, the priority will be raised and the message is sent again. If there is a send timeout at the highest priority level, a send error is reported.
@@ -263,8 +238,6 @@ All message sending routines follow the above calling scheme. The data buffer is
 \section{Summary}
 
 A key part of the runtime library is the setup and manipulation of node and port data. A small comprehensive function set was presented in this chapter. That is all there is to invoke the core library functions. There are a few more functions that will be described in the chapters that deal with their purpose. For the other direction of information flow, i.e. the core library sends information back to the firmware layer, callback functions are used, presented in the following chapter.
-
-
 
 %-------------------------------------------------------------------------------------------------------
 \chapter{RtLib Callbacks}
@@ -308,7 +281,11 @@ Node and port attributes can be queried from other nodes. The reply from sending
 \lstset{style=codesnippetstyle}
 \begin{lstlisting}
 // ... the node query handler routine
-void nodeReqHandler( uint16_t nodeId, uint8_t portId, uint8_t item, uint16_t val1, uint16_t val2 ) { ... }
+void nodeReqHandler(    uint16_t nodeId, 
+                        uint8_t portId, 
+                        uint8_t item, 
+                        uint16_t val1, 
+                        uint16_t val2 ) { ... }
 ...
 // during module firmware initialization ...
 lcsLib -> registerReqRepCallback( nodeReqHandler );
@@ -337,6 +314,7 @@ All the callback routines return a status code. When the item is not found or th
 The event callback function is invoked when an event was received and the node has an inbound port that is interested in the event. The eventId / portId was previously configured in the event map. A port reaction to the incoming event can be configured to have a delay between the receipt of the event and the actual invocation of the port event callback routine. The callback function is passed the actual event information.
 
 \lstset{style=codesnippetstyle}
+\begin{minipage}{\textwidth}
 \begin{lstlisting}
 // ... the inbound event handler routine
 void eventHandler ( uint16_t nodeId, uint8_t portId, uint8_t eAction, uint16_t eId, uint16_t eData ) { ... }
@@ -344,6 +322,7 @@ void eventHandler ( uint16_t nodeId, uint8_t portId, uint8_t eAction, uint16_t e
 // during module firmware initialization ...
 lcsLib -> registerPortEventCallback( eventHandler )
 \end{lstlisting}
+\end{minipage}
 
 If there is more than one port configured to react on the the incoming event, they are invoked in ascending order of portIds. The ***eAction*** parameter specifies whether the event is a simple ON/OFF event or a generic event with optional associated data. Note that only ports can react to events.
 
@@ -428,12 +407,8 @@ Perhaps the most important command is the help command, which lists all availabl
 
 Any command not recognized is passed to a command line handler....
 
-
-
-```
 <lcs-command-char [ arguments ] >
 
-```
 
 will be passed to the registered command call back function, if there is one registered. The following summary shows the available LCS serial commands. The appendix contains a detailed description of of the commands implemented by the LCS library.
 
@@ -441,10 +416,10 @@ will be passed to the registered command call back function, if there is one reg
 
 The configuration mode commands will place a node into either operations or configuration mode.
 
-|Command | Arguments | Operation |
-|:----|:-----|:-----|
-|!c | | enter node configuration mode |
-|!o | | enter node operations mode |
+%|Command | Arguments | Operation |
+%|:----|:-----|:-----|
+%|!c | | enter node configuration mode |
+%|!o | | enter node operations mode |
 
 \section{Event Commands}
 
@@ -510,8 +485,11 @@ Note: to be implemented. Perhaps to simple library routines to create an ASCII v
 
 The command line interface provides a way to interact with a node at the command line level. This is very useful for initial testing new hardware and software debugging. All that is needed is a USB interface and a computer. As we will see in the main controller chapter, a USB or serial interface is also necessary for downloading new firmware to the boards. Besides that, this interface is normally not used during regular operations.
 
-
+%-------------------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------------------
 \chapter{ RtLib Usage Example}
 
 ??? what is a good comprehensive example ?
+
+%-------------------------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------------

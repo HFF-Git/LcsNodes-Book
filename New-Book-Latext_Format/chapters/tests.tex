@@ -30,19 +30,6 @@ float barrier command to ensure that text stays close to the picture but no text
 \FloatBarrier
 
 
-\section{Code Snippets}
-
-\lstset{style=listingstyle}
-\begin{lstlisting}
-
-    int main( int argc, char **argv ) {
-
-        return( 0 );
-    }
-    
-\end{lstlisting}
-
-
 \section{Lists}
 
 \subsection{A simple list}
@@ -68,5 +55,22 @@ A little test for an instruction word layout ... will be a bit fiddling work ...
         \draw[thick] (\x, 0) -- (\x, 1); % Vertical line
         \node[above] at (\x + 0.125, 1) {\x}; % a number above the field
     }
+
+\end{tikzpicture}
+
+
+First attempt ...
+
+\begin{tikzpicture}[node distance=2cm, every node/.style={draw, text width=3cm, align=center}]
+% Nodes
+\node (base) {Base Station};
+\node[right of=base] (cab) {Cab Handhelds};
+\node[below of=cab] (gateways) {Gateways Sensors Actors};
+\node[below of=base] (track) {Layout Elements \\ Track};
+
+% Arrows
+\draw[->] (base) -- (cab) node[midway, above] {USB};
+\draw[->] (cab) -- (gateways);
+\draw[->] (base) -- (track);
 
 \end{tikzpicture}

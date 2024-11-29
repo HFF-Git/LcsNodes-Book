@@ -1,0 +1,256 @@
+%-------------------------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------------
+\chapter{LCS Hardware Module Design}
+
+So far we covered the general concepts, messages, protocols as well as the LCS core library and a glimpse how all of this might be used. Let's take a break from all that concepts and mostly software talk. For the software to run, hardware modules need to be built. Welcome to the next big part of this book. Here, we will talk about the lCS hardware modules. A hardware module conceptually consist of three key parts.
+
+- communication
+- controller
+- function block(s)
+
+At the center of a hardware module is the \textbf{controller}. There is a great variety of controllers and development environments available. When selecting a controller for LCS, we will talk in a minute which one was picked, its is important that there is enough CPU power and equally important a powerful development environment. A console command line interface and interfaces to load the software is also very handy for configuring, monitoring and debugging. The \textbf{communication} part implements at a minimum the LCS message bus interface for the messages to transmit between the modules. Finally, the \textbf{function block}s implement the hardware module specific capabilities.
+
+ This chapter is the first in series of chapters on hardware modules. Instead of presenting complete schematics for each major hardware module, such as the base station, we will go a slightly different route. We will first present the basic components an LCS node might need. Definitively we will need a controller and a CAN bus interface. Some LCS nodes might make use of an extended non-volatile storage, others need plenty of digital outputs. Just like Lego Blocks, all these parts should be combined easily to form the desired LCS hardware module. We will tackle each component one at a time to understand how they work. The later chapters will just combine these basic blocks with minor adaptations and perhaps some very dedicated components for their functionality.
+
+\section{Selecting the controller}
+
+The module designs described in this book initially used the AtMega controller platform along with the Arduino IDE to write the software. There is the Arduino IDE and by now a whole set of different processors. Since it was released, the Atmega controller family and boards such as Arduino UNO, Arduino NANO, Arduino MEGA are in widespread use. The LCS core library program and non-volatile storage requirements do place however a higher demand on the controller capabilities.
+
+Meanwhile, the Raspberry PI Pico \texttt{(PICO)} controller joined the club. And it has a lot to offer. The PICO is a dual core controller running at up to 133 Mhz. It features a whopping 16Mbytes of flash and 264 Kbytes of main memory. There are plenty of IO ports, and functional blocks for UARTS, SPI and I2C interfaces. What makes this controller especially interesting are the PIO state machines that allow for implementing your own I/O protocols. There is CAN bus software library built using these state machines. This way no extra CAN bus controller is needed. The PICO comes with its own software development kit and also an Arduino IDE integration is available.
+
+As time goes by, there will be for sure more capable controller entering the market. However, when you want to complete a project versus chasing the latest controllers, you will need to pick. In our case, the PICO is the controller of choice. Its capabilities match our requirements and will be a good choice for the years to come. nevertheless, the LCS library software should be designed as independent of a particular controller as possible. More on this later. 
+
+\section{The Controller Platform}
+
+ The following table gives some guidance on the capabilities needed in our designs. This list also applies in general to other controllers.
+
+\begin{longtable}{@{}p{0.25\linewidth}p{0.7\linewidth}@{}}
+    \caption{Controller Attributes} \\
+    \toprule
+    \textbf{Attributes} & \textbf{Notes} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Attributes} & \textbf{Notes} \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    \textbf{Processor} & For a typical module, the PICO offers plenty in terms of CPU power. Since we use a software implementation for the CAN bus, running the software in one core and the CAN bus state machine in the other will well match what the PICO offers. \\
+    \midrule
+    \textbf{Memory} & Memory depends on the size requirements of the node, port and event maps and the node-specific firmware data demands. A simple module would perhaps get by with 2Kb, a base station could easily use 32Kb or even more. \\
+    \midrule
+    \textbf{Program Memory} & The LCS library already uses round about 64Kb of code storage. A simple module would get by with 32Kb, a base station could easily use 128Kb and more. \\
+    \midrule
+    \textbf{External NVM} & Additional NVM storage is allocated in a separate EEPROM or FRAM. The capacity is highly dependent on the module use case. External NVM components typically also require the SPI or I2C interface. Most external EEPROM chips have write cycles of more than a million. At a minimum, a chip size of 32Kb is recommended. The PICO does not offer an internal EEPROM, so an external NVM is always required. \\
+    \midrule
+    \textbf{Digital channels} & The bulk of control lines is digital and used heavily. For some hardware modules, a subset of the digital pins should also be PWM capable. \\
+    \midrule
+    \textbf{Analog channels} & Analog input is typically used for the power module for analog voltage measurements. Otherwise, it is perhaps optional. The PICO allows for only three inputs. If more are desired, an external multiplexer needs to be implemented. \\
+    \midrule
+    \textbf{I2C} & The I2C interface comes in very handy to connect a large variety of chips. Communication to the external NVM and also to chips that implement functions such as a servo controller will require this bus. \\
+    \midrule
+    \textbf{Serial I/O} & The serial I/O is used in some hardware modules for implementation of RailCom detectors. The PICO features two hardware UARTS and the option to implement more in software using the PIO state machines. \\
+    \midrule
+    \textbf{Console I/O} & Serial I/O is used for console I/O. Rather than using dedicated I/O pins and a UART block in the controller, the PICO serial I/O will be implemented via the USB connector. \\
+    \textbf{LEDs, Button and Dip Switches} & A hardware module could make use of LEDs to indicate readiness and activity, as well as a set of switches to configure a hardware option. Not really required but certainly useful. \\
+    \midrule
+    \textbf{WLAN} & WLAN is optional. But there is a PICO version with WLAN capability integrated. \\
+\end{longtable}
+
+\section{Hardware Module Schematics}
+
+Hardware modules are described to large extent via schematics. The schematics shown in the following chapters are all drawn with the EasyEDA software. It is a great hardware development platform, and you can order PCBs for the final design in one easy step. Following a building block principle, the schematic diagrams will show functional components with many network endpoints where they connect to other building blocks. Each network endpoint is labelled with a name that is unique across all building blocks used in a hardware module schematic drawn. For example, "VCC-3V3" will always refer to the 3.3V power supply line. If two building blocks have an endpoint with the same name, the endpoints will be connected on all building block schematics in the final hardware module design.
+
+A general word to the building blocks. They serve as examples of how the individual parts could be implemented and help to understand how each part works. Parts of the library software assume the presence of these blocks and how they basically work. Although the library has been written with as much as possible independence of the hardware, the final adaption of timers, serial lines, I/O pins and so on is required needs to be considered. Throughout the next chapters, you will find comments on what is perhaps generic and what would require some adaption if moving to another processor family.
+
+\section{Controller and Extension Board}
+
+Each node in the layout control system is a node and hence there is a controller for running the node firmware. Without a question, there will be many different nodes and as time goes by perhaps even a new controller families. However, each node would need at least some form of power supply, the CAN bus interface and depending on the storage demands and controller family, an external NVM. On top there is the node specific hardware. One approach is to design a board for each dedicated purpose. This board would include all the common portion for a LCS node and the hardware module specific portion. Another approach is to design a node controller board with extension boards that can be connected to it. In the remainder of this chapter, we will describe the main controller and extension concept. However, it is also perfectly all-right to design a hardware component with all the components integrated on one board. For a complex node such as the base station, this is a very reasonable solution. The building blocks shown in this chapter thus also form the basis for a more monolithic hardware module design. But first, let's look at the physical dimension of our boards.
+
+picture 
+% ![Schematic_LcsNodes-PCB-Layout-Concepts.png](./Figures/Schematic_LcsNodes-PCB-Layout-Concepts.png )
+
+All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. In particular, the 10x16cm board should be very familiar as the "Euro PCB" format. The main controller board has on the left side the connectors for the LCS bus and the power input. On the left side, there are two connectors toward an extension board. The middle one is the extension connector described earlier, the lower right side is the power lines routed through from the power in connector.
+
+Extension boards have three connectors pairs, in and out. The lower pair just routes power through to the next extension board. The middle connector pair will route a subset of the extension connector signals from the main controller. What exactly is routed is described in the extension board chapters. Finally, the extension boards have an optional third line, which is the track power connectors. This line is used by the base station and block controller boards. Again, all this will be explained in the later chapters. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as footprints in the EasyEDA library.
+
+\section{LCS Bus connector}
+
+Every hardware module needs the LCS bus interface to connect to the bus. Some modules may also draw power from this bus. The modules use an RJ45 connector for connecting to the bus. The bus signals can be grouped in several categories. The CAN bus differential lines represent the CAN bus. The VS line is intended for hardware modules with very little power consumptions so that they can directly be powered by the bus. The DCC signal lines are an exact copy of the DCC signal that would go to a track sent out by the DCC signal generating base station. The signal is intended to be routed from the base station to booster nodes, but also to hardware modules that analyze the DCC signal for some action. Finally there is the STOP signal line. This is a wired OR line that allows a simple button along the layout with access to this line to issue a STOP signal. The base station or any nodes interested in the signal can monitor this line. There are the following signal lines.
+
+\begin{table}[h!]
+    \begin{center}
+        \caption{Bus Connector Pins}
+        \begin{tabular}{|l|l|p{0.72\textwidth}|}
+            \toprule
+            \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
+            \midrule
+            1 & DCC-Sig-1 & The DCC signal labelled "+" \\
+            \midrule
+            2 & DCC-Sig-2 & The DCC signal labelled "-" \\
+            \midrule
+            3 & GND &  Common ground \\
+            \midrule
+            4 & RSV &  \\
+            \midrule
+            5 & RSV &  \\
+            \midrule
+            6 & VS & The bus supplied 12V power line. This line is intended for devices with very little power consumption to get their power from. Any other module should connect to its own power supply line. \\
+            \midrule
+            7 & CAN-L &  Line L of the differential CAN bus signal. \\
+            \midrule
+            8 & CAN-H &  Line H of the differential CAN bus signal. \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\section{LCSNodes Extension Board Connector}
+
+For interchangeability of extensions, there is a standardized \textbf{extension board connector} between controller and extensions. Furthermore, an extension board should have two connectors so we can for example add two or more extension to the main controller board. This concept is very similar to the the shield concept found in the Arduino or Raspberry PI universe, except that we do not stack boards, we place them next to each other. Not all IO lines of a controller are exported to the extension board. For example, the SPI interface, configuration switches and status LEDs are local to the main controller board. The I2C interface will be the main communication method between the boards. Nevertheless, a rather rich functionality set from the controller should be available to the extension board for flexibility. There should be ports for digital input and output, analog input, PWM outputs, serial outputs and so on. Many pins of a controller chip double up in function. All of these special purpose pins can also be used just as plain digital input/output pins. The following table shows the extension connector pin assignments.
+
+??? do the double duty of digital ins still apply for the pico ?
+
+%\begin{longtable}{@{}p{0.1\linewidth}p{0.2\linewidth}p{0.6\linewidth}@{}}
+\begin{longtable}{@{}|l|p{0.2\linewidth}p{0.6\linewidth}@{}}
+    \caption{Controller Attributes} \\
+    \toprule
+    \textbf{Pin} & \textbf{Name} & \textbf{Purpose}\\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Pin} & \textbf{Name} & \textbf{Purpose}\\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    1 & \textbf{DCC-SIG1} & The DCC "+" signal as generated by the DCC Signal Generator. On the main controller board, the DCC signals are routed from the extension connector directly to the LCS Bus connector. \\
+    \midrule
+    2 & \textbf{DCC-SIG2} & The DCC "-" signal as generated by the DCC Signal Generator. On the main controller board, the DCC signals are routed from the extension connector directly to the LCS Bus connector. \\
+    \midrule
+    3 & GND & Common ground. \\
+    \midrule
+    4 & GND & Common ground. \\
+    \midrule
+    5 & ADC-0 & Analog input pin. The input is not protected. The analog voltage range is 0 to VCC. \\
+    \midrule
+    6 & ADC-1 & Analog input pin. The input is not protected. The analog voltage range is 0 to VCC. \\
+    \midrule
+    7 & - & reserved. \\
+    \midrule
+    8 & RST & Reset line available to the extension boards. A reset line is active low. \\
+    \midrule
+    9 & DIO-0 (RX-1) & Digital pin, UART RX capable. The pin is protected. \\
+    \midrule
+    10 & DIO-1 (TX-1) & Digital pin, UART TX capable. The pin is protected. \\
+    \midrule
+    11 & DIO-2 & Plain digital Pin, input or output. The pin is protected. The pin DIO-2 and DIO3 are on the same controller IO port and can be set simultaneously. \\
+    \midrule
+    12 & DIO-3 & Plain digital Pin, input or output. The pin is protected. The pin DIO-2 and DIO-3 are on the same controller IO port and can be set simultaneously. \\
+    \midrule
+    13 & DIO-4 & Plain digital Pin, input or output. The pin is protected. The pin DIO-4 and DIO5 are on the same controller IO port and can be set simultaneously. \\
+    \midrule
+    14 & DIO-5 & Plain digital Pin, input or output. The pin is protected. The pin DIO-4 and DIO-5 are on the same controller IO port and can be set simultaneously. \\
+    \midrule
+    15 & DIO-6 (PWM-1) & Plain digital Pin, PWM capable. The pin is protected. The pin DIO-6 and DIO-7 are on the same controller IO port and can be set simultaneously. \\
+    \midrule
+    16 & DIO-7 (PWM-2) & Plain digital Pin, PWM capable. The pin is protected. The pin DIO-6 and DIO-7 are on the same controller IO port and can be set simultaneously. \\
+    \midrule
+    17 & VCC & VCC 5V supply to extension boards. \\
+    \midrule
+    18 & VCC & VCC 5V supply to extension boards. \\
+    \midrule
+    19 & SCL & I2C Interface SCL line. The line is protected with a serial resistor and there is a pull-up resistor to VCC. \\
+    \midrule
+    20 & SDA & I2C Interface SDA line. The line is protected with a serial resistor and there is a pull-up resistor to VCC. \\
+\end{longtable}
+
+Since the connector chosen is a 2x10 connector, the signal pin numbers shown above change their row numbering, depending whether it is output or input connector. When looking at the schematics and the connector layout on the PCB, the signals on the output connector have pin 1 to 10 on the leftmost row, and on the rightmost row on the input connector, such that pin 1 of the output connector connects to pin 1  of the input connector and so on. The same is true for pins 11 to 20. 
+
+There are EasyEDA symbols that offer the connector pins with you going through these details. The appendix contains EasyEDA symbols for the most common board dimensions with the connectors placed in the right location. A new projects can just start with this EasyEDA symbol. There is also the option of  cascading extensions. An extension connector could therefore be on both ends of the board and pass the GND, VCC, Reset, DCC and I2C lines from board to board. For this type of board, EasyEDA symbols are also available.
+
+A key question is how many controller pins are available to an extension board. Most of the extension boards would just need the I2C bus. However, if there is a rather complex extension board, such as a block controller shown in one of the next chapters, the IO pins needed from the controller board to the extension are many and quickly reach the limit of the extension connector. Why not place a connector with more pins on the boards ? First, a different controller may not have that many IO pins and there would be no easy mix and match between main and extension boards. Second, the majority of extension boards are rather encapsulated and most often just need the I2C bus to communicate. To find a middle ground, the 20-pin connector along with the pin capabilities outlined was chosen. 
+
+For more complex extension boards, it is perhaps the better idea to combine a main board with an extension board to one monolithic board and still keep the extension connector for other not so complex boards to attach. As a convention, only the first extension board will benefit from all signals coming from the main controller board. All follow on extension boards will only get the DCC signals, the reset line, the I2C signal and the power lines.
+
+\section{Power Line Connectors}
+
+The \textbf{power line connector} forward the power line input of the main controller board to an extension board. This connector is primarily needed for power unit extension to power the H-Bridges on such a board. Extensions that do not require this power input forwarding just leave it out. The first pair of connector pins is always connected, all the others are optional. Boards with a high current consumption could pool more than one connector pin pair.
+
+\begin{table}[h!]
+    \begin{center}
+        \caption{Power Line Connectors}
+        \begin{tabular}{|l|l|p{0.72\textwidth}|}
+            \toprule
+            \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
+            \midrule
+            1 & GND & Common ground. \\
+            \midrule
+            2 & GND & Common ground. \\
+            \midrule
+            3 & GND & Common ground. \\
+            \midrule
+            4 & GND & Common ground. \\
+            \midrule
+            5 & VS & Input voltage forward, always connected. \\
+            \midrule
+            6 & VS & Input voltage forward, always connected. \\
+            \midrule
+            7 & VS & Input voltage forward, always connected. \\
+            \midrule
+            8 & VS & Input voltage forward, always connected. \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\section{Track Power Connectors}
+
+In addition to the extension board and power line connector, there is the \textbf{track power connector}. This connector is only used by the base station, block controller and associated extensions. Its purpose is to pass the track power signals from the H-bridges on the block controller ( or booster ) board to the extension boards. This connector is described in more detail in the base station and block controller chapter.
+
+\begin{table}[h!]
+    \begin{center}
+        \caption{Power Line Connectors}
+        \begin{tabular}{|l|l|p{0.72\textwidth}|}
+            \toprule
+            \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
+            \midrule
+            1 & DCC-SIG-B0 & Bridge-0 DCC Signal "+". \\
+            \midrule
+            2 & DCC-SIG-B1 & Bridge-1 DCC Signal "+". \\
+            \midrule
+            3 & DCC-SIG-B2 & Bridge-2 DCC Signal "+". \\
+            \midrule
+            4 & DCC-SIG-B3 & Bridge-3 DCC Signal "+". \\
+            \midrule
+            5 & DCC-SIG-B0 & Bridge-0 DCC Signal "-". \\
+            \midrule
+            6 & DCC-SIG-B1 & Bridge-1 DCC Signal "-". \\
+            \midrule
+            7 & DCC-SIG-B2 & Bridge-2 DCC Signal "-". \\
+            \midrule
+            8 & DCC-SIG-B3 & Bridge-3 DCC Signal "-". \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+
+\FloatBarrier
+
+When using all four bridge signal outputs, each each output is rated up to 3Amps. For high power bridges with up to 6Amps, two pairs can be combined and the number of bridges signals passed on is two.
+
+\section{Summary}
+
+This chapter introduced the basic architecture of a hardware modules, it connectors and board layout. A key concept is the idea of a common component, the main controller, and extension that can be connected. Nevertheless, there are good cases for combining a main controller and the extension hardware into one monolithic board. But in any case, the connectors and their purposes stay the same from board to board. Throughout the chapter to come, you will see how easy boards can be combined using the three connectors lanes and standards behind them. Currently, the boards are designed in a layout, where they just connect next to each other. Conceptually, they could also be stacked. It is a matter of PCS layout design.
+
+Ready for the first hardware work ? All aboard, the train leaves for the next chapter.
+

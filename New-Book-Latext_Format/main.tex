@@ -16,7 +16,6 @@
 \usepackage{titlesec}
 \usepackage{titlepic}
 \usepackage{booktabs}
-\usepackage[all]{nowidow}      
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{tcolorbox}
@@ -27,6 +26,9 @@
 \usepackage{tikz}
 \usepackage{relsize}
 \usepackage{pdflscape}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[all]{nowidow}
 
 %-------------------------------------------------------------------------------------------------------
 % Directory paths used for included files
@@ -86,6 +88,10 @@
     morekeywords={\#include, \#define, \#ifdef, \#endif, \#pragma}
 } 
 
+%-------------------------------------------------------------------------------------------------------
+% Listing style for showing code snippets
+%
+%-------------------------------------------------------------------------------------------------------
 \lstdefinestyle{codesnippetstyle}{ 
     backgroundcolor=\color{gray!10}, 
     basicstyle={\ttfamily\relsize{-1}}, 
@@ -100,7 +106,6 @@
     alsoletter={\#},
     morekeywords={\#include, \#define, \#ifdef, \#endif, \#pragma}
 }
-
 
 %-------------------------------------------------------------------------------------------------------
 % Document start
@@ -129,6 +134,11 @@
     \include{chapters/Message-Formats}
     \include{chapters/Message-Protocols}
     \include{chapters/Runtime-Library}
+    \include{chapters/DCC-Subsystem}
+    \include{chapters/Analog-Subsystem}
+    \include{chapters/HW-Module-Design}
+
+
     \include{chapters/tests}
     \include{chapters/listings}
 
