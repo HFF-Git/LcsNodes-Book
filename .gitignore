@@ -31,7 +31,7 @@
 *.nav
 *.snm
 
-*/main.pdf
+*/New-Book-Latex_Format/main.pdf
 
 # Ignore specific directories if needed
 */_minted*  # If you use minted

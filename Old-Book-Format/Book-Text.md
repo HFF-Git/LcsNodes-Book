@@ -913,7 +913,7 @@ A node or individual port can be restarted. This command can be used in configur
 
 A node can interact with any other node on the layout. The same is true for the ports on a node. Any port can be directly addressed. Node/port attributes and functions are addressed via items. The are reserved item numbers such as software version, nodeId, canId and configuration flags. Also, node or port attributes have an assigned item number range. Finally, there are reserved item numbers available for the firmware programmer.
 
-The query node message specifies the target node and port atrribute to retrieve from there. The reply node message will return the requested data.
+The query node message specifies the target node and port attribute to retrieve from there. The reply node message will return the requested data.
 
 |Requesting Node | Target Node |
 |:---|:-----------|
