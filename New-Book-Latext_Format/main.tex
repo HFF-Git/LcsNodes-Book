@@ -29,6 +29,7 @@
 \usepackage{longtable}
 \usepackage{array}
 \usepackage[all]{nowidow}
+\usetikzlibrary{shapes,shadows,arrows}
 
 %-------------------------------------------------------------------------------------------------------
 % Directory paths used for included files
@@ -74,7 +75,6 @@
 %-------------------------------------------------------------------------------------------------------
 \lstdefinestyle{listingstyle}{ 
     backgroundcolor=\color{gray!10}, 
-   % basicstyle=\ttfamily\tiny,
     basicstyle={\ttfamily\tiny}, 
     keywordstyle=\color{magenta},
     identifierstyle=\ttfamily\color{blue},
@@ -115,13 +115,10 @@
 
     \begin{center}
         \includegraphics[width=0.7\textwidth]{./figures/Frontpage-Picture.png}
-
         \vspace{ 2cm }
         {\Huge \textbf{A Layout Control System for \\ Model Railroads}} 
-
         \vspace{ 2cm }
         {\Large Helmut Fieres}
-
         {\large \today}
     \end{center}
 
@@ -130,19 +127,25 @@
 
     \mainmatter             
     \include{chapters/Introduction}
-    \include{chapters/General-Concepts}
-    \include{chapters/Message-Formats}
-    \include{chapters/Message-Protocols}
-    \include{chapters/Runtime-Library}
-    \include{chapters/DCC-Subsystem}
-    \include{chapters/Analog-Subsystem}
-    \include{chapters/HW-Module-Design}
+    
+    \include{chapters/LCS-Concepts-General}
+    \include{chapters/LCS-Concepts-Message-Formats}
+    \include{chapters/LCS-Concepts-Message-Protocols}
 
+    \include{chapters/LCS-Runtime-Lib-Introduction}
+    \include{chapters/LCS-Runtime-Lib-Storage}
+    \include{chapters/LCS-Runtime-Lib-API}
+    \include{chapters/LCS-Runtime-Lib-Callbacks}
+    \include{chapters/LCS-Runtime-Lib-Example}
+    
+    \include{chapters/LCS-Concepts-DCC-Subsystem}
+    \include{chapters/LCS-Concepts-Analog-Subsystem}
+    \include{chapters/LCS-Concepts-Hardware-Module-Design}
 
-    \include{chapters/tests}
-    \include{chapters/listings}
+    \appendix 
+    \include{appendices/tests}
+   \include{appendices/listings}
 
-    % Optional: For appendices, bibliography, etc.
     \backmatter             
 
 \end{document}
