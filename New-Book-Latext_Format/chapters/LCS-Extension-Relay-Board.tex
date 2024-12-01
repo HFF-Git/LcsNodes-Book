@@ -1,0 +1,26 @@
+## *Relay Extension Board*
+
+Next in line are relays and their relatives, the traditional twin coil machine that power turnouts and mechanical signals before the advent of cheap servos. The relay extension boards is based on the plain digital input/output board with output drivers that directly drive the relays. There are many relays boards available on the market. One cannot beat the price on Ebay for such a board. These relays boards can be driven by a digital signal, such as as the plain input/output extension shown before generates. Instead of designing an own board, the combination of the plain IO extension and such a relays board is recommended.
+
+The ULN2803 is a bread and butter high voltage, high-current darlington array consisting of eight channels. The drivers have an open Collector output, so that a load is required for expected voltage changes. The ULN2803 can be used for driving relays, motors and other items. The outputs are inverted. A high on the input results in the output going low.
+
+
+Again, there is no limit what a modeler would do with a relays that can be turned on and off. One common use case is the control of a turnout with magnetic coils for switch movement. We would need two per turnout control to be really flexible. There should also be timers for a delayed turning on and turning off the relays in order to avoid damage to the magnetic coils.
+
+### *Block Diagram*
+
+![Schematic_LcsNodes-Extension-Relais-Board-16-S-B.00.01-1.png](./Schematics/Schematic_LcsNodes-Extension-Relais-Board-16-S-B.00.01-1.png ")
+
+### "Connectors"
+
+![Schematic_LcsNodes-Extension-Relais-Board-16-S-B.00.01-2.png](./Schematics/Schematic_LcsNodes-Extension-Relais-Board-16-S-B.00.01-2.png ")
+
+### *Logic*
+
+![Schematic_LcsNodes-Extension-Relais-Board-16-S-B.00.01-3.png](./Schematics/Schematic_LcsNodes-Extension-Relais-Board-16-S-B.00.01-3.png )
+
+### *PCB*
+
+![LCS-NODES-PCB-RELAIS-BOARD-B.00.01.png](./Boards/LCS-NODES-PCB-RELAIS-BOARD-B.00.01.png )
+
+### *Firmware*

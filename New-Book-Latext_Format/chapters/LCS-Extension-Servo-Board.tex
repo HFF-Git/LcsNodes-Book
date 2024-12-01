@@ -1,0 +1,32 @@
+## *Servo Extension Board*
+
+With dramatically dropped RC servo motor prices they are often used to replace traditional magnetic coil drives for turnouts and semaphores (mechanical signals) on model railroads. Besides their advantages in price, they enable a much more realistic operation with smooth operation of turnout points and semaphore arms. However servo’s need a PWM (pulse wide modulation) to operate rather than the simple pushbutton to power up a coil. Also, a signal light can fade in and out a little to mimic more realistically a real light. The use of servos in a layout are endless. An extension board to generate such PWM signals for driving servos is needed. A servo is just a mechanical device that is controlled with a pulse width modulated (PWM) signal. A PWM high period of one millisecond will move the servo arm left ( 0 degrees ) and two milliseconds right ( 180 degrees ). The servo control extension could also be used to drive the signal light brightness and the slow raising from off to full on. Signals need more than one line to implement a signal with red/green/yellow lights. A 16 channel PWM is therefore a good starting point to address the above requirements. The following schematic shows an extension board based on the PCA9685 chip.
+
+The PCA9685 chip is a SMD chip. As an alternative to designing an SMD component board, we could also use the very popular breakout board based on the PCA9685 chip. The breakout board interfaces via the I2C bus. A good solution is to build an extension board that just piggy backs the breakout board and connects to the I2C bus via the extension board connectors. As a first step, the breakout board is a good solution. The price again is very competitive.
+
+### *Block Diagram*
+
+![Schematic_LcsNodes-Extension-Servo-Board-32-S-B.00.01-1.png](./Schematics/Schematic_LcsNodes-Extension-Servo-Board-32-S-B.00.01-1.png )
+
+### *Connectors*
+
+![Schematic_LcsNodes-Extension-Servo-Board-32-S-B.00.01-2.png](./Schematics/Schematic_LcsNodes-Extension-Servo-Board-32-S-B.00.01-2.png )
+
+### *Logic*
+
+![Schematic_LcsNodes-Extension-Servo-Board-32-S-B.00.01-3.png](./Schematics/Schematic_LcsNodes-Extension-Servo-Board-32-S-B.00.01-3.png )
+
+### *PCB*
+
+![LCS-NODES-PCB-SERVO-BOARD-B.00.01.png](./Schematics/LCS-NODES-PCB-SERVO-BOARD-B.00.01.png )
+
+### *Firmware*
+
+The servo extension hardware is managed by the extension driver for a servo.
+
+- servos can draw quite a bit of current.
+- option 1: the 5V supply can be replaced by a 2A version, same footprint.
+- along the pulses in a staggered period. Each servo channel start at another point in the overall PCA9685 period. To the servo it does not matter. However, the power consumption is spread and thus less than if all servo periods start at the same time.
+
+- describe the items and functions of the driver.
+

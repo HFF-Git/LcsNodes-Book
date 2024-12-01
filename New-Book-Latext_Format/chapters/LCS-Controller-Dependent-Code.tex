@@ -1,0 +1,263 @@
+
+// ??? **note** this concept will be enhanced to cover the board specifics, most of the requirements stay the same... perhaps this chapter should become "Hardware Abstraction Layer"
+
+// ??? **note** rework the text ... extend it...
+
+## *Controller Dependent Code*
+
+Enough software talk ? Well not quite. The previous chapter presented the main controller boards and the extension concept. A main controller board features the controller itself, the CAN bus interface, the non-volatile memory and the extension connector with several IO pins of the controller assigned to it. During board initialization the controller hardware needs to be mapped to the actual board. Two processor versions of the main controller board were presented. It can be easily seen that different controller and board versions would place a great configuration and perhaps conditional compile burden on the LCS core library. To address this problem, there is a hardware layer library at the very bottom of the architecture that isolates the controller dependencies.
+
+### *The big picture*
+
+The figure depicted below shows the refined overall structure of the node firmware. There is the core library discussed in a previous chapters and a new layer, which is the **controller dependent code layer**. The layer essentially encapsulates the required controller functions, such as a timer or a digital I/O pin, and offers a common interface to core library and firmware layer that directly uses the controller functions. The picture also shows a component labelled "extension driver". An extension driver is piece of software that knows how to handle an extension board. We get this this part later when we talk about more about extensions.
+
+![Schematic_LcsNodes-Core-Library-Overview-Refined.png](./Figures/Schematic_LcsNodes-Core-Library-Overview-Refined.png )
+
+Using the CDC layer does not mean that access to the bare bones controller chip is not possible. Any controller HW function can be accessed directly at the expense of that the code will most likely not be portable between different controller families. Still, here may be good reasons for the direct path. The following sections describe will now what the CDC library is offering across all controller platforms.
+
+### *Configuring the pins*
+
+The CDC library is rather low level hardware abstraction to give access to the pins which will work for the Atmega family and the Raspberry PI Pico and perhaps over time other controllers as well. The key identifier to access a hardware input/output is the pin number. Using the correct pin numbers according to the hardware developed is therefore very important. At the same time the upper layer code should not deal with these details. There needs to be a mapping of actual pin numbers and functions to the controller family and the hardware developed.
+
+Each project therefore needs to define a structure containing some constants and pin number assignments that are used through the node firmware. For this purpose, the CDC library defines a structure with all the pin names and a sensible default setting for a particular controller. Think of the structure a the superset of all pins and HW functions that can be configured for any controller. Using the structure, all the firmware programmer has to do is to set the controller pin numbers of the particular hardware module design to the names predefined in that structure. The upper layer code then just uses these names. The following figure shows the CDC configuration structure.
+
+```cpp
+
+// ??? rework when done ....
+
+struct CdcConfigInfo {
+
+    uint8_t   CFG_STATUS;
+
+    uint8_t   PFAIL_PIN;
+    uint8_t   EXT_INT_PIN;
+
+    uint8_t   DIO_PIN_0;
+    uint8_t   DIO_PIN_1;
+    uint8_t   DIO_PIN_2;
+    uint8_t   DIO_PIN_3;
+    uint8_t   DIO_PIN_4;
+    uint8_t   DIO_PIN_5;
+    uint8_t   DIO_PIN_6;
+    uint8_t   DIO_PIN_7;
+
+    uint8_t   ADC_PIN_0;
+    uint8_t   ADC_PIN_1;
+    uint8_t   ADC_PIN_2;
+    uint8_t   ADC_PIN_3;
+
+    uint8_t   PWM_PIN_0;
+    uint8_t   PWM_PIN_1;
+    uint8_t   PWM_PIN_2;
+    uint8_t   PWM_PIN_3;
+
+    uint8_t   UART_RX_PIN_0;
+    uint8_t   UART_TX_PIN_0;
+
+    uint8_t   UART_RX_PIN_1;
+    uint8_t   UART_TX_PIN_1;
+
+    uint8_t   UART_RX_PIN_2;
+    uint8_t   UART_TX_PIN_2;
+
+    uint8_t   UART_RX_PIN_3;
+    uint8_t   UART_TX_PIN_3;
+
+    uint8_t   SPI_MOSI_PIN;
+    uint8_t   SPI_MISO_PIN;
+    uint8_t   SPI_SCLK_PIN;
+    uint32_t  SPI_FREQUENCY;
+
+    uint8_t   I2C_SCL_PIN_0;
+    uint8_t   I2C_SDA_PIN_0;
+
+    uint8_t   I2C_SCL_PIN_1;
+    uint8_t   I2C_SDA_PIN_1;
+
+    uint8_t   CAN_BUS_CTRL_MODE;
+    uint8_t   CAN_BUS_SELECT_PIN;
+    uint8_t   CAN_BUS_RX_PIN;
+    uint8_t   CAN_BUS_TX_PIN;
+
+    uint8_t   NVM_SELECT_PIN;
+    uint8_t   NVM_CHIP_TYPE;
+
+    uint8_t   READY_LED_PIN;
+    uint8_t   ACTIVE_LED_PIN;
+    uint8_t   BUTTON_PIN;
+
+    uint8_t   CONTROLLER_FAMILY;
+    uint8_t   MAJOR_VERSION;
+    uint8_t   MINOR_VERSION;
+    uint16_t  PATCH_LEVEL;
+  };
+```
+
+While the whole idea of the CDC is isolating the firmware programmer from the controller layer and board revisions, the pin assignments cannot be chosen arbitrarily on all supported processor families. An application uses the default configuration routine to obtain an initialized configuration structure with controller specific values set. The application will then fill in the assigned pins and other configuration values. Note that the default configuration setting only fills in what are the controller limitations and leaves all else undefined. An application takes this initial structure and fills in what are board version specific. Throughout the life of the application, this structure is the "single source of truth" for pins. Under their defined name all upper layers refer to the configured IO capabilities. Once all is set, the **init** configuration routine, described later, does the sanity check for the given controller family hardware. For example, on the Atmega the UART pins numbers are fixed if used. On the PICO the pin numbers can be assigned to a couple of different slots. Whatever can be checked is checked. There is however no absolute guarantee that the configuration structure is valid in any cases.
+
+Most CDC routines use pins as one of their input argument. These arguments are not checked again at the level of the configuration validation. For performance reasons, just some quick sanity checks are performed.
+
+For each part of the CDC library, there is a configuration routine. For example, the digital IO configuration will set a particular pin to be an input or output pin and so on. During this configuration only basic checking what a controller can support on that pin will be done. The ATmega is far more restrictive with respect to the IO pins used than the Raspberry. The CDC library will do whatever it can to do such checking. During actual usage of such a pin, i.e. the digital read or write in the example above, no further checking will take place. During initialization, the configuration structure is checked against what the controller is capable. This also includes the pins assigned to UART, SPI and I2C pins.
+
+### *CDC Library setup*
+
+To the firmware programmer, the library is a set of functions in the name space CDC. A call to any of the routines typically has the form "CDC::xxx". Of course, the name space can be declared upfront so the prefix is not needed. The example shown below will just show the fully qualified signature. The very first thing a node firmware should do is to set up the controller dependent library. If for some reason access to the lower layer is required before the LCS library is initialized, the calls can be made directly from the node firmware. There is also a convenience routine to print the content of the configuration structure.
+
+```cpp
+   CdcConfigInfo getConfigDefault( );
+   CdcConfigInfo *getConfigActual( );
+
+   uint8_t       init( CdcConfigInfo *ci );
+   void          printCfgInfo( CdcConfigInfo *ci );
+```
+
+### *General Controller Attributes and Functions*
+
+The CDC layer provides a set of common low level functions. There is a function that creates a unique ID for the controller board. It is primarily used when a node needs a hardware module unique identifier. The controller internal memory and any internal EEPROM sizes return the hardware capabilities of processor and installed NVM. The NVM select pin is used for the VNVM memory SPI addressing. Finally, the CANBus controller needs to know the SPI bus select pin and the mode, i.e. baud rate and controller frequency. The library also offers the timestamp routines for milliseconds and microseconds since start.
+
+```cpp
+   const char    *versionInfo( );
+   uint32_t      createUid( );
+   uint32_t      chipMemSize( );
+   uint32_t      chipNvmSize( );
+   uint32_t      cpuFrequency( );
+   uint32_t      getMillis( );
+   uint32_t      getMicros( );
+```
+
+Some of the routines can also be found in the Arduino IDE and its libraries for the Arduino. As this project perhaps may also be implemented in an non-Arduino environment, this dependency is also hidden behind the CDC layer.
+
+### *Power Fail detect*
+
+The main controller board features optional power failure detection. The power supply provides a signal line to the controller which goes low when power drops. The power fail input pin is set in the configuration structure and just passed as an input to the configure routine. 
+
+
+// ??? has changed...
+
+
+
+### *External Interrupt*
+
+The CDC library offers a set of routines for handling an external interrupt. While a controller typically allows for interrupts on almost any IO pin, there are one some controllers dedicated IO pins which offer an interrupt input with flexible setting and high resolution timing. A callback needs to be registered for this interrupt.
+
+// ??? has changed ...
+
+
+### *Status LEDs*
+
+The main controller board features two LEDs. They are the ready and the activity LED. They are accessed via the **writeDio** routine. The LCS core library will use the ready LED to indicate that the node is ready. The activity LED is used to show library activities such as receiving a LCS message. The recommended colors for the LEDs are a green for the READY LED and yellow for the ACTIVE LED. The following just shows an example how to control the LEDs.
+
+// ??? this is done via nodeControl calls ...
+
+
+### *Timer*
+
+Although the LCS core library itself does not make use of a timer, having a general timer with a callback routine interface is an essential component. The DCC signal generation for example makes intensive use of timers to generate that signal. The timer is a repeating timer and accepts a timer value measured in microseconds. In addition, the timer already starts again counting in parallel to the timer interrupt handler code. Finally, the timer limit, i.e. the timer when the next interrupt would occur, can be set without disturbing the already active count.
+
+```cpp
+   typedef void ( *TimerCallback ) ( uint32_t timerVal );
+
+   void          onTimerEvent( TimerCallback functionId );
+   void          startRepeatingTimer( uint32_t val );
+   void          setRepeatingTimerLimit( uint32_t val );
+   uint32_t      getRepeatingTimerLimit( );
+   void          stopRepeatingTimer( );
+```
+
+Timers work slightly different on Atmega and PICO. Nevertheless, both versions allow to set the new limit, i.e. the timer value when the next interrupt would occur, while already counting toward the limit. Care needs to be taken however to set the new limit while the counter is below this limit. If the new limit value is below the timer counter value, we have passed the limit point already and the counter would simply continue to count and wrap around before hitting the new limit. Any carefully designed timer signal is gone. Again, better be quick in the interrupt handler.
+
+### *Digital IO*
+
+The digital IO routines offer an interface to plain digital input and output operations. If it is an input channel, the input can be set to active low or high input. Also, there is an option to enable the controller internal input pull-up resistor. For configured output pins, two pins can be set in pairs if supported by the actual hardware configuration, i.e. the two IO pins are on the same controller output port. This feature enables the simultaneous setting the two pins. A typical use case is the DCC signal where the two signal levels are set in one call.
+
+// ??? add the interrupt stuff...
+
+```cpp
+   uint8_t       configureDio( uint8_t dioPin, uint8_t Mode = IN );
+   bool          readDio( uint8_t dioPin );
+   uint8_t       writeDio( uint8_t dioPin, bool val );
+   uint8_t       writeDio( uint8_t dioPin1, bool val1, uint8_t dioPin2, bool val2 );
+   uint8_t       toggleDio( uint8_t dioPin );
+```
+
+### *Analog Input*
+
+Analog input configures the respective controller input ports for reading an analog value. The read method offers an asynchronous way in just starting the analog input conversion process and a hardware interrupt when the conversion completes. The registered call back is then passed the value of the conversion process. The **adcRead** function is a blocking ADC measurement call.
+
+```cpp
+   typedef void ( *AdcReadCallback ) ( uint8_t adcPin, uint16_t val );
+
+   uint8_t       configureAdc( uint8_t adcPin );
+   uint16_t      readAdc( uint8_t adcPin );
+```
+
+The analog to digital converter system for the Raspberry PI PICO is compared to the Atmega really fast. A typical 12-bit conversion takes about 2 microseconds. The PICO ADC unit resolution will be scaled down to 1024 to match the Atmega resolution.
+
+### *PWM Output*
+
+Depending on the controller, some digital pins can be configured with a time period and pulse width ratio. The capabilities of the underlying processor also determine what kind of PWM is possible. For example, in the main controller board Atmega1284 processor version, Timer 2 is used, allowing for two separate channels. Both channels can be set to either a fast PWM where the timer just counts up, or a phase correct mode, where the timer counts up and then down, essentially dividing the PWM period by two. Since the PWM channels are configured as two independent channels, the PWM period can only be set according to the processor clock frequency divided by the pre-scaler fixed values.
+
+```cpp
+   uint8_t       configurePwm( uint8_t   pwmPin,
+                               uint32_t  pwmFreqency,
+                               bool      phaseCorrect  = true,
+                               bool      inverted      = false
+                               );
+
+   uint8_t       writePwm( uint8_t pwmPin, uint8_t dutyCycle );
+```
+The pre-scale options for the Atmega are limited to what the particular timer allows. In other words, the frequency can only be set to the nearest value of what the pre-scale option will allow. Thee PICO is again far more flexible allowing for a true frequency setting.
+
+### *UART Interface*
+
+The UART interface is used to offer a serial communication channel. This is required for the RailCom feature. Currently this interface implements only an asynchronous read into a local data buffer. However, the configuration routine allows to set more parameters that are needed for the current usage. One day, even a write capability may be needed.
+
+```cpp
+   uint8_t       configureUart( uint8_t rxPin, uint8_t txPin, uint32_t baudRate, UartMode mode );
+   uint8_t       startUartRead( uint8_t rxPin );
+   uint8_t       stopUartRead( uint8_t rxPin );
+   uint8_t       getUartBuffer( uint8_t rxPin, uint8_t *buf, uint8_t bufLen );
+```
+
+The Raspberry PI Pico offers to implement the UART channel on one of the PIO state machines. This allows for more than the two UART blocks of the controller. The **UartMode** parameter selects what kind of UART HW is actually used.
+
+### I2C
+
+Controller offers a serial wire IO block. The I2C will need two pins for clock and data. There is one I2C port on the Atmega1284, and two hardware blocks on the Raspberry Pi Pico. The CDC layer offers an interface to read and write a byte.
+
+```cpp
+   uint8_t       configureI2C( uint8_t sclPin, uint8_t sdaPin );
+   uint8_t       i2cBeginTransmission( uint8_t i2cAdr );
+   uint8_t       i2cEndTransmission( );
+   uint8_t       i2cRequestFrom( uint8_t i2cAdr, uint8_t len, bool stop = true );
+   uint8_t       i2cWrite( uint8_t arg );
+   uint8_t       i2cRead( );
+```
+
+### SPI
+
+SPI is the bus used for connecting NVM and CAN controller chips. The CDC library will validate that the configured pins are actually available for the SPI IO block in the respective controller. By nature, the SPI communication exchanges a data item with between two entities. A master sends a byte and in return receives a byte from the slave. To avoid surprises such as filling a buffer sent with whatever is returned from the slave, the transfer routines available will NOT overwrite a buffer sent with whatever data returned. A future version may change this behavior and offer dedicated routines to do a write or read with the transfer semantics.
+
+```cpp
+   uint8_t       configureSPI( uint8_t sclkPin, uint8_t mosiPin, uint8_t misoPin );
+   uint8_t       spiBeginTransaction( uint8_t csPin );
+   uint8_t       spiEndTransaction( uint8_t csPin );
+   uint8_t       spiTransfer( uint8_t dataByte );
+   void          spiTransfer( void *buf, uint32_t len );
+
+   uint8_t       readSpi( uint8_t *buf, uint32_t len );
+   uint8_t       writeSpi( uint8_t *buf, uint32_t len );
+```
+
+
+
+### *Extension Connector and hardware pins*
+
+The routines described have been implemented fairly flexible and their main purpose is to shield the upper library and firmware from the controller specific implementation methods. The same routines are also used to control the pins of the extension connector. If you recall, there are two ADC channels, a digital channels and an I2C communication channel available. The first two digital pins can be overlaid with an UART interface, and the last two digital pins allow a PWM capability.
+
+The configuration descriptor structure uses predefined names for the pins of the controller. If the hardware exports these pins via the extension connector, the connector pins can be accessed by these names. However, not all pins need to be provided to the extension connector. If for example, the digital pins DIO 0 .. 4 are used local to the board, the pins are left open on the extension connector. The only mandatory pins available on any extension connector are Power, ground, I2C, reset and E-Stop.
+
+### *Summary*
+
+The controller dependent code library is the lowest layer in the LCS node software stack. Its purpose is to shield the firmware programmer from the underlying pin assignments and some of the intricacies of the particular controller. At the same time, the layer needs to be rather thin so that it adds very little to the overall path length for performance critical signal management. For special cases, there is always the possibility to access the underlying hardware directly. However, this coding my not be that portable then.
+

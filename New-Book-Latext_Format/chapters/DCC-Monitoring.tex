@@ -1,0 +1,49 @@
+## *DCC Monitoring*
+
+When I started to build parts of the layout system, the DCC++ system was the starting point. An Arduino UNO and a breakout board power unit and the base station that accepts ASCII commands on the console interface was up and running. The parallel project was to build a snooping device that tells what the actual DCC packets are that are on the track. What a moment to see an IDLE packet on the track after power on. Not only for great moments, a DCC monitoring module is a very useful device for trouble shooting. What we would need is a DCC signal detector, a controller and the module firmware that displays what is found. The detector can also ensure that the track is connected with the right polarity and that there is cutout period of configured for RailCom support.
+
+### *Requirements*
+
+- not necessarily a LCS node, an Arduino Mega or Pico will do...
+- perhaps an own PCB ?
+- display a DCC packet in human readable form
+- DCC packet formatter usable as part of the library
+- signal timing
+- cutout detection
+- polarity detection
+
+// ??? **note** what to leverage ? e.g. have a main controller and a monitoring extension board that hast the DCC signal detect logic ?
+
+// ??? **note** should we be able to detect PWM signals as well ? DC signals ?
+
+
+### *Module hardware*
+
+- describe the hardware and building blocks used
+- signal derived from the track
+- no LCS component, just an Arduino Mega, etc.
+
+
+### *Module firmware*
+
+The DCC monitor consists of two main parts. The first is the signal detector, which monitors the actual DCC track signal taken directly from a track or the track signal line on the LCS bus. The result is a stream of bits from which the packets are formed. The second part is the packet analysis part and DCC packet payload formatting. Both parts are separated and could also be used in other projects. This is also right now the only module that does not use the LCS core library.
+
+// ??? **note** describe how we detect polarity...
+
+#### Signal detection
+
+The hardware for signal detection is a simple optocoupler that takes the DCC signals and produces a stream of ones and zeroes from it. There is one challenge though. The detector can only detect power, i.e. a "DCC +" or "DCC -" and no power. While this does not matter for receiving a simple packet data stream, it has consequences for the cutout period. The following picture ( currently hand drawn ) shows the incoming DCC signal and the result after the optocoupler for normal and reverse polarity.
+
+![DCC-Polarity-Detection.png](./Figures/DCC-Polarity-Detection.png )
+
+Fortunately, the signal timing differs with polarity. The DCC packet preamble ends with a ZERO bit as part of the first data byte. On a "positive" wired analyzer, the distance between measurement of the first half of the IBE bit to the first half of the following ZERO bit is 58 + 116 = 174 microseconds. If the wiring is reverse, the distance becomes 232 microseconds. Furthermore, we can detect on a "positive" wiring the 29 microseconds start of a cutout period, on the reverse wiring we detect the end, which does not help much.
+
+// ??? **note** can we also figure out how to detect the RailCom data if present ? Would it require a bit of HW, i.e. a UART interface ?
+
+#### DCC Packet Analysis
+
+- not a lot to say, just pick up the standard with the packet description
+- a part of the LCS libraries as a generic function
+- 
+
+### *Summary*

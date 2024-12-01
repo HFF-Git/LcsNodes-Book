@@ -1,0 +1,51 @@
+## *Appendix n - LCS Nodes and EasyEda*
+
+The schematics and boards shown were all developed using the EasyED software. EasyEDA is a design tool for developing the schematics and PCB layouts. A PCB can then be ordered at very reasonable prices. Even during LCS node early design stages it is therefore sometimes worthwhile to just produce a PCB and avoid searching software bugs that are actually just loose connection on a breadboard. To ease the development, there are experimental boards. However when it comes to a final design, PCB boards need to be developed and ordered in larger quantitates. The LCS Node design introduced contains a main controller board and extension boards. The sizes and location of the connectors have been standardized. This appendix contains the PCB drawings of the most common LCS boards to give you a head start in developing your own boards, ensuring that all boards fit together.
+
+### *Symbols and Footprints*
+
+EasyEDA allows you to create symbols that represent components and can be placed in a schematic. To each symbol there should be a footprint that is used to put the component on to the PCB. The connection between the two is a list of assignments that associate a **pin** on the symbol with a **pad** on the footprint. For LcsNodes there is a list of symbols and footprints to ensure that the PCBs do have all their connectors at the exact place, so that they fit together.
+
+#### Symbols
+
+To ease the development of LCS boards, the entire board and its connectors are available as a symbol. Depending on the category, the symbol features the connection end points for the connectors found on the board. This symbol is associated with the corresponding footprint described in the next section. Note that the footprint needs to match the symbol. That is the number, position and meaning of the connectors found on the board map, only length of the PCB board varies.
+
+
+#### Footprints
+
+This section contains all the footprints developed so far. There are three main categories. The first is anything that represents an LCS Controller portion. The LCS Main Controller Board for example is a 10x8cm board shown below.
+
+<br>
+<img src="./Boards/LCS-NODES-FP-MAIN-CTRL-10X8.png" width="400" height="320" > 
+<br>
+
+For monolithic design, such as the LCS base station, we would like to have more room on the board. Well, here is a 10x12cm board. If there is a need for any other main controller board length, just clone the footprint give it a new name, change the board length and place the connectors and holes accordingly.
+
+<br>
+<img src="./Boards/LCS-NODES-FP-MAIN-CTRL-10X12.png" width="600" height="440" >
+<br>
+
+Another combination used is a main controller style board with a track power output. The Quad Block controller described is a good example. The footprint features on the right the LCS node inputs and on the left the track power output, extension connector and a power line connector. If you need anything that combines main controller and track power generation, this is the board to work from.
+
+<br>
+<img src="./Boards/LCS-NODES-FP-BLOCK-CTRL-10X16.png" width="800" height="640" >
+<br>
+
+Finally, there are the extension boards. They are straightforward and just offer the three connector lines to the left and to the right. Just the length varies. Common length are an 8cm and a 16cm board.
+
+<br>
+<img src="./Boards/LCS-NODES-FP-EXT-PCB-10X8.png" width="400" height="320" >
+<br>
+
+<br>
+<img src="./Boards/LCS-NODES-FP-EXT-PCB-10X16.png" width="800" height="640" >
+<br>
+
+As always, there could be many more combinations as new boards with different demands are developed. Nevertheless it is important that when connectors are used, that they have the same meaning and are placed at the same location. This is the whole idea of using footprints to ensure this exact fitting.
+
+### Links
+
+|Tool|Link|Comment|
+|:--|:--|:--|
+| EasyEDA | http://easyeda.com/de | Design tool for schematics and PCB layouts |
+| JLCPCB | - | part of EasyEDA that manufactures PCB boards, order from within EasyEDA |

@@ -1,0 +1,89 @@
+## *Cab Handheld Firmware*
+
+Now that the development platform is in place, lets have a look at the firmware design. As you perhaps have guessed it, the hardware was already developed with a certain mode in mind. First of all, a cab handheld is nothing else than just another node on the LCS bus. The firmware sits on top of the LCS core library. In addition, there is another key library we have not talked about yet. A cab handheld and also any other device that allows for users to interact, needs software to work with buttons, encoders, displays and so on. This the tasks of the **UI Elements ** library. We will look at this library in a later chapter in great detail.
+
+// ??? note perhaps a picture ?
+
+- SW architecture on top of the LCS library
+- UI is key to build a handheld
+- firmware to handle the buttons, switches, display, etc. Refer to UIElements.
+- issues LCS messages to the base station for speed, direction and functions
+- menu descriptions
+
+### Concepts
+
+- a current cab and a stack of cabs to select from
+- base station has the ultimate data about a cab, loaded into the cab handheld
+- CabHandheld functions and DCC functions
+
+### Screen Layout
+
+- display has 4 lines up to 16 characters. Two fonts
+- four navigation buttons, use top and bottom line, 8x8 font
+- two data lines between, 8x16 font.
+
+### Screen Navigation
+
+- inherent in the UI Elements Screen Object design
+- MENU
+- SELECT
+- UP
+- DOWN
+
+### Operate Screen
+
+- main screen, workhorse
+- speed, dir, functions
+
+### Engine On/off Screen
+
+- for diesels only
+
+### Engine Lights Screen
+
+- front and back lights...
+
+### New Cab Screen
+
+There needs to be a way to set an engine cab number. The NEW CAB screen is used to enter a cab Id and engine type. We will display 4 digits and the engine type among we can toggle with the MENU button. The UP/DOWN buttons advance the current digit position. The encoder knob offers a fast way to scroll a digit. The high value digit allows to set an "S" instead of the number to indicate a short loco DCC address. The SELECT button completes the number entering and the current cab becomes this new cab. Note, that it would need to be explicitly saved.
+
+- works on current cab setting
+
+### Select Cab Screen
+
+A cab handheld maintains a stack of known cabs. That is cabs the handheld has used before and saved in the cab stack. This menu will toggle through them and select the new current cab. The UP/DOWN button is used to scroll around. In addition, the encoder knob allows to scroll a bit faster. The SELECT button will make the entry shown the current loco.
+
+- SELECT scrolls through the cab stack and sets the cab selected as current cab.
+
+### Save Cab Screen
+
+The current cab can be saved in the cab stack. This menu will toggle through them and select the cab slot for saving the current cab data. The UP/DOWN button is used to scroll around. In addition, the encoder knob allows to scroll a bit faster. The SELECT button will perform the action.
+
+- SAVE scrolls through the cab stack and saves the current cab to this slot.
+- any previous entry used for the same cabId is cleared.
+
+### Set DCC Function
+
+The DCC standard defines a list of 69 functions, F0 to F68.
+
+- allows to set any DCC function ( F0 to F68 )
+- encoder knob for fast scrolling
+
+### Config Cab Handheld Functions
+
+- connects a cab handheld function to a DCC function
+
+### Options
+
+- all kinds of screen for configuration settings
+
+### Diag
+
+- all kinds of screen for technical checks and tests
+
+### *Summary*
+
+Phew. The cab handheld is another big step toward controlling a layout. After all, a layout control system without some form cab handhelds is not very useful. As said, there are many ways to build a cab.
+
+- design of UI elements and firmware was greatly influenced by a handheld called ***Protothrottle***.
+- The next chapter will present a diesel cab handheld that resembles a diesel cab stand from the 1950s.

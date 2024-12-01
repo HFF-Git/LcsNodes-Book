@@ -1,0 +1,21 @@
+## *The LCS Guidance Computer*
+
+And now for something entirely different. About 60 years ago work started to put man on the moon and bring them back safely. This would not have worked without flight control in the space ship and hence an onboard computer was necessary. Most of the concepts for a highly available, mission critical, real time computer had to be invented. In honor of the Apollo Guidance Computer development and to serve all the model railroad hobbyist that would like to control the layout without resorting to a PC, how about building a hardware module to enter commands to the layout for configuration and limited operational purposes. And of course you would not need to be in a space suit to operate it.
+
+Interestingly enough, when looking at the evolution of DCC decoders, there is the trend to configure them with a PC or with a simple interface directly on the decoder module. Some even have a small display to show a comfortable configuration menu. Unfortunately, when these decoder are installed in the opposite corner of the layout, changing the decoder configuration without a computer means crawling below the layout and what not. Some decoder companies actually recommend to first configure the decoder and then install it on the layout. Our approach is to allow the configuration of a LCS node any time, any place. A simple piece of hardware with a small display and few buttons to query and control the nodes on the layout might not be such a bad idea. Welcome to the LCS guidance computer :-). Here is a first sketch what the LCS guidance computer could look like.
+
+![Layout-Guidance_Computer.png](./Figures/Layout-Guidance-Computer.png )
+
+If you take a picture from the Apollo space program days, it looks very much the same. There are buttons for setting a node, entering a verb and noun. There are also buttons for entering data clearing and finishing data entry. The display is organized to show the current node, non and verb. There are three registers for parameters and values. If you would enter a command it would involve setting the node, entering a noun and a verb. So, setting a new limit for a DCC track, you would enter the node number of the DCC block controller, enter the limit in one of the registers, and set the verb "set" and noun "limit". More on this in the next sections.
+
+### *Nodes, Verbs, Nouns and Registers*
+
+// **note** how close are the verbs to the console commands ?
+// **note** can they replace them for a uniform serial command interface ?
+// **note** can they be another way of sending data around ? ( "Node xxx Verb yyy Noun zzz" )
+
+
+### *Display and Keyboard*
+
+
+### *Summary*

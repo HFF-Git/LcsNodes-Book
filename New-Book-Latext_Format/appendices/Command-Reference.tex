@@ -1,0 +1,25 @@
+## *Appendix n - Library Serial Commands Reference*
+
+This appendix contains the list of LCS core library commands. The command line is embraced by the "<" and ">" pair. The LCS commands consist of the command followed by an optional list of arguments. To distinguish an LCS command from any other command handled outside of the library, the LCS commands start with an "!" character. The command line format was modeled after the DCC++ command line. Invalid input arguments for a command are just ignored and the command is not executed.
+
+|Command | Arguments | Operation |
+|:---|:---|:---|
+|!c | - | enter node configuration mode |
+|!o | - | enter node operations mode |
+|!a | eventId \[portId\] | add an event to the eventMap. If the portId is omitted, all ports will get an entry with the eventId.
+|!r | eventId \[portId\]| remove an event to the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed. |
+|!f | eventId \[ portId \] | search an event in the eventMap. |
+|!e | mode nodeId&nbsp;eventId&nbsp;\[arg\] | simulate sending an event ( mode: 0 - ON, 1 - OFF, 2 - EVT |
+|!n| portId item \[val1\[val2\]\] | list a node or port map item.|
+|!N| portId item \[val1\[val2\]\] | set a node or port map item.|
+|!v | attrId \[mode\] | list an attribute. |
+|!V | attrId mode val | set an attribute.|
+|!B | byte1 [ byte2 .. byte8 ] | send a raw LCS message |
+|!s | \[level\] | list status at detail level, default is summary. ( 1 - ConfigDesc, 2 - NodeMap, 3 - PortMap, 4 - EventMap, 5 - AttrMap, 6 - NVM Area, 7 - MEM Area ) |
+
+// ??? **note** driver commands ...
+
+|Command | Arguments | Operation |
+|:---|:---|:---|
+
+// ??? **note** add some text to each entry rather than a single page for each command.

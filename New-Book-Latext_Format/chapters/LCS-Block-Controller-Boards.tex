@@ -1,0 +1,60 @@
+## *Block Controller Board*
+
+
+// ??? we have a combo and a quad controller .... how to best present them ?
+
+This chapter presents a quad block controller board. It can manage as the name suggests four blocks. While not every layout will favor a quad block controller, scaling the design down to two or even one block is rather straightforward. The following figure introduces the quad controller overall design. It is built around the Raspberry PI Pico and the L6205 dual H-Bridge. The block controller is also the first module that will not run on an Atmega platform. There are simply not enough features to build such a complex module.
+
+The following schematics show the block controller board for the quad block version. First, there is the main controller part with the connectors, the Raspberry PI PICO, the non-volatile memory, the CAN Bus line driver and the level shifters for the external connector pins used. Note that all the digital pins DIO0 to DIO7 are not exported, they are used on the board itself. The block controller also make use of the track lane connector, which routes the track power signals from the block controller board to the extension board. This way, no extra cables need to be wired from block controller to extension board for this purpose. The connector features four track channels, each for a nominal amperage of 3 Amps. This version of the block controller sends the first block track power on channel 1 and 2 and the second block track power on channel 3 and 4. Depending on future designs, the channel could be combined for a higher amperage or kept separate for up to four blocks.
+
+![Schematic_LcsNodes-Block-Quad-Controller-B.00.04-1.png](./Schematics/Schematic_LcsNodes-Block-Quad-Controller-B.00.04-1.png )
+
+The first schematic shows the main controller Raspberry PI Pico, the level shifters required for the extension connector pins, the CAN bus driver and the non-volatile memory. This part is very similar to the main controller board shown in the previous chapters.
+
+![Schematic_LcsNodes-Block-Quad-Controller-B.00.04-2.png](./Schematics/Schematic_LcsNodes-Block-Quad-Controller-B.00.04-2.png )
+
+The following schematic shows the control logic for the four H-Bridges. All decoding logic for the power unit control is done with dual 4-1 selectors and a couple of OR/AND gates to produce the enable signal. There are four command to control the H-bridge.
+
+| SEL-x-1 | SEL-x-2 | IN-x-1 | IN-x-2 | ENB-x | Comment |
+|:---:|:---:|:---:|:---:|:---:|:---|
+| 0 | 0 | GND | GND | GND | The H-bridge is put into high impedance state. |
+| 1 | 0 | VS | GND | PWM | The PWM signal drives a "+" H-Bridge signal, the passive part of the duty cycle puts the bridge into high impedance state. |
+| 0 | 1 | GND | VS | PWM | The PWM signal drives a "-" H-Bridge signal, the passive part of the duty cycle puts the bridge into high impedance state. |
+| 1 | 1 | DCC1| DCC2 | BLK | The DCC signal drives the H-Bridge halves. The BLK signal will put the H-Bridge into the high-impedance state around the cutout period. |
+
+All decoding logic for the power unit control is done with dual 4-1 selectors. The signal from the opto-coupler is actually inverted, the wires need to be crossed for DCC signal input. All other signals are active high signals. The bridge overall state, i.e. whether active or disconnected is controlled by an OR/AND gate, which will disable the bridge when both control signals are zero. For PWM mode, one side of the bridge will be at the zero level while the other will be the PWM signal. The PWM mode output of the bridge will thus be either a voltage for the high" phase or disconnected for the low" phase of the PWM signal.
+
+![Schematic_LcsNodes-Block-Quad-Controller-B.00.04-3.png](./Schematics/Schematic_LcsNodes-Block-Quad-Controller-B.00.04-3.png )
+
+Next is the power unit. The workings have already been described in the chapter on power units. The power unit is a H-Bridge with a current consumption measurement. The analog voltage across the shunt resistor is amplified and read in by the controller. Four H-Bridges need four analog inputs on the controller which we don't have on the PICO. All analog input signals are multiplexed to one analog input. We can thus read only one current measurement at a time.
+
+![Schematic_LcsNodes-Block-Quad-Controller-B.00.04-4.png](./Schematics/Schematic_LcsNodes-Block-Quad-Controller-B.00.04-4.png )
+
+For DCC Railcom support, the schematic shown below is the RailCom signal detector part. As explained in the DCC chapter, when Railcom is enabled, the decoders will put Railcom datagrams onto the track, which are detected by the circuitry shown below. The controller will just read in the serial communication and decode the datagrams. Although the component is optional, it should be on the board in any case, just to be flexible.
+
+![Schematic_LcsNodes-Block-Quad-Controller-B.00.04-5.png](./Schematics/Schematic_LcsNodes-Block-Quad-Controller-B.00.04-5.png )
+
+The next schematic shows the DCC signal receiver for the DCC signal coming from the base station. The block controller will take the DCC signal and eventually feed it to the H-Bridge power module. The DCC signal itself is also the mechanism to synchronize other signals such as the PWM signal generated locally on the block controller board. Since the DCC signal lines are decoupled from the rest of the logic via an OptoCoupler, all that we receive via the incoming signals are a zero state, i.e both lines are short circuited already or simply not powered, or in "+" or "-" signal state. Note that we cannot distinguish between a cutout signal and no power on the signal lines. The enabling and disabling of the power module needs to come from dedicated LCS messages to the node and cannot be derived from the DCC signal lines.
+
+![Schematic_LcsNodes-Block-Quad-Controller-B.00.04-6.png](./Schematics/Schematic_LcsNodes-Block-Quad-Controller-B.00.04-6.png )
+
+In addition to recognizing the DCC cutout situation, we need to worry about several block controllers receiving that signal. Not all will switch into cutout mode at exactly the same time. This could potentially become a short circuit problem if block N is still powered, and block N + 1 already in cutout mode. A locomotive crossing from a still powered track to an already short circuited track will short circuit the powered track. To address this issue, the signal detector will generate a short window of about four microseconds where the power module input signal is put in the "high impedance" state when detecting a change into the short circuit state. And likewise, at the end of the cutout, there is the same window before leaving the cutout state. For PWM signals, the active part of the duty cycle drives the H-bridge to either a positive or negative output, the passive part will put the bridge into high-impedance.
+
+And last but not least, there is a power supply and the connectors for the quad block controller board.
+
+![Schematic_LcsNodes-Block-Quad-Controller-B.00.04-7.png](./Schematics/Schematic_LcsNodes-Block-Quad-Controller-B.00.04-7.png )
+
+Well, that is the block controller. It is so to speak a maximum configuration. When designing a block controller with just two blocks, just take out one H-Bridge mode decoder and one Railcom detector. Furthermore, the L6205 dual H-Bridge can be configured to deliver twice the amperage. For larger scales a version of the block controller needs to be available that delivers on two blocks 5.6 Amps. There could also be a board that just has one block, which would be a classical booster. There could also be a board that has a power H-Bridge piggybacked on top, and so on. This chapter showed a full fledged four channel version, other combinations would still rest on the same core building blocks described.
+
+### *Block Controller PCB*
+
+The quad controller is implemented on a 10x16cm board layout. As you can see, it is a dense board. Even the place below the PICO board is used. Without SMD parts, this board would for sure not fit onto a 10x16Cm layout.
+
+![LCS-NODES-PCB-BLOCK-CTRL-B.00.03.png](./Boards/LCS-NODES-PCB-BLOCK-CTRL-B.00.03.png ")
+
+### *Summary*
+
+Well, the design of the quad block controller, although simple in the individual components, was a champions league effort when it came to the PCB board design. It is the most complex board of all the board described in this book.
+
+// ??? note wrap it up, summarize the concepts...
+

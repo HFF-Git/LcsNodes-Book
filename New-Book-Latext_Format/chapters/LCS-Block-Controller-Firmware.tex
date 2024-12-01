@@ -1,0 +1,160 @@
+## *Block Controller Firmware*
+
+// ??? **note** this chapter should come after the extension chapters ... ???
+
+A block controller is an LCS node that can manage one more blocks, each with one or more sections. This chapter will describe the firmware developed for the block controller. The block controller features several ports for the blocks and associated turnouts, signals and so on.
+
+First, each block must be uniquely defined in the layout. A block controller ID consists of the node ID and a portId resenting that block. A layout could have theoretically 4095 nodes with 4 blocks each. In reality, we need nodes also for other purposes, bit still this number is large enough even for really large layouts. Let'S first look a t what ports are needed.
+
+### *Block Controller Ports Overview*
+
+A node can have up to 15 ports, portID zero refers to the node itself. For the block controller, portId 1 to 4 are reserved for the blocks that the node can manage. The quad block controller introduced before, will use all four ports. Again, the combination of nodeID and port will uniquely identify that block in the layout. These ports are called **Block Port** in the text to follow.
+
+Next, there needs to be a port to provide information and control access to the individual H-Brides or the block controller board. Up to four H-Bridges must be managed. Examples for H-Bridge information are the actual current consumption and current limit setting. Examples for control data is the mode of the H-bridge, i.e. whether DCC or analog mode, output turned or off and so on. Up to four entries can be found on that **H-Bridge Port**.
+
+Blocks have sections. Each block consist of up to four sections. The **Section Port** contains information about the individual sections. Example are whether a section is occupied or not.
+
+Associated with a block are turnouts and signals. A block can have up to two turnouts, one on each entry. The **Turnout Port** contains an entry for each turnout defined in one of the blocks of the block controller node. Information about the turnout are for example the electrical type of turnout and the actual setting. Block can have several signals, typically one main signal at each end. The **Signal Port** will contain an entry for each signal with information about the  type of signal and the current setting.
+
+Local to the node ports refer to each other. For example the block controller port would refer to its signals with the entry index into the array of signals described and managed by the signal port.
+
+When configuring a layout the blocks need to be configured, which means to set all the values in the port data map for the ports outlined above. With the exception of actual values, such current consumption or turnout setting, this data is kept in the non-volatile memory of the node.
+
+The block controller will define many items that refer to node and pot map attributes as well as user defined items specific to the block controller.
+
+### *Block Port*
+
+- block state ( free, used, running, locked, etc. )
+- block actual direction
+- neighbor blocks
+- block part of a route ( route ID )
+- block default direction after restart
+- train ID of train in block( also to be broadcasted )
+- actual speed and direction of train in block ( DCC or analog )
+- timestamp of entry and exit
+- block entry speed
+- block target speed computed, max speed of block ( or sections ? )
+- associated sections and order
+- associated turnouts( indices into turnout port data entries )
+- associated signals ( indices into turnout signal data entries )
+- periodic events to fire
+
+| Node Info Item | comment |
+|--------|--------|
+| ... | |
+
+| Node Control Item | comment |
+|--------|--------|
+| ... | |
+
+### *Section Port*
+
+- associated block port
+- section type ( normal section, brake section, etc. )
+- timestamp on entry
+- timestamp on exit
+- physical length of section
+- "daylights saving section" :-)
+- "daylights saving sound" :-)
+- events to fire on section entry and exit
+- periodic events to fire
+- hardware address information for extension board addressing ( tbd )
+
+| Node Info Item | comment |
+|--------|--------|
+| ... | |
+
+| Node Control Item | comment |
+|--------|--------|
+| ... | |
+
+### *H-Bridge Port*
+
+- actual power consumption
+- actual current consumption limit
+- initial current consumption limit at restart
+- maximum H-Bridge current limit
+- bridge mode ( OFF, DCC, PWM-F, PWM-B )
+- events to fire on limit overflow
+- periodic events to fire
+
+| Node Info Item | comment |
+|--------|--------|
+| ... | |
+
+| Node Control Item | comment |
+|--------|--------|
+| ... | |
+
+
+### *Turnout Port*
+
+- actual turnout setting
+- initial setting after restart
+- turnout hardware type ( servo, magnet, etc. )
+- turnout feedback for actual turnout setting
+- hardware address information for extension board addressing ( tbd )
+- periodic events to fire on turnout setting
+
+| Node Info Item | comment |
+|--------|--------|
+| ... | |
+
+| Node Control Item | comment |
+|--------|--------|
+| ... | |
+
+### *Signal Port*
+
+- actual signal state
+- delays for setting "STOP" or "GO" a signal after command has been received
+- initial setting after restart
+- hardware address information for extension board addressing ( tbd )
+
+| Node Info Item | comment |
+|--------|--------|
+| ... | |
+
+| Node Control Item | comment |
+|--------|--------|
+| ... | |
+
+
+### *Block Controller Node*
+
+- global data for the block controller
+- nodeId and node type
+- number of blocks
+
+| Node Info Item | comment |
+|--------|--------|
+| ... | |
+
+| Node Control Item | comment |
+|--------|--------|
+| ... | |
+
+
+### *Info, Control and Events*
+
+- events are the key mechanism to broadcast the block state. when an engine is entering a block, the event is broadcasted. The configured previous block and the follow-on block are interested in this event and react. In addition, the status can be queried from other nodes anytime.
+
+- a central station does not control the actual sections of a block. It will do rather the high level setting of turnouts that build the actual chain of blocks.
+
+- setting of turnouts and actual block occupancy are non-volatile data to be recovered at restart or after power fail. At restart, block occupancy and turnouts direction are set from this data.
+
+### *To think about*
+
+- layout turn on: what setting for each engine ? automatic ramp up to previous speed levels ?
+- layout turn off: what setting for each engine ? automatic ramp down to previous speed levels ?
+- layout emergency stop: ...
+- automatism for speed acceleration or deceleration based on block entry speed...
+- short rains and block sections, a train should perhaps stop in the middle if desired...
+
+### *Summary*
+
+- a rather complex firmware with a lot of functions.
+- blocks largely work with events to each other.
+- any block, turnout, signal etc. can be access manually.
+- events produced can be consumed by any other node, e.g. a central switch board, etc.
+- detection of a train loosing some of its cars... ( previous block not released after some time )
