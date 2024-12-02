@@ -86,3 +86,16 @@ First attempt ...
     \node at (3, 1.5) {Berta};
     \node at (3, 0.5) {Carla};
 \end{tikzpicture}
+
+\begin{center}
+\begin{tikzpicture}
+    \usetikzlibrary{calc}
+    \coordinate (O) at (0,0);
+    \coordinate (P) at (5,0);
+    \coordinate (M) at ($(O)!0.5!(P)$);
+
+    \draw (O) -- (P);
+    \fill (M) circle(2pt);
+    \draw (M) --+ (0,2) node [left]{$L$};
+\end{tikzpicture}
+\end{center}

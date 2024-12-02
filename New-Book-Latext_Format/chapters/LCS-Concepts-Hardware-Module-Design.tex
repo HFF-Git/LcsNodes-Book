@@ -83,7 +83,7 @@ Extension boards have three connectors pairs, in and out. The lower pair just ro
 
 Every hardware module needs the LCS bus interface to connect to the bus. Some modules may also draw power from this bus. The modules use an RJ45 connector for connecting to the bus. The bus signals can be grouped in several categories. The CAN bus differential lines represent the CAN bus. The VS line is intended for hardware modules with very little power consumptions so that they can directly be powered by the bus. The DCC signal lines are an exact copy of the DCC signal that would go to a track sent out by the DCC signal generating base station. The signal is intended to be routed from the base station to booster nodes, but also to hardware modules that analyze the DCC signal for some action. Finally there is the STOP signal line. This is a wired OR line that allows a simple button along the layout with access to this line to issue a STOP signal. The base station or any nodes interested in the signal can monitor this line. There are the following signal lines.
 
-\begin{table}[h!]
+\begin{table}[!ht]
     \begin{center}
         \caption{Bus Connector Pins}
         \begin{tabular}{|l|l|p{0.72\textwidth}|}
@@ -186,7 +186,7 @@ For more complex extension boards, it is perhaps the better idea to combine a ma
 
 The \textbf{power line connector} forward the power line input of the main controller board to an extension board. This connector is primarily needed for power unit extension to power the H-Bridges on such a board. Extensions that do not require this power input forwarding just leave it out. The first pair of connector pins is always connected, all the others are optional. Boards with a high current consumption could pool more than one connector pin pair.
 
-\begin{table}[h!]
+\begin{table}[!ht]
     \begin{center}
         \caption{Power Line Connectors}
         \begin{tabular}{|l|l|p{0.72\textwidth}|}
@@ -217,7 +217,7 @@ The \textbf{power line connector} forward the power line input of the main contr
 
 In addition to the extension board and power line connector, there is the \textbf{track power connector}. This connector is only used by the base station, block controller and associated extensions. Its purpose is to pass the track power signals from the H-bridges on the block controller ( or booster ) board to the extension boards. This connector is described in more detail in the base station and block controller chapter.
 
-\begin{table}[h!]
+\begin{table}[!ht]
     \begin{center}
         \caption{Power Line Connectors}
         \begin{tabular}{|l|l|p{0.72\textwidth}|}

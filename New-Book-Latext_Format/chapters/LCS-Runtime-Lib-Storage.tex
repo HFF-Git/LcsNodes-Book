@@ -1,5 +1,3 @@
-%-------------------------------------------------------------------------------------------------------
-%-------------------------------------------------------------------------------------------------------
 \chapter{RtLib Storage}
 
 All data of a LCS node is kept in volatile \texttt{(MEM)} and non-volatile \texttt{(NVM)}. The data is structured into several data areas which we call **map**s. A map is a memory area which can be found in MEM and NVM or only in MEM. The key idea is that a map in MEM is initialized from its NVM counterpart at runtime start. Changes in a MEM map can be synced with its NVM map counterpart. There are also maps that do not have a NVM counterpart. These maps are initialized with default values defined for this map. 
@@ -43,7 +41,7 @@ The library \textbf{nodeGet}, \textbf{nodePut} and \textbf{nodeReq} routines pre
 
 The term "item" came up numerous times by now. Nodes and ports features to access their attributes through an \textbf{item Id}. An item Id is just a number in the range from 1 to 255. Here is the definition from the library include file. The include file also contains the item numbers for the reserved node info and control items.
 
-\begin{table}[h!]
+\begin{table}[!ht]
     \begin{center}
         \caption{Item ranges}
         \begin{tabular}{|l|l|p{0.72\textwidth}|}
