@@ -59,22 +59,50 @@ A little test for an instruction word layout ... will be a bit fiddling work ...
 \end{tikzpicture}
 
 
-First attempt ...
+% example for the protocol chapter... instead of the tables....
 
-\begin{tikzpicture}[node distance=2cm, every node/.style={draw, text width=3cm, align=center}]
-% Nodes
-\node (base) {Base Station};
-\node[right of=base] (cab) {Cab Handhelds};
-\node[below of=cab] (gateways) {Gateways Sensors Actors};
-\node[below of=base] (track) {Layout Elements \\ Track};
+\section{Protocol boxes}
 
-% Arrows
-\draw[->] (base) -- (cab) node[midway, above] {USB};
-\draw[->] (cab) -- (gateways);
-\draw[->] (base) -- (track);
+A bit cumbersome and we would need to have text at defined locations. Perhaps keep the simple table in the protocol chapter.
+
+\begin{center}
+\begin{tikzpicture}
+
+    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
+
+    \node[  draw, 
+            rectangle, 
+            minimum width=6cm, 
+            minimum height=4cm, 
+            text height=1cm, 
+            align=left] (A) at (4, 4) 
+            { };
+
+    \node[  draw, 
+            rectangle, 
+            minimum width=6cm, 
+            minimum height=4cm, 
+            text height=1cm, 
+            align=left] (B) at (12, 4) 
+            { };
+
+    \draw[->] (A.north east) ++(0, -1) -- ($(B.west) + (0, 1 )$);
+    \draw[->] (B.south west) ++(0,  1) -- ($(A.east) + (0, -1)$);
+
+    \node at ( 4,  6.25 ) {\textbf{Node A}};
+    \node at ( 12, 6.25 ) {\textbf{Node B}};
+
+    \node at ( 2.25,  5 ) {\textbf{LCS\_TOF}};
+    \node at ( 10.25, 3 ) {\textbf{LCS\_TOF}};
 
 \end{tikzpicture}
+\end{center}
 
+
+
+\section{Split rectangle}
+
+We would need the split rectangle for the runtime area maps....
 
 \begin{tikzpicture}
     
@@ -87,15 +115,56 @@ First attempt ...
     \node at (3, 0.5) {Carla};
 \end{tikzpicture}
 
-\begin{center}
-\begin{tikzpicture}
-    \usetikzlibrary{calc}
-    \coordinate (O) at (0,0);
-    \coordinate (P) at (5,0);
-    \coordinate (M) at ($(O)!0.5!(P)$);
 
-    \draw (O) -- (P);
-    \fill (M) circle(2pt);
-    \draw (M) --+ (0,2) node [left]{$L$};
+\section{test a simple diagram}
+
+Not too hard, however still need to understand the coordinate system.
+
+Also, arrows are too small.
+
+% use styles to set attributes...
+\tikzstyle {hugo} = [ draw=black, rectangle, fill=blue!50, text width=3cm, rounded corners ] 
+
+% then use it
+% \node [hugo] (H1) { ... }
+% \node [hugo, right of = H1 ] (H2) { ... }
+
+\begin{center}
+\begin{tikzpicture}[>=stealth, scale=1.0]
+
+    %take out when finished drawing....
+    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
+
+    \draw[ultra thick, <->, line cap=round] (1,4) -- (15,4) node[midway, below] {bus};
+    
+    \node[  draw=magenta, 
+            rounded corners, 
+            fill=cyan!50,  
+            thick,
+            text=red, 
+            minimum width=3cm, 
+            minimum height=2cm] (node1) at (4,6) {\textbf{Base  Station}};
+
+            \node[  draw=magenta, 
+            rounded corners, 
+            fill=cyan!50,  
+            thick,
+            text=red, 
+            minimum width=3cm, 
+            minimum height=2cm] (node2) at (10,6) {\textbf{Handheld}};
+    
+    
+    \node[draw, thick, rounded corners, minimum width=3cm, minimum height=2cm] (node3) at (8,0) {Node Three};
+    \node[draw, thick, rounded corners, minimum width=3cm, minimum height=2cm] (node4) at (12,0) {Node Four};
+   
+    \node[draw, thick, ellipse] (node5) at (10 ,2) { node5};
+
+    \draw[<->, thick, line cap=round] (node1.south) -- (4, 4);
+    \draw[<->, thick, line cap=round] (node2.south) -- (10, 4);
+    \draw[<->, thick, line cap=round] (node3.south) -- (8, -3);
+    \draw[<->, thick, line cap=round] (node4.south) -- (12, -3);
+
+
 \end{tikzpicture}
 \end{center}
+
