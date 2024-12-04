@@ -1,4 +1,4 @@
-## *Base Station Firmware*
+\chapter{Base Station Firmware}
 
 With the base station hardware in place, let's look at the firmware. First of all, the base station is just another LCS node and rests on the LCS runtime library. On top there is the locomotive session management, the DCC track power management, the DCC signal generation logic, and finally the RailCom communication interface. Being an LCS node, there are attributes and functions to control the base station through node and port items.
 
@@ -6,7 +6,7 @@ The base station is rather complex node. Especially the DCC signal generation re
 
 The base station module firmware is divided into a couple of key software modules. Let's start with locomotive session management.
 
-### *Locomotive Session Management*
+\section{Locomotive Session Management}
 
 The base station maintains a list of all active locomotives. Before controlling a locomotive or a consist, a session needs go be established. Once the session is place, LCS DCC commands such as set speed, direction and functions, are translated to the respective DCC packets according to standard. In addition, the standards require a periodic refresh of this data. The base station session management code will just run through the active sessions and issue the necessary DCC commands. Another key part of the base station functionality is the ability to configure a DCC decoder. Typically, the locomotive is put alone on special section of track. The configuration command will set CV values in the decoder. To configure a locomotive on the programming track, no session is actually required. As programming an engine is in the end also just a matter of sending DCC packets, the functionality is part of the session management object.
 
@@ -16,33 +16,33 @@ As the layout and the number of running engines grows, the DCC bus may reach its
 
 In general, base stations are required to send a valid DCC packet every 30 milliseconds to indicate that the DCC protocol is still active. Further more, there should be a time gap of at least 5 milliseconds between two packets addressing the same decoder. The base station itself is required to send every 5 seconds what its capabilities are. For example, the base station can broadcast that it supports 128-step speed setting. There are also attributes for stationary decoders as well. Finally, the base station broadcasts a "layout" time. This can be used by all decoders to simulate timing aspects of their features.
 
-// ??? **note** update the following paragraph when the session management refresh work is implemented... we need a more global approach to periodic work in the code ...
+// ??? \textbf{note} update the following paragraph when the session management refresh work is implemented... we need a more global approach to periodic work in the code ...
 
 Right now, the scheme is simple. A DCC management LCS message directly results in the DCC command sent to the track. The refresh function just advances through the session map and emits a DCC refresh packet for each active session. More experience with a really large layout is needed before changing this simple approach.
 
-### *Base Station Global Functions*
+\section{Base Station Global Functions}
 
 In addition to locomotive session management and the DCC track management, a base station is also responsible for global data such as the system data and time. Each decoder can make use of this "layout" time. The base station is required to send out this information periodically. Furthermore, the base station needs to broadcast what global capabilities and configuration options are available. For example, the base station will communicate which standards are supported, whether it supports a 128-step speed setting or not, wether  programming on the main track is enabled and on on. The base station is required to send this kind of information every 5 seconds.
 
-### *Locomotive Session Management Attributes and Functions*
+\section{Locomotive Session Management Attributes and Functions}
 
 Locomotive session management presents itself through a set of node attributes and functions.
 
-// **note** fill in what we can access through the node/port interfaces
+// \textbf{note} fill in what we can access through the node/port interfaces
 
-|Item|Arguments|Purpose|
-|:--|:--|:--|
-| ... | ... | ... |
+%|Item|Arguments|Purpose|
+%|:--|:--|:--|
+%| ... | ... | ... |
 
-### *DCC Track management*
+\section{DCC Track management}
 
 Here we are with a stream of DCC packets send by the locomotive session management. To get the DCC packet actually onto the track, DCC track management component has two key functions. There is the signal generation part and the track power management part.
 
-#### DCC Track Signal Management
+\subsection{DCC Track Signal Management}
 
 The base station produces for the main track and programming track the DCC signal. To recap, the DCC ONE bit is a square wave signal with a period of 58 microseconds, the DCC ZERO bit a square wave signal with a period of 116 microseconds. A signal generation logic could thus think in "ticks" of 58 microseconds. However, when implementing RailCom support a cutout period needs to be added. This period starts with a 29us ONE followed by the cutout period itself, followed by 29us ZERO to complete the cutout. Luckily, 29 is two times 58. A DCC "ONE" is therefore two ticks of 29us "+" follow by two ticks of "-" on the signal generation lines.
 
-// ??? **note** repeat the DCC picture here ? NO. make a new picture... ( signal, cut, Z-blackout, etc ).
+// ??? \textbf{note} repeat the DCC picture here ? NO. make a new picture... ( signal, cut, Z-blackout, etc ).
 
 The software implementation used in the base station consists of a track signal state machine and one timer that can be scheduled to interrupt in multiple of 29 microseconds. Whenever the interrupt happens  the interrupt logic first sets the new signal levels and then computes the next interrupt timer value in ticks. Since we have two tracks and control both state machines with one timer, the next time to interrupt is the smaller number of ticks for the two tracks. For example, if one track is scheduled to change the signal level in 2 ticks, the other track in 4 ticks, the interrupt timer is set to interrupt again in 2 ticks. At that time, the track that wants to be interrupt in 4 ticks, does nothing but to decrement the tick interrupt count to 2.
 
@@ -52,13 +52,13 @@ In addition to getting the next bit or packet, there is the requirement to measu
 
 While this approach will work fairly reasonable, there is a hidden challenge though. The measurement will sample what the current consumption is. And this consumption depends on the actual power drawn by the decoder. Since decoders typically drive the engine motor with a PWM signal, it matters when the measurement is taken. With a decoder with a low PWM frequency there is a good chance to measure during the "off" period of the PWN signal. It will be therefore be important to measure very often and compute a mean value, for example a Root Mean Square" value, across a significant sample of measurements. However, we need to make sure that the controller is not overwhelmed with all the processing that needs to be done. Our approach is to measure quite often and store the digital values. Short circuit detection and also a simple high water mark computation can be be done with little overhead. Only when an RMS value is needed, the square root of the sum of squares of our samples is computed and converted to milliAmps. Note that that the RMS computation is done using 16-bit unsigned integers. This is little less precise compared to a floating point value computation, but the performance gain from using integer math justify this moderate imprecision.
 
-#### Track Signal management using Raspberry Pi Picos features
+\subsection{Track Signal management using Raspberry Pi Picos features}
 
 The Raspberry PI Pico has a very powerful feature, which are the PIO state machines. Rather than offering various IO interfaces and protocols in dedicated silicon blocks, the PIO state  machines are programmable IO controllers. One idea is to just implement the DCC output though a PIO program. A tempting project.
 
 However, right now the SW state machine described before will just work fine and do the job for both controller families. May some time later.
 
-#### Track Power Management
+\subsection{Track Power Management}
 
 In addition to the signal generation state machine, there is a track power state machine. This state machine runs periodically and checks for power overload. When the power consumption exceeds the configured limit, the track is shut down. After a short period of time restart is attempted. If the restart leads again to a power overload and this happens for several attempts, the track is shut down permanently. Manual action is necessary.
 
@@ -66,44 +66,44 @@ For the programming track, the power consumption measurement plays another very 
 
 With RailCom implemented, a decoder can also be configured using the programming on the main (POM) DCC commands with status and data reply via RailCom datagrams. More on this in a later section.
 
-#### Base Station Dictionary
+\subsection{Base Station Dictionary}
 
 Another software component typically found in base stations is a dictionary. For each locomotive there is a dictionary entry that describes this locomotive. When a session for that locomotive is allocated, this entry is consulted and initial values for speed, direction and other functions are set.
 
-// ??? **note** we just do locos. How to put data in and read data out ?
+// ??? \textbf{note} we just do locos. How to put data in and read data out ?
 
 |Item|Arguments|Purpose|
 |:--|:--|:--|
 | ... | ... | ... |
 
-### *DCC Track Management Attributes and Functions*
+\section{DCC Track Management Attributes and Functions}
 
-// **note** fill in what we can access through the node/port interfaces
+// \textbf{note} fill in what we can access through the node/port interfaces
 
-|Item|Arguments|Purpose|
-|:--|:--|:--|
-| ... | ... | ... |
+%|Item|Arguments|Purpose|
+%|:--|:--|:--|
+%| ... | ... | ... |
 
-### *RailCom Support*
+\section{RailCom Support}
 
 For RailCom support the power module is directed to short circuit the track for a defined period before working on the next packet. The DCC decoder in the locomotive will detect this short circuit or cutout period and send a RailCom datagram. During this period the controller attempts to read in the datagram bytes from the serial I/O input line. Both analog measurement as well as serial I/O reading for RailCom are implemented as a setup the request routine followed by an interrupt routine that processes the results in as little as possible time. After all, our key priority is the correct DCC signal timing.
 
-### *RailCom Support Attributes and Functions*
+\section{RailCom Support Attributes and Functions}
 
-// **note** fill in what we can access through the node/port interfaces
-// **note** channel one will always fill a port variable with what ever the loco ID currently is. Can be read by all nodes...
-// **note** channel two will essentially invoke a callback to deal with the data received on a POM/XPOM request.
+// \textbf{note} fill in what we can access through the node/port interfaces
+// \textbf{note} channel one will always fill a port variable with what ever the loco ID currently is. Can be read by all nodes...
+// \textbf{note} channel two will essentially invoke a callback to deal with the data received on a POM/XPOM request.
 
 
-|Item|Arguments|Purpose|
-|:--|:--|:--|
-| ... | ... | ... |
+%|Item|Arguments|Purpose|
+%|:--|:--|:--|
+%| ... | ... | ... |
 
-### *LocoNet Support*
+\section{LocoNet Support}
 
-// ??? **note** under investigation. We would need a library to send and receive the locoNet messages. We also would need a higher level piece to "understand" these messages and translate them to LCS messages. From a HW perspective, perhaps one PIO block of the PICO is needed to implement a UART, as the two UARTS are used for RailCom already... in other words a bigger research project :-).
+// ??? \textbf{note} under investigation. We would need a library to send and receive the locoNet messages. We also would need a higher level piece to "understand" these messages and translate them to LCS messages. From a HW perspective, perhaps one PIO block of the PICO is needed to implement a UART, as the two UARTS are used for RailCom already... in other words a bigger research project :-).
 
-### *Base Station Serial Commands*
+\section{Base Station Serial Commands}
 
 In addition to the LCS core library serial commands available to any node, the base station implements a serial command interface which accepts a subset of the DCC\+\+ / DCC-EX commands. As a short introduction, DCC\+\+ was an implementation of a DCC base station using an Arduino Uno and a motor shield. For a very small budget and with little effort, the world of DCC opened up to everyone. Part of the DCC\+\+ system is an ASCII interface to send commends to the base station. Not only is this command line feature useful for debugging the base station code, it is really valuable when interfacing to tools such as Decoder Pro provided by the JMRI organization, which implemented an ACCI interface to DCC\+\+. The command listed in the table below are an accurate implementation of the original DCC++ commands. In addition some commands have been added.
 
@@ -134,9 +134,9 @@ In addition to the LCS core library serial commands available to any node, the b
 | D | | | enter diagnostics mode - need to restart later! |
 | ? | | | list this help |
 
-### *Summary*
+\section{Summary}
 
-// ??? **note** wrap it up ..
+// ??? \textbf{note} wrap it up ..
 
 Just like any other LCS node, the base station firmware offers through node and port attributes status and control functions. However, there is only one on the layout.
 

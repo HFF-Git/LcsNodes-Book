@@ -1,18 +1,19 @@
-## *A basic Cab Handheld*
+\chapterr{\textit{A basic Cab Handheld}}
 
 As the name already suggests, the cab handheld is a handheld device with several buttons and a display. To keep it a compact design, we will use both sides of the PCB. The upper side contains the buttons, switches and display, the lower side contains the controller components. The cab handheld will connect via a cable to the LCS bus. Power comes from the LCS bus power lines and the CAN bus interface is used to transmit the messages. Perhaps a later version will also add some WLAN capabilities. While WLAN would come pretty much for free with the PICO W, the power supply side needs to include a battery.
+\begin{itemize}
+\item a 8x12cm board, used from both sides (?)
+\item block diagram...
+\item power supply from the LCS bus lines
+\item controller, a PICO
+\item small display
+\item rotary encoder, switches, buttons, etc.
+\item a subset for analog ?
+\end{itemize}
 
-- a 8x12cm board, used from both sides (?)
-- block diagram...
-- power supply from the LCS bus lines
-- controller, a PICO
-- small display
-- rotary encoder, switches, buttons, etc.
-- a subset for analog ?
+// ??? \textbf{note} to do ..... focus on the firmware first ...
 
-// ??? **note** to do ..... focus on the firmware first ...
-
-### *Summary*
+\section{\textit{Summary}}
 
 As always, there are many options to build a cab handheld. Although this version connects via cable to the LCS Bus, a wireless version is not hard to build. Having more buttons or fewer buttons, having a set of numeric keypad style input, are all quite valid options. It is a matter of what is preferred. Currently, the cab handheld will not offer any controls for accessories, such as turnouts. This is a subject better left to the layout control panels and controlling software. Our cab handheld favors the approach to model more of a locomotive control stand rather than a TV remote style handheld. Since this is a matter of taste and preference, go build your own.
 

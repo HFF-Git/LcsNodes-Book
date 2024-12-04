@@ -1,26 +1,26 @@
-## *A Main Controller Board with Raspberry PI Pico*
+\chapter{\textit{A Main Controller Board with Raspberry PI Pico}}
 
 The Raspberry PI Pico is a powerful controller with a dual core, generous program and memory sizes and USB also included. The Pico is a small board that can be soldered to a mother PCB or connected just like a big IC. This chapter will present our main controller board which is just the controller along to a CAN bus interface, the non-volatile memory and the level shifters to accommodate our 5V interface level standard. Although there will be more different controller boards in the chapters to come, this basic building block is the generic heart and can be used for many other projects in the LCS system.
 
-### *Block Diagram*
+\section{\textit{Block Diagram}}
 
 The following schematic depicts the block diagram of our main controller. All of our schematics will start with a block diagram and the one or more parts of the overall schematic.
 
-![Schematic_LcsNodes-Main-Controller-Board-B.01.00-1.png](./Schematics/Schematic_LcsNodes-Main-Controller-Board-B.01.00-1.png )
+!\href{./Schematics/Schematic_LcsNodes-Main-Controller-Board-B.01.00-1.png }{Schematic_LcsNodes-Main-Controller-Board-B.01.00-1.png}
 
-### *Main Controller*
+\section{\textit{Main Controller}}
 
 The first part of the schematics shows the PICO processor, LEDS, Button, CAN bus driver and NVM storage as well as the power supply with the optional power fail capability.
 
-![Schematic_LcsNodes-Main-Controller-Board-B.01.00-2.png](./Schematics/Schematic_LcsNodes-Main-Controller-Board-B.01.00-2.png )
+!\href{./Schematics/Schematic_LcsNodes-Main-Controller-Board-B.01.00-2.png }{Schematic_LcsNodes-Main-Controller-Board-B.01.00-2.png}
 
-### *Connectors and Level Shifters*
+\section{\textit{Connectors and Level Shifters}}
 
 The second part depicts the connectors and the level shifters. The ADC inputs also need a divider to map the incoming voltage range of 0 to 5V to 0 to 3V3. A simple resistor divider does the job.
 
-![Schematic_LcsNodes-Main-Controller-Board-B.01.00-3.png](./Schematics/Schematic_LcsNodes-Main-Controller-Board-B.01.00-3.png )
+!\href{./Schematics/Schematic_LcsNodes-Main-Controller-Board-B.01.00-3.png }{Schematic_LcsNodes-Main-Controller-Board-B.01.00-3.png}
 
-### *A Main Controller Board PCB for PICO*
+\section{\textit{A Main Controller Board PCB for PICO}}
 
 And here is the PCB for the PICO based main controller. Note that there is quite some real estate allocated to the level shifters between 5V and 3V3. When most of the IO pins are used in a monolithic board design, these level shifters are perhaps not needed. Since our extension connectors standardizes on 5V for digital levels, we we need them for this board.
 
@@ -28,8 +28,8 @@ And here is the PCB for the PICO based main controller. Note that there is quite
 <img src="./Boards/LCS-NODES-PCB-MAIN-CTRL-PICO-B.01.00.png" width="640" height="800" />
 
 
-### *Summary*
+\section{\textit{Summary}}
 
 By now we have a core library which can handle the basics of just about any node and we have a main controller board that will form the heart of many projects to come for the layout control system. However, while LCS boards will all run the same core library, there are still differences how for example the controller pins are assigned on the boards. It is very likely that new software versions and perhaps different processors and boards layouts will require that the core library is adapted to each processor / board combination. This is especially true for monolithic board designs, where there is a great freedom which pins to use for what. At this point, many projects found on the web will now start a symphony of "ifdefs" in their coding. The conditional compiles often reach up to the highest layers of the firmware programming. 
 
-Perhaps there is a way to shield all these differences at a lower layer such that higher level libraries and firmware just refer to symbolic names for controller functions and pins. A mapping structure will translate between the symbolic names and the actual HW counterpart. This **controller dependent layer** will be the topic of the next chapter.
+Perhaps there is a way to shield all these differences at a lower layer such that higher level libraries and firmware just refer to symbolic names for controller functions and pins. A mapping structure will translate between the symbolic names and the actual HW counterpart. This \textbf{controller dependent layer} will be the topic of the next chapter.
