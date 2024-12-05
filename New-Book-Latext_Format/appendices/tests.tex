@@ -65,6 +65,9 @@ A little test for an instruction word layout ... will be a bit fiddling work ...
 
 A bit cumbersome and we would need to have text at defined locations. Perhaps keep the simple table in the protocol chapter.
 
+
+
+
 \begin{center}
 \begin{tikzpicture}
 
@@ -105,6 +108,8 @@ A bit cumbersome and we would need to have text at defined locations. Perhaps ke
 We would need the split rectangle for the runtime area maps....
 
 \begin{tikzpicture}
+
+    
     
     \draw[draw](0,0) rectangle (6,4);
     \draw[draw](0,2) -- (6,2);
@@ -113,6 +118,42 @@ We would need the split rectangle for the runtime area maps....
     \node at (3, 3.0) {Hugo};
     \node at (3, 1.5) {Berta};
     \node at (3, 0.5) {Carla};
+\end{tikzpicture}
+
+\section{Using tikzstyle}
+
+Another test with tikzstyle.
+
+
+\tikzstyle{roundedRectangle} = [rectangle, 
+                                rounded corners, 
+                                minimum width=6cm, 
+                                minimum height=4cm,
+                                text width=5cm,
+                                text centered,
+                                align=left,
+                                draw=black,
+                                ultra thick,
+                                font=\bfseries\large
+                                ]
+
+\tikzstyle{myEllipse} =         [ellipse, 
+                                rounded corners, 
+                                minimum width=6cm, 
+                                minimum height=4cm,
+                                text width=4cm,
+                                text centered,
+                                align=left,
+                                draw=black,
+                                ultra thick,
+                                font=\bfseries\large
+                                ]
+
+
+\begin{tikzpicture}
+    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
+    \node[roundedRectangle, fill=red!50 ] at (3,2) {test text text text text text text };
+    \node[myEllipse, fill=green!70] at ( 9,2 ) {Ellipse text};
 \end{tikzpicture}
 
 

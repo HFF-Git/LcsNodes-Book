@@ -1,10 +1,10 @@
-\chapterr{\textit{The Base Station}}
+\chapter{The Base Station}
 
 Take a deep breath. We are about to put together out first major LCS hardware module. The previous chapters introduced the message format and protocols and the core library for implementing the event system as well as the running equipment based on the DCC signal standards. Next, we took a closer look on the major hardware building blocks and power module designs. Just like the LCS core library allows to build a node specific firmware on top, the hardware building blocks are the foundation to build the required hardware modules. We also looked at how one would go after designing the node firmware in general. So here is the first and most important hardware module putting it all together. The base station. Every layout needs to have some kind of a base station that acts as the central place for layout control and signal generation.
 
 Looking at the market, there are plenty of so called base stations. They typically offer support for several standards and communication protocols, such as DCC, mfx, LocoNet, a Can Bus, a S88 sensor bus, and so on. Most base station also have the power module directly integrated. They support the configuration of locomotive and stationary decoders. In short, a one stop all round solution. Their price range is around few hundred Euros. With the advent of Arduino, Raspberry and other controllers there are numerous do it yourself solutions. Just to name one, the DCC\+\+ Arduino base station with a motor shield as a power unit, gets you a base station for well under hundred Euros. The excellent work of the JMRI community to provide a DCC\+\+ interface for configuration software and other utilities to use this inexpensive base station hardware. The DCC-EX group extended and stabilized the original DCC\+\+ work for a wider range of controllers but also with new capabilities. There are many such great projects. The appendix provides some links and pointers to this work.
 
-\section{\textit{Key Requirements}}
+\section{Key Requirements}
 
 Our base station needs to deliver the following capabilities. At first it needs to be able to assemble the DCC packets and generate the respective DCC hardware signals. This work is split into the base station producing the signal content and the power section driving the hardware. Furthermore, the base station needs to provide a way to manage several locomotive sessions. For each active session the current state of the locomotive is maintained and the DCC packets are produced. When a new locomotive session is established, a dictionary of locomotives could be consulted about the particular locomotive to get the initial function settings, and so on.
 
@@ -17,6 +17,8 @@ Finally, the firmware for the base station could also host LCS management functi
 \section{Module hardware}
 
 The base station is essentially based on a main controller board and a dual power module unit shown in previous chapters. We will use the PICO controller version and the dual H-Bridge building block. Add the RailCom detectors and stir the whole soup for a while. The extension connector of the base station would still export the I2C interface and the DCC signal produced by the base station. So, adding an I2C based extension board for display, switches, etc. is of course still possible. Here is the schematic for the base station. The individual building blocks should be familiar by now. The first page shows the main controller parts. Note that it needs fewer level shifters, as most of the signals are consumed internal to the board.
+
+// schematic.....
 
 ![Schematic_LcsNodes-Base-Station-Board-B.01.00-1.png](./Schematics/Schematic_LcsNodes-Base-Station-Board-B.01.00
 -1.png )
@@ -39,14 +41,14 @@ Finally, there are the connectors and the power supplies. While the LCS node run
 
 Like the main controller, the monolithic base station board makes extensive use of SMD parts. While the previous boards have already been using passive SMD parts such as capacitors and resistors, this board also make use of SMD ICs. The exception is of course the Raspberry PI PICO board and the Dual H-Bridge IC L6205. The H-Bridge is a high power part and in case of a hardware problem it can easily be replaced as a DIP version.
 
-\section{\textit{Base Station PCB}}
+\section{Base Station PCB}
 
 The following picture shows the PCB for the monolithic base station. It is a 12cm by 10cm board, with the standard connectors in the usual place. As said, the LocoNet Interface is optional. Each LCS node needs at least one NVM chip. The second is optional too.
 
 <!-- using specific picture size goes like this ... -->
 <img src="./Boards/LCS-NODES-PCB-BASE_STATION-B.01.00.png" width="640" height="800" />
 
-\section{\textit{Summary}}
+\section{Summary}
 
 The base station, no matter how it is implemented, is a key component in any digital layout. It is primarily responsible for the locomotive session management and track signal generation. There could be designs where the base station is a device in a nice housing with a display, switches and so on. Other designs just put the LCS node somewhere on the layout. All these options will work just fine. And just like any other LCS node, the base station firmware offers through node and port attributes status and control functions.
 
