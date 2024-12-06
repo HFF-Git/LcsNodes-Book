@@ -1,4 +1,4 @@
-\chapterr{\textit{Cab Handheld Firmware}}
+\chapter{Cab Handheld Firmware}
 
 Now that the development platform is in place, lets have a look at the firmware design. As you perhaps have guessed it, the hardware was already developed with a certain mode in mind. First of all, a cab handheld is nothing else than just another node on the LCS bus. The firmware sits on top of the LCS core library. In addition, there is another key library we have not talked about yet. A cab handheld and also any other device that allows for users to interact, needs software to work with buttons, encoders, displays and so on. This the tasks of the \textbf{UI Elements } library. We will look at this library in a later chapter in great detail.
 
@@ -14,6 +14,7 @@ Now that the development platform is in place, lets have a look at the firmware 
 \end{itemize}
 
 \section{Concepts}
+
 \begin{itemize}
 \begin{itemize}
 \item a current cab and a stack of cabs to select from
@@ -23,6 +24,7 @@ Now that the development platform is in place, lets have a look at the firmware 
 \end{itemize}
 
 \section{Screen Layout}
+
 \begin{itemize}
 \begin{itemize}
 \item display has 4 lines up to 16 characters. Two fonts
@@ -32,6 +34,7 @@ Now that the development platform is in place, lets have a look at the firmware 
 \end{itemize}
 
 \section{Screen Navigation}
+
 \begin{itemize}
 \begin{itemize}
 \item inherent in the UI Elements Screen Object design
@@ -43,6 +46,7 @@ Now that the development platform is in place, lets have a look at the firmware 
 \end{itemize}
 
 \section{Operate Screen}
+
 \begin{itemize}
 \begin{itemize}
 \item main screen, workhorse
@@ -51,6 +55,7 @@ Now that the development platform is in place, lets have a look at the firmware 
 \end{itemize}
 
 \section{Engine On/off Screen}
+
 \begin{itemize}
 \begin{itemize}
 \item for diesels only
@@ -58,6 +63,7 @@ Now that the development platform is in place, lets have a look at the firmware 
 \end{itemize}
 
 \section{Engine Lights Screen}
+
 \begin{itemize}
 \begin{itemize}
 \item front and back lights...
@@ -103,6 +109,7 @@ The DCC standard defines a list of 69 functions, F0 to F68.
 \end{itemize}
 
 \section{Config Cab Handheld Functions}
+
 \begin{itemize}
 \begin{itemize}
 \item connects a cab handheld function to a DCC function
@@ -110,6 +117,7 @@ The DCC standard defines a list of 69 functions, F0 to F68.
 \end{itemize}
 
 \section{Options}
+
 \begin{itemize}
 \begin{itemize}
 \item all kinds of screen for configuration settings
@@ -117,13 +125,14 @@ The DCC standard defines a list of 69 functions, F0 to F68.
 \end{itemize}
 
 \section{Diag}
+
 \begin{itemize}
 \begin{itemize}
 \item all kinds of screen for technical checks and tests
 \end{itemize}
 \end{itemize}
 
-\section{\textit{Summary}}
+\section{Summary}
 
 Phew. The cab handheld is another big step toward controlling a layout. After all, a layout control system without some form cab handhelds is not very useful. As said, there are many ways to build a cab.
 \begin{itemize}

@@ -72,9 +72,9 @@ Another software component typically found in base stations is a dictionary. For
 
 // ??? \textbf{note} we just do locos. How to put data in and read data out ?
 
-|Item|Arguments|Purpose|
-|:--|:--|:--|
-| ... | ... | ... |
+%|Item|Arguments|Purpose|
+%|:--|:--|:--|
+%| ... | ... | ... |
 
 \section{DCC Track Management Attributes and Functions}
 
@@ -106,6 +106,28 @@ For RailCom support the power module is directed to short circuit the track for 
 \section{Base Station Serial Commands}
 
 In addition to the LCS core library serial commands available to any node, the base station implements a serial command interface which accepts a subset of the DCC\+\+ / DCC-EX commands. As a short introduction, DCC\+\+ was an implementation of a DCC base station using an Arduino Uno and a motor shield. For a very small budget and with little effort, the world of DCC opened up to everyone. Part of the DCC\+\+ system is an ASCII interface to send commends to the base station. Not only is this command line feature useful for debugging the base station code, it is really valuable when interfacing to tools such as Decoder Pro provided by the JMRI organization, which implemented an ACCI interface to DCC\+\+. The command listed in the table below are an accurate implementation of the original DCC++ commands. In addition some commands have been added.
+
+\begin{longtable}{@{}|l|p{0.2\linewidth}p{0.6\linewidth}@{}}
+    \caption{Table Caption} \\
+    \toprule
+    \textbf{Col1} & \textbf{Col2} & \textbf{Col3}\\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Col1} & \textbf{Col2} & \textbf{Col3}\\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    Row1 & \textbf{Row1} & Text1 \\
+    \midrule
+    Row2 & \textbf{Row2} & Text2 \\
+\end{longtable}
+
 
 | Command | Arguments | Reply | Operation |
 |:--|:--|:--|:--|
