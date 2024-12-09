@@ -13,6 +13,25 @@ The node map is a node private data structure only accessible to the library fir
 
 picture: the high level structure of the node map...
 
+would it make more sense to present this in a table with offset in NVM ?
+
+\begin{table}[!ht]
+    \begin{center}
+        \caption{Node Map NVM storage}
+        \begin{tabular}{|l|l|p{0.72\textwidth}|}
+            \toprule
+            \textbf{Offset} & \textbf{Size} & \textbf{Purpose} \\
+            \midrule
+            0x0 & 0x200 & Node Map. bla bla .... \\
+            \midrule
+            0x200 & 0x200 & CDC Map. bla bla .... \\
+            \midrule
+            ... & ... & bla bla ....\\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+
 \begin{figure}[!ht]
     \centering
    % \includegraphics[page=1, width=\textwidth]{./figures/Schematic_LcsNodes-Layout-Overview.pdf}

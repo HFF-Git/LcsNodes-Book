@@ -109,8 +109,6 @@ We would need the split rectangle for the runtime area maps....
 
 \begin{tikzpicture}
 
-    
-    
     \draw[draw](0,0) rectangle (6,4);
     \draw[draw](0,2) -- (6,2);
     \draw[draw](0,1) -- (6,1);
@@ -122,7 +120,7 @@ We would need the split rectangle for the runtime area maps....
 
 \section{Using tikzstyle}
 
-Another test with tikzstyle.
+Another test with tikzstyle. It still is a lot of work to even make simple pictures look nice :-)
 
 
 % TikZ styles
@@ -135,24 +133,10 @@ Another test with tikzstyle.
                                 draw=black,
                                 ultra thick]
 
-\tikzstyle{blkEllipse} = [ellipse,
-                         wraptext,
-                         rounded corners,
-                         minimum width=3cm,
-                         minimum height=1.5cm,
-                         text width=3cm,
-                         draw=black,
-                         ultra thick]
-
-\tikzstyle{leEllipse} = [ellipse,
-                         wraptext,
-                         rounded corners,
-                         minimum width=3cm,
-                         minimum height=1.5cm,
-                         text width=3cm,
-                         draw=black,
-                         ultra thick]
-
+\tikzstyle{leEllipse} = [   ellipse,
+                            wraptext,
+                            draw=black,
+                            ultra thick]
 
 \begin{tikzpicture}
     \draw[help lines, gray!50, dashed] (0,0) grid(16,12);
@@ -160,98 +144,90 @@ Another test with tikzstyle.
     % Thick horizontal line (LCS bus) with text
     \draw[line width=1.5mm, <->, line cap=round, draw=gray, name path=lcsline] 
         (0,8) -- (16,8)
-        node[pos=0.5, largebold, below] {LCS bus};
+        node[pos= 0.9, largebold, below] {LCS bus};
 
     % Define nodes
-    \node[roundedRectangle, fill=red!50] (bs) at (5,10) {Base\\Station};
-    \node[roundedRectangle, fill=red!50] (ch) at (11,10) {Cab\\Handheld};
+    \node[  roundedRectangle, 
+            minimum width=3cm,
+            minimum height=1.5cm,
+            text width=3cm,
+            text centered,
+            fill=red!50] (bs) at (5,10) {Base\\Station};
+
+    \node[  roundedRectangle, 
+            minimum width=3cm,
+            minimum height=1.5cm,
+            text width=3cm,
+            text centered,
+            fill=red!50] (ch) at (11,10) {Cab\\Handheld};
 
     % Connecting arrows to LCS bus
     % Arrow from Base Station
     \path[name path=p1] (bs.south) -- (5,8); % Define arrow path
-    \path[name intersections={of=lcsline and p1, by=intpoint}]; % Find intersection
-    \coordinate (adjustedPoint) at ($(intpoint) + (0,0.75mm)$);
-    \draw[<->, ultra thick, line cap=round] (bs.south) -- (adjustedPoint); % Draw to intersection
+    \path[name intersections={of=lcsline and p1, by=intpoint1}]; % Find intersection
+    \coordinate (adjustedPoint1) at ($(intpoint1) + (0,0.75mm)$);
+    \draw[<->, ultra thick, line cap=round] (bs.south) -- (adjustedPoint1); % Draw to intersection
 
     % Arrow from Cab Handheld
     \path[name path=p2] (ch.south) -- (11,8);
     \path[name intersections={of=lcsline and p2, by=intpoint2}];
-    \draw[<->, ultra thick, line cap=round] (ch.south) -- (intpoint2);
+    \coordinate (adjustedPoint2) at ($(intpoint2) + (0,0.75mm)$);
+    \draw[<->, ultra thick, line cap=round] (ch.south) -- (adjustedPoint2);
 
     % Other nodes
-    \node[roundedRectangle, fill=red!50] (bc) at (3,6) {Block Controller};
-    \node[roundedRectangle, fill=red!50] (s) at (8,6) {Sensors};
-    \node[roundedRectangle, fill=red!50] (a) at (12,6) {Actors};
+    \node[  roundedRectangle,  
+            minimum width=3cm,
+            minimum height=1.5cm,
+            text width=3cm,
+            text centered,
+            fill=red!50] (bc) at (3,6) {Block\\Controller};
+
+    \node[  roundedRectangle, 
+            minimum width=3cm,
+            minimum height=1.5cm,
+            text centered,
+            text width=3cm, fill=red!50] (s) at (8,6) {Sensors};
+
+    \node[  roundedRectangle, 
+            minimum width=3cm,
+            minimum height=1.5cm,
+            text width=3cm,
+            text centered, 
+            fill=red!50] (a) at (12,6) {Actors};
 
     % Vertical arrows to LCS bus
     \path[name path=p3] (bc.north) -- (3,8);
     \path[name intersections={of=lcsline and p3, by=intpoint3}];
-    \draw[<->, ultra thick, line cap=round] (bc.north) -- (intpoint3);
+    \coordinate (adjustedPoint3) at ($(intpoint3) - (0,0.75mm)$);
+    \draw[<->, ultra thick, line cap=round] (bc.north) -- (adjustedPoint3);
 
     \path[name path=p4] (s.north) -- (8,8);
     \path[name intersections={of=lcsline and p4, by=intpoint4}];
-    \draw[<->, ultra thick, line cap=round] (s.north) -- (intpoint4);
+    \coordinate (adjustedPoint4) at ($(intpoint4) - (0,0.75mm)$);
+    \draw[<->, ultra thick, line cap=round] (s.north) -- (adjustedPoint4);
 
     \path[name path=p5] (a.north) -- (12,8);
     \path[name intersections={of=lcsline and p5, by=intpoint5}];
-    \draw[<->, ultra thick, line cap=round] (a.north) -- (intpoint5);
+    \coordinate (adjustedPoint5) at ($(intpoint5) - (0,0.75mm)$);
+    \draw[<->, ultra thick, line cap=round] (a.north) -- (adjustedPoint5);
 
     % Ellipses with connections
-    \node[blkEllipse, fill=green!70] at (4,2) (blk) {Blocks and Sections};
-    \node[leEllipse, fill=green!70] at (10,2) (le) {Layout\\Elements};
+    \node[  leEllipse, 
+            minimum width=3cm,
+            minimum height=1.5cm,
+            text width=3cm,
+            text centered,
+            fill=green!70] at (4,2) (blk) {Layout\\Blocks};
+
+    \node[  leEllipse, 
+            minimum width=3cm,
+            minimum height=1.5cm,
+            text width=3cm,
+            text centered,
+            fill=green!70] at (10,2) (le) {Layout\\Elements};
 
     \draw[<->, ultra thick, line cap=round] (bc.south) -- (blk.north);
-    \draw[<->, ultra thick, line cap=round] (s.south) -- ($(le.north) - (0.2,0)$);
-    \draw[<->, ultra thick, line cap=round] (a.south) -- ($(le.north) + (0.2,0)$);
+    \draw[<->, ultra thick, line cap=round] (s.south) -- ($(le.north) - (0.4,0)$);
+    \draw[<->, ultra thick, line cap=round] (a.south) -- ($(le.north) + (0.4,0)$);
 \end{tikzpicture}
-
-\section{test a simple diagram}
-
-Also, arrows are too small.
-
-% use styles to set attributes...
-\tikzstyle {hugo} = [ draw=black, rectangle, fill=blue!50, text width=3cm, rounded corners ] 
-
-% then use it
-% \node [hugo] (H1) { ... }
-% \node [hugo, right of = H1 ] (H2) { ... }
-
-\begin{center}
-\begin{tikzpicture}[>=stealth, scale=1.0]
-
-    %take out when finished drawing....
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-
-    \draw[ultra thick, <->, line cap=round] (1,4) -- (15,4) node[midway, below] {bus};
-    
-    \node[  draw=magenta, 
-            rounded corners, 
-            fill=cyan!50,  
-            thick,
-            text=red, 
-            minimum width=3cm, 
-            minimum height=2cm] (node1) at (4,6) {\textbf{Base  Station}};
-
-            \node[  draw=magenta, 
-            rounded corners, 
-            fill=cyan!50,  
-            thick,
-            text=red, 
-            minimum width=3cm, 
-            minimum height=2cm] (node2) at (10,6) {\textbf{Handheld}};
-    
-    
-    \node[draw, thick, rounded corners, minimum width=3cm, minimum height=2cm] (node3) at (8,0) {Node Three};
-    \node[draw, thick, rounded corners, minimum width=3cm, minimum height=2cm] (node4) at (12,0) {Node Four};
-   
-    \node[draw, thick, ellipse] (node5) at (10 ,2) { node5};
-
-    \draw[<->, thick, line cap=round] (node1.south) -- (4, 4);
-    \draw[<->, thick, line cap=round] (node2.south) -- (10, 4);
-    \draw[<->, thick, line cap=round] (node3.south) -- (8, -3);
-    \draw[<->, thick, line cap=round] (node4.south) -- (12, -3);
-
-
-\end{tikzpicture}
-\end{center}
 
