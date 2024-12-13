@@ -76,9 +76,7 @@ Each node in the layout control system is a node and hence there is a controller
 picture 
 % !\href{./Figures/Schematic_LcsNodes-PCB-Layout-Concepts.png }{Schematic_LcsNodes-PCB-Layout-Concepts.png}
 
-All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. In particular, the 10x16cm board should be very familiar as the "Euro PCB" format. The main controller board has on the left side the connectors for the LCS bus and the power input. On the left side, there are two connectors toward an extension board. The middle one is the extension connector described earlier, the lower right side is the power lines routed through from the power in connector.
-
-Extension boards have three connectors pairs, in and out. The lower pair just routes power through to the next extension board. The middle connector pair will route a subset of the extension connector signals from the main controller. What exactly is routed is described in the extension board chapters. Finally, the extension boards have an optional third line, which is the track power connectors. This line is used by the base station and block controller boards. Again, all this will be explained in the later chapters. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as footprints in the EasyEDA library.
+All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. In particular, the 10x16cm board should be very familiar as the "Euro PCB" format. The main controller board has on the left side the connectors for the LCS bus and the power input. On the right side, there are two connectors toward an extension board. As described before, there are two types of extension boards. The usage of the individual connector pins are described in the upcoming chapter. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as symbols and PCB footprints in the EasyEDA library.
 
 \section{LCS Bus connector}
 
@@ -95,13 +93,13 @@ Every hardware module needs the LCS bus interface to connect to the bus. Some mo
             \midrule
             2 & DCC-Sig-2 & The DCC signal labelled "-" \\
             \midrule
-            3 & GND &  Common ground \\
+            3 & GND & Common ground \\
             \midrule
-            4 & RSV &  \\
+            4 & RSV & reserved for future extensions. \\
             \midrule
-            5 & RSV &  \\
+            5 & RSV & reserved for future extensions. \\
             \midrule
-            6 & VS & The bus supplied 12V power line. This line is intended for devices with very little power consumption to get their power from. Any other module should connect to its own power supply line. \\
+            6 & PWR & The bus supplied 12V power line. This line is intended for devices with very little power consumption to get their power from. Any other module should connect to its own power supply line. \\
             \midrule
             7 & CAN-L &  Line L of the differential CAN bus signal. \\
             \midrule
@@ -113,18 +111,20 @@ Every hardware module needs the LCS bus interface to connect to the bus. Some mo
 
 \section{LCSNodes Extension Board Connector}
 
-For interchangeability of extensions, there is a standardized \textbf{extension board connector} between controller and extensions. Furthermore, an extension board should have two connectors so we can for example add two or more extension to the main controller board. This concept is very similar to the the shield concept found in the Arduino or Raspberry PI universe, except that we do not stack boards, we place them next to each other. Not all IO lines of a controller are exported to the extension board. For example, the SPI interface, configuration switches and status LEDs are local to the main controller board. The I2C interface will be the main communication method between the boards. Nevertheless, a rather rich functionality set from the controller should be available to the extension board for flexibility. There should be ports for digital input and output, analog input, PWM outputs, serial outputs and so on. Many pins of a controller chip double up in function. All of these special purpose pins can also be used just as plain digital input/output pins. The following table shows the extension connector pin assignments.
+For interchangeability of extensions, there is a standardized \textbf{extension board connector} between controller and extensions. Extension boards come in two flavors. The first will have the extension connector on both sides of the board. Main controller boards and extension board will have a female connector on the right hand side. The first flavor extension board will have a matching connector on the left side. This way main controller and extension boards can be placed next to each other, just like a train. The second type of extension boards only have the connectors on the right hand side. They are intended for a backplane style layout where main controller and extension boards are plugged next to each other. 
 
-??? do the double duty of digital ins still apply for the pico ?
+The overall concept is very similar to the the shield concept found in the Arduino or Raspberry PI universe, except that we can stack boards, as well as placing them next to each other. 
 
-\begin{longtable}{@{}|l|p{0.2\linewidth}p{0.6\linewidth}@{}}
+The I2C interface will be the main communication method between the boards. Nevertheless, a rather rich functionality set from the controller should be available to the extension board for flexibility. There should be ports for digital input and output, analog input, PWM outputs, serial outputs and so on. The following table shows the connector pin assignments for the communication between a main controller board and extension boards. All boards will have a 40-pin connector organized as 2 rows of 20 pins.
+
+\begin{longtable}{@{}|l|p{0.1\linewidth}|l|p{0.1\linewidth}|p{0.5\linewidth}@{}}
     \caption{Controller Attributes} \\
     \toprule
-    \textbf{Pin} & \textbf{Name} & \textbf{Purpose}\\
+    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name}& \textbf{Purpose}\\
     \midrule
     \endfirsthead
     \toprule
-    \textbf{Pin} & \textbf{Name} & \textbf{Purpose}\\
+    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name}& \textbf{Purpose}\\
     \midrule
     \endhead
     \midrule
@@ -133,48 +133,50 @@ For interchangeability of extensions, there is a standardized \textbf{extension 
     \endfoot
     \bottomrule
     \endlastfoot
-    1 & \textbf{DCC-SIG1} & The DCC "+" signal as generated by the DCC Signal Generator. On the main controller board, the DCC signals are routed from the extension connector directly to the LCS Bus connector. \\
+    1 & \textbf{GND} & 2 & \textbf{GND} & Common ground pins. \\
     \midrule
-    2 & \textbf{DCC-SIG2} & The DCC "-" signal as generated by the DCC Signal Generator. On the main controller board, the DCC signals are routed from the extension connector directly to the LCS Bus connector. \\
+    3 & \textbf{DCC-1} & 4 & \textbf{DCC-2} & The DCC "+" and "-" signal as generated by the DCC Signal Generator. These pins are typically driven by the base station generating the layout DCC signal.\\
     \midrule
-    3 & GND & Common ground. \\
+    5 & \textbf{GND} & 6 & \textbf{GND} & Common ground pins. \\
     \midrule
-    4 & GND & Common ground. \\
+    7 & \textbf{RST} & 8 & \textbf{EXT} & RST is reset line. Active Low. EXT is the external interrupt line which be raised from an extension board. Active low. \\
     \midrule
-    5 & ADC-0 & Analog input pin. The input is not protected. The analog voltage range is 0 to VCC. \\
+    9 & \textbf{ADC-0} & 10 & \textbf{ADC-1} & Analog input pins. The input is not protected. The analog voltage range is 0 to VCC. \\
     \midrule
-    6 & ADC-1 & Analog input pin. The input is not protected. The analog voltage range is 0 to VCC. \\
+    11 & \textbf{GND} & 12 & \textbf{GND} & Common ground pins. \\
     \midrule
-    7 & - & reserved. \\
+    13 & \textbf{DIO-0} & 14 & \textbf{DIO-1} & Plain digital Pins, input or output. The pins are protected. \\
     \midrule
-    8 & RST & Reset line available to the extension boards. A reset line is active low. \\
+    15 & \textbf{DIO-2} & 16 & \textbf{DIO-3} & Plain digital Pins, input or output. The pins are protected. \\
     \midrule
-    9 & DIO-0 (RX-1) & Digital pin, UART RX capable. The pin is protected. \\
+    17 & \textbf{DIO-4} & 18 & \textbf{DIO-5} & Plain digital Pins, input or output. The pins are protected. \\
     \midrule
-    10 & DIO-1 (TX-1) & Digital pin, UART TX capable. The pin is protected. \\
+    19 & \textbf{DIO-6} & 20 & \textbf{DIO-7} & Plain digital Pins, input or output. The pins are protected. \\
     \midrule
-    11 & DIO-2 & Plain digital Pin, input or output. The pin is protected. The pin DIO-2 and DIO3 are on the same controller IO port and can be set simultaneously. \\
+    21 & \textbf{GND} & 22 & \textbf{GND} & Common ground pins. \\
     \midrule
-    12 & DIO-3 & Plain digital Pin, input or output. The pin is protected. The pin DIO-2 and DIO-3 are on the same controller IO port and can be set simultaneously. \\
+    23 & \textbf{BI-0} & 24 & \textbf{BI-1} & Bus Address input lines. Up to four extension boards can be connected, the BI pins are used to determine the I2C address on the I2C extension bus. \\ 
     \midrule
-    13 & DIO-4 & Plain digital Pin, input or output. The pin is protected. The pin DIO-4 and DIO5 are on the same controller IO port and can be set simultaneously. \\
+    25 & \textbf{BO-0} & 26 & \textbf{BO-1} & Bus Address output lines. The BO lines are computed form the BI lines. If for example BI is 1:0 the BO lines will become 1:1. The starting output pins values are 1:1. \\ 
+    27 & \textbf{SCL} &  28 & \textbf{SDA} & I2C extension bus channel.  The lines are protected with a serial resistor and there is a pull-up resistor to VCC. \\
     \midrule
-    14 & DIO-5 & Plain digital Pin, input or output. The pin is protected. The pin DIO-4 and DIO-5 are on the same controller IO port and can be set simultaneously. \\
+    29 & \textbf{GND} & 30 & \textbf{GND} & Common ground pins. \\
     \midrule
-    15 & DIO-6 (PWM-1) & Plain digital Pin, PWM capable. The pin is protected. The pin DIO-6 and DIO-7 are on the same controller IO port and can be set simultaneously. \\
+    31 & \textbf{VCC} & 32 & \textbf{VCC} & VCC 5V supply to extension boards. \\
     \midrule
-    16 & DIO-7 (PWM-2) & Plain digital Pin, PWM capable. The pin is protected. The pin DIO-6 and DIO-7 are on the same controller IO port and can be set simultaneously. \\
+    33 & \textbf{GND} & 34 & \textbf{GND} & Common ground pins. \\
     \midrule
-    17 & VCC & VCC 5V supply to extension boards. \\
+    35 & \textbf{VS} & 36 & \textbf{VS} & Board Input voltage forward. These connector pins are primarily used by extension boards that need the high power input. Examples are H-Bridges on such a board or boards that have their power supply circuitry. \\
     \midrule
-    18 & VCC & VCC 5V supply to extension boards. \\
+    37 & \textbf{VS} & 38 & \textbf{VS} & Board Input voltage forward. \\
     \midrule
-    19 & SCL & I2C Interface SCL line. The line is protected with a serial resistor and there is a pull-up resistor to VCC. \\
+    39 & \textbf{GND} & 40 & \textbf{GND} & Common ground pins. \\
     \midrule
-    20 & SDA & I2C Interface SDA line. The line is protected with a serial resistor and there is a pull-up resistor to VCC. \\
-\end{longtable}
+\end{longtable}  
 
-Since the connector chosen is a 2x10 connector, the signal pin numbers shown above change their row numbering, depending whether it is output or input connector. When looking at the schematics and the connector layout on the PCB, the signals on the output connector have pin 1 to 10 on the leftmost row, and on the rightmost row on the input connector, such that pin 1 of the output connector connects to pin 1  of the input connector and so on. The same is true for pins 11 to 20. 
+The connectors on the boards are female connectors. 
+
+Since the connector chosen is a 2x20 connector, the signal pin numbers shown above change their row numbering, depending whether it is output or input connector. When looking at the schematics and the connector layout on the PCB, the signals on the output connector have pin 1 to 10 on the leftmost row, and on the rightmost row on the input connector, such that pin 1 of the output connector connects to pin 1  of the input connector and so on. The same is true for pins 11 to 20. 
 
 There are EasyEDA symbols that offer the connector pins with you going through these details. The appendix contains EasyEDA symbols for the most common board dimensions with the connectors placed in the right location. A new projects can just start with this EasyEDA symbol. There is also the option of  cascading extensions. An extension connector could therefore be on both ends of the board and pass the GND, VCC, Reset, DCC and I2C lines from board to board. For this type of board, EasyEDA symbols are also available.
 
@@ -182,75 +184,45 @@ A key question is how many controller pins are available to an extension board. 
 
 For more complex extension boards, it is perhaps the better idea to combine a main board with an extension board to one monolithic board and still keep the extension connector for other not so complex boards to attach. As a convention, only the first extension board will benefit from all signals coming from the main controller board. All follow on extension boards will only get the DCC signals, the reset line, the I2C signal and the power lines.
 
-\section{Power Line Connectors}
-
-The \textbf{power line connector} forward the power line input of the main controller board to an extension board. This connector is primarily needed for power unit extension to power the H-Bridges on such a board. Extensions that do not require this power input forwarding just leave it out. The first pair of connector pins is always connected, all the others are optional. Boards with a high current consumption could pool more than one connector pin pair.
-
-\begin{table}[!ht]
-    \begin{center}
-        \caption{Power Line Connectors}
-        \begin{tabular}{|l|l|p{0.72\textwidth}|}
-            \toprule
-            \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
-            \midrule
-            1 & GND & Common ground. \\
-            \midrule
-            2 & GND & Common ground. \\
-            \midrule
-            3 & GND & Common ground. \\
-            \midrule
-            4 & GND & Common ground. \\
-            \midrule
-            5 & VS & Input voltage forward, always connected. \\
-            \midrule
-            6 & VS & Input voltage forward, always connected. \\
-            \midrule
-            7 & VS & Input voltage forward, always connected. \\
-            \midrule
-            8 & VS & Input voltage forward, always connected. \\
-            \bottomrule
-        \end{tabular}
-    \end{center}
-\end{table}
-
 \section{Track Power Connectors}
 
-In addition to the extension board and power line connector, there is the \textbf{track power connector}. This connector is only used by the base station, block controller and associated extensions. Its purpose is to pass the track power signals from the H-bridges on the block controller ( or booster ) board to the extension boards. This connector is described in more detail in the base station and block controller chapter.
+In addition to the extension board connector, there is the \textbf{track power connector}. This connector is only used by the base station, block controller and associated extensions. Its purpose is to pass the track power signals from the H-bridges on the block controller ( or booster ) board to the extension boards. This connector is described in more detail in the base station and block controller chapter.
 
-\begin{table}[!ht]
-    \begin{center}
-        \caption{Power Line Connectors}
-        \begin{tabular}{|l|l|p{0.72\textwidth}|}
-            \toprule
-            \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
-            \midrule
-            1 & DCC-SIG-B0 & Bridge-0 DCC Signal "+". \\
-            \midrule
-            2 & DCC-SIG-B1 & Bridge-1 DCC Signal "+". \\
-            \midrule
-            3 & DCC-SIG-B2 & Bridge-2 DCC Signal "+". \\
-            \midrule
-            4 & DCC-SIG-B3 & Bridge-3 DCC Signal "+". \\
-            \midrule
-            5 & DCC-SIG-B0 & Bridge-0 DCC Signal "-". \\
-            \midrule
-            6 & DCC-SIG-B1 & Bridge-1 DCC Signal "-". \\
-            \midrule
-            7 & DCC-SIG-B2 & Bridge-2 DCC Signal "-". \\
-            \midrule
-            8 & DCC-SIG-B3 & Bridge-3 DCC Signal "-". \\
-            \bottomrule
-        \end{tabular}
-    \end{center}
-\end{table}
+\begin{longtable}{@{}|l|l|l|l|p{0.4\linewidth}@{}}
+    \caption{Controller Attributes} \\
+    \toprule
+    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name}& \textbf{Purpose}\\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name}& \textbf{Purpose}\\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    1 & \textbf{DCC-SIG-B0} & 2 & \textbf{DCC-SIG-B0} & Bridge-0 DCC Signal "+" and "-". \\
+    \midrule
+    3 & \textbf{DCC-SIG-B1} & 4 & \textbf{DCC-SIG-B1} & Bridge-1 DCC Signal "+" and "-". \\
+    \midrule
+    5 & \textbf{DCC-SIG-B2} & 6 & \textbf{DCC-SIG-B2} & Bridge-2 DCC Signal "+" and "-". \\
+    \midrule
+    7 & \textbf{DCC-SIG-B3} & 8 & \textbf{DCC-SIG-B2} & Bridge-3 DCC Signal "+" and "-". \\
+    \midrule
+\end{longtable} 
 
 \FloatBarrier
 
-When using all four bridge signal outputs, each each output is rated up to 3Amps. For high power bridges with up to 6Amps, two pairs can be combined and the number of bridges signals passed on is two.
+When using all four bridge signal output pairs, each each output pair is rated up to 3Amps. For high power bridges with up to 6Amps, two pairs can be combined and the number of bridges signals passed on is two.
 
 \section{Summary}
 
-This chapter introduced the basic architecture of a hardware modules, it connectors and board layout. A key concept is the idea of a common component, the main controller, and extension that can be connected. Nevertheless, there are good cases for combining a main controller and the extension hardware into one monolithic board. But in any case, the connectors and their purposes stay the same from board to board. Throughout the chapter to come, you will see how easy boards can be combined using the three connectors lanes and standards behind them. Currently, the boards are designed in a layout, where they just connect next to each other. Conceptually, they could also be stacked. It is a matter of PCS layout design.
+This chapter introduced the basic architecture of a hardware modules, it connectors and board layout. A key concept is the idea of a common component, the main controller, and extension that can be connected. Nevertheless, there are good cases for combining a main controller and the extension hardware into one monolithic board. But in any case, the connectors and their purposes stay the same from board to board. While the main controller boards always have the LCS bus and power input on the left side, the extension connector and tack line connector on the right, extension boards come in two flavors. 
+
+The first extension board type has male connectors for track line and extension lines on the left side of the board while the second type has not. Both types have female track line and extension line connectors on their right. The first type can just be plugged into the main controller type boards, additional extension boards are simply plugged into the previous extension board. The second extension type is intended for a backplane type design where main controller boards as well as up to four extension board types are plugged into a backplane board. Throughout the chapter to come, you will see how easy boards can be combined using the two connectors lanes and standards behind them. 
 
 Ready for the first hardware work ? All aboard, the train leaves for the next chapter.
 
