@@ -115,14 +115,14 @@ For interchangeability of extensions, there is a standardized \textbf{extension 
 
 The I2C interface will be the main communication method between the boards. In fact all current extension boards shown in later chapters use the I2C communication channel. Nevertheless, a rather rich set of outputs from the controller should be available to the extension board for flexibility. There should be ports for digital input and output, analog input, PWM outputs, serial outputs and so on. The raspberry pi pico offers a great flexibility on assigning function blocks such as an SPI or I2C interface to pins. The extension connector outlined below offers a set of pins which are mapped to the PICO capabilities. The following table shows the connector pin assignments for the communication between a main controller board and extension boards. All boards will have a 40-pin connector organized as 2 rows of 20 pins.
 
-\begin{longtable}{@{}|l|p{0.1\linewidth}|l|p{0.1\linewidth}|p{0.5\linewidth}@{}}
+\begin{longtable}{@{}|p{0.05\linewidth}|p{0.1\linewidth}|p{0.05\linewidth}|p{0.1\linewidth}|p{0.4\linewidth}|@{}}
     \caption{Controller Attributes} \\
     \toprule
-    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name}& \textbf{Purpose}\\
+    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
     \midrule
     \endfirsthead
     \toprule
-    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name}& \textbf{Purpose}\\
+    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
     \midrule
     \endhead
     \midrule
@@ -169,7 +169,6 @@ The I2C interface will be the main communication method between the boards. In f
     37 & \textbf{VS} & 38 & \textbf{VS} & Board Input voltage forward. \\
     \midrule
     39 & \textbf{GND} & 40 & \textbf{GND} & Common ground pins. \\
-    \midrule
 \end{longtable}  
 
 The extension board connectors on the main controller boards are female connectors placed on the right hand side of the board. Male connectors are used on an extension board to connect into the main controller or a previous extension board. There are EasyEDA symbols and PCB footprints that offer the connector pins without you going through these details. The appendix contains EasyEDA symbols for the most common board dimensions with the connectors placed in the correct location. A new projects can just start with these EasyEDA symbols.
@@ -182,7 +181,7 @@ For even more complex extension boards, it is perhaps the better idea to combine
 
 In addition to the extension board connector, there is the \textbf{track power connector}. This connector is only used by the base station, block controller and associated extensions. Its purpose is to pass the track power signals from the H-bridges on the base station or block controller ( or booster ) board to the extension boards. This connector is described in more detail in the base station and block controller chapter.
 
-\begin{longtable}{@{}|l|l|l|l|p{0.4\linewidth}@{}}
+\begin{longtable}{@{}|l|l|l|l|p{0.4\linewidth}|@{}}
     \caption{Controller Attributes} \\
     \toprule
     \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name}& \textbf{Purpose}\\
@@ -205,7 +204,6 @@ In addition to the extension board connector, there is the \textbf{track power c
     5 & \textbf{DCC-SIG-B2} & 6 & \textbf{DCC-SIG-B2} & Bridge-2 DCC Signal "+" and "-". \\
     \midrule
     7 & \textbf{DCC-SIG-B3} & 8 & \textbf{DCC-SIG-B2} & Bridge-3 DCC Signal "+" and "-". \\
-    \midrule
 \end{longtable} 
 
 \FloatBarrier
