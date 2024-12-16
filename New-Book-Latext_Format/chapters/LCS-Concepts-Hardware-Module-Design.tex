@@ -19,7 +19,7 @@ The module designs described in this book initially used the AtMega controller p
 
 Meanwhile, the Raspberry PI Pico \texttt{(PICO)} controller joined the club. And it has a lot to offer. The PICO is a dual core controller running at up to 133 Mhz. It features a whopping 16Mbytes of flash and 264 Kbytes of main memory. There are plenty of IO ports, and functional blocks for UARTS, SPI and I2C interfaces. What makes this controller especially interesting are the PIO state machines that allow for implementing your own I/O protocols. There is CAN bus software library built using these state machines. This way no extra CAN bus controller is needed. The PICO comes with its own software development kit and also an Arduino IDE integration is available.
 
-As time goes by, there will be for sure more capable controller entering the market. However, when you want to complete a project versus chasing the latest controllers, you will need to pick. In our case, the PICO is the controller of choice. Its capabilities match our requirements and will be a good choice for the years to come. nevertheless, the LCS library software should be designed as independent of a particular controller as possible. More on this later. 
+As time goes by, there will be for sure other capable controller entering the market. However, when you want to complete a project versus chasing the latest controllers, you will need to pick. In our case, the PICO is the controller of choice. Its capabilities match our requirements and will be a good choice for the years to come. nevertheless, the LCS library software should be designed as independent of a particular controller as possible. More on this later. 
 
 \section{The Controller Platform}
 
@@ -76,7 +76,7 @@ Each node in the layout control system is a node and hence there is a controller
 picture 
 % !\href{./Figures/Schematic_LcsNodes-PCB-Layout-Concepts.png }{Schematic_LcsNodes-PCB-Layout-Concepts.png}
 
-All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. In particular, the 10x16cm board should be very familiar as the "Euro PCB" format. The main controller board has on the left side the connectors for the LCS bus and the power input. On the right side, there are two connectors toward an extension board. As described before, there are two types of extension boards. The usage of the individual connector pins are described in the upcoming chapter. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as symbols and PCB footprints in the EasyEDA library.
+All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. In particular, the 10x16cm board should be very familiar. It has the "Euro PCB" dimensions. The main controller board has on the left side the connectors for the LCS bus and the power input. On the right side, there are two connectors toward an extension board. As described before, there are two types of extension boards. The usage of the individual connector pins are described in the upcoming chapter. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as symbols and PCB footprints in the EasyEDA library.
 
 \section{LCS Bus connector}
 
@@ -111,11 +111,9 @@ Every hardware module needs the LCS bus interface to connect to the bus. Some mo
 
 \section{LCSNodes Extension Board Connector}
 
-For interchangeability of extensions, there is a standardized \textbf{extension board connector} between controller and extensions. Extension boards come in two flavors. The first will have the extension connector on both sides of the board. Main controller boards and extension board will have a female connector on the right hand side. The first flavor extension board will have a matching connector on the left side. This way main controller and extension boards can be placed next to each other, just like a train. The second type of extension boards only have the connectors on the right hand side. They are intended for a backplane style layout where main controller and extension boards are plugged next to each other. 
+For interchangeability of extensions, there is a standardized \textbf{extension board connector} between controller and extensions. Extension boards come in two flavors. The first will have the extension connector on both sides of the board. Main controller boards and extension board will have a female connector on the right hand side. The first flavor extension board will have a matching connector on the left side. This way main controller and extension boards can be placed next to each other, just like a train. The second type of extension boards only have the connectors on the right hand side. They are intended for a backplane style layout where main controller and extension boards are plugged next to each other. The overall concept is very similar to the the shield concept found in the Arduino or Raspberry PI universe, except that we can stack boards, as well as placing them next to each other. 
 
-The overall concept is very similar to the the shield concept found in the Arduino or Raspberry PI universe, except that we can stack boards, as well as placing them next to each other. 
-
-The I2C interface will be the main communication method between the boards. Nevertheless, a rather rich functionality set from the controller should be available to the extension board for flexibility. There should be ports for digital input and output, analog input, PWM outputs, serial outputs and so on. The following table shows the connector pin assignments for the communication between a main controller board and extension boards. All boards will have a 40-pin connector organized as 2 rows of 20 pins.
+The I2C interface will be the main communication method between the boards. In fact all current extension boards shown in later chapters use the I2C communication channel. Nevertheless, a rather rich set of outputs from the controller should be available to the extension board for flexibility. There should be ports for digital input and output, analog input, PWM outputs, serial outputs and so on. The raspberry pi pico offers a great flexibility on assigning function blocks such as an SPI or I2C interface to pins. The extension connector outlined below offers a set of pins which are mapped to the PICO capabilities. The following table shows the connector pin assignments for the communication between a main controller board and extension boards. All boards will have a 40-pin connector organized as 2 rows of 20 pins.
 
 \begin{longtable}{@{}|l|p{0.1\linewidth}|l|p{0.1\linewidth}|p{0.5\linewidth}@{}}
     \caption{Controller Attributes} \\
@@ -133,25 +131,25 @@ The I2C interface will be the main communication method between the boards. Neve
     \endfoot
     \bottomrule
     \endlastfoot
-    1 & \textbf{GND} & 2 & \textbf{GND} & Common ground pins. \\
+    1 & \textbf{DCC-1} & 2 & \textbf{DCC-2} & The DCC "+" and "-" signal as generated by the DCC Signal Generator. These pins are typically driven by the base station generating the layout DCC signal.\\
     \midrule
-    3 & \textbf{DCC-1} & 4 & \textbf{DCC-2} & The DCC "+" and "-" signal as generated by the DCC Signal Generator. These pins are typically driven by the base station generating the layout DCC signal.\\
+    3 & \textbf{GND} & 4 & \textbf{GND} & Common ground pins. \\
     \midrule
-    5 & \textbf{GND} & 6 & \textbf{GND} & Common ground pins. \\
+    5 & \textbf{ADC-0} & 6 & \textbf{ADC-1} & Analog input pins. The input is not protected. The analog voltage range is 0 to VCC. \\
     \midrule
-    7 & \textbf{RST} & 8 & \textbf{EXT} & RST is reset line. Active Low. EXT is the external interrupt line which be raised from an extension board. Active low. \\
+    7 & \textbf{GND} & 8 & \textbf{GND} & Common ground pins. \\
     \midrule
-    9 & \textbf{ADC-0} & 10 & \textbf{ADC-1} & Analog input pins. The input is not protected. The analog voltage range is 0 to VCC. \\
+    9 & \textbf{DIO-0} & 10 & \textbf{DIO-1} & Plain digital Pins, input or output. The pins are protected. \\
     \midrule
-    11 & \textbf{GND} & 12 & \textbf{GND} & Common ground pins. \\
+    11 & \textbf{DIO-2} & 12 & \textbf{DIO-3} & Plain digital Pins, input or output. The pins are protected. \\
     \midrule
-    13 & \textbf{DIO-0} & 14 & \textbf{DIO-1} & Plain digital Pins, input or output. The pins are protected. \\
+    13 & \textbf{DIO-4} & 14 & \textbf{DIO-5} & Plain digital Pins, input or output. The pins are protected. \\
     \midrule
-    15 & \textbf{DIO-2} & 16 & \textbf{DIO-3} & Plain digital Pins, input or output. The pins are protected. \\
+    15 & \textbf{DIO-6} & 16 & \textbf{DIO-7} & Plain digital Pins, input or output. The pins are protected. \\
     \midrule
-    17 & \textbf{DIO-4} & 18 & \textbf{DIO-5} & Plain digital Pins, input or output. The pins are protected. \\
+    17 & \textbf{DIO-8} & 18 & \textbf{DIO-9} & Plain digital Pins, input or output. The pins are protected. \\
     \midrule
-    19 & \textbf{DIO-6} & 20 & \textbf{DIO-7} & Plain digital Pins, input or output. The pins are protected. \\
+    19 & \textbf{DIO-10} & 20 & \textbf{DIO-11} & Plain digital Pins, input or output. The pins are protected. \\
     \midrule
     21 & \textbf{GND} & 22 & \textbf{GND} & Common ground pins. \\
     \midrule
@@ -160,7 +158,7 @@ The I2C interface will be the main communication method between the boards. Neve
     25 & \textbf{BO-0} & 26 & \textbf{BO-1} & Bus Address output lines. The BO lines are computed form the BI lines. If for example BI is 1:0 the BO lines will become 1:1. The starting output pins values are 1:1. \\ 
     27 & \textbf{SCL} &  28 & \textbf{SDA} & I2C extension bus channel.  The lines are protected with a serial resistor and there is a pull-up resistor to VCC. \\
     \midrule
-    29 & \textbf{GND} & 30 & \textbf{GND} & Common ground pins. \\
+    29 & \textbf{RST} & 30 & \textbf{EXT} & RST is reset line. Active Low. EXT is the external interrupt line which be raised from an extension board. Active low. \\
     \midrule
     31 & \textbf{VCC} & 32 & \textbf{VCC} & VCC 5V supply to extension boards. \\
     \midrule
@@ -174,19 +172,15 @@ The I2C interface will be the main communication method between the boards. Neve
     \midrule
 \end{longtable}  
 
-The connectors on the boards are female connectors. 
+The extension board connectors on the main controller boards are female connectors placed on the right hand side of the board. Male connectors are used on an extension board to connect into the main controller or a previous extension board. There are EasyEDA symbols and PCB footprints that offer the connector pins without you going through these details. The appendix contains EasyEDA symbols for the most common board dimensions with the connectors placed in the correct location. A new projects can just start with these EasyEDA symbols.
 
-Since the connector chosen is a 2x20 connector, the signal pin numbers shown above change their row numbering, depending whether it is output or input connector. When looking at the schematics and the connector layout on the PCB, the signals on the output connector have pin 1 to 10 on the leftmost row, and on the rightmost row on the input connector, such that pin 1 of the output connector connects to pin 1  of the input connector and so on. The same is true for pins 11 to 20. 
+A key question is how many controller pins are available to an extension board. As said, most of the extension boards would just need the I2C bus to drive the I2C capable ICs on an extension board. However, since there might be rather complex extension boards, the IO pins needed from the controller board to the extension are many and should allow not only for digital IO but also the function blocks inside the controller. The \texttt{DIO-x} pins on the connector map to the GPIO pins of the Raspberry Pi PICO in a way that most of the controller capabilities can be used on an extension board. We will discuss this in more detail in the main controller chapter.
 
-There are EasyEDA symbols that offer the connector pins with you going through these details. The appendix contains EasyEDA symbols for the most common board dimensions with the connectors placed in the right location. A new projects can just start with this EasyEDA symbol. There is also the option of  cascading extensions. An extension connector could therefore be on both ends of the board and pass the GND, VCC, Reset, DCC and I2C lines from board to board. For this type of board, EasyEDA symbols are also available.
-
-A key question is how many controller pins are available to an extension board. Most of the extension boards would just need the I2C bus. However, if there is a rather complex extension board, such as a block controller shown in one of the next chapters, the IO pins needed from the controller board to the extension are many and quickly reach the limit of the extension connector. Why not place a connector with more pins on the boards ? First, a different controller may not have that many IO pins and there would be no easy mix and match between main and extension boards. Second, the majority of extension boards are rather encapsulated and most often just need the I2C bus to communicate. To find a middle ground, the 20-pin connector along with the pin capabilities outlined was chosen. 
-
-For more complex extension boards, it is perhaps the better idea to combine a main board with an extension board to one monolithic board and still keep the extension connector for other not so complex boards to attach. As a convention, only the first extension board will benefit from all signals coming from the main controller board. All follow on extension boards will only get the DCC signals, the reset line, the I2C signal and the power lines.
+For even more complex extension boards, it is perhaps the better idea to combine a main board with an extension board capabilities to one monolithic board but still keep the extension connector for other not so complex extension boards to attach. As a guideline, only the first extension board will benefit from all signals coming from the main controller board. All follow on extension boards will only get the DCC signals, the interrupt and reset line, the I2C signal and the power lines.
 
 \section{Track Power Connectors}
 
-In addition to the extension board connector, there is the \textbf{track power connector}. This connector is only used by the base station, block controller and associated extensions. Its purpose is to pass the track power signals from the H-bridges on the block controller ( or booster ) board to the extension boards. This connector is described in more detail in the base station and block controller chapter.
+In addition to the extension board connector, there is the \textbf{track power connector}. This connector is only used by the base station, block controller and associated extensions. Its purpose is to pass the track power signals from the H-bridges on the base station or block controller ( or booster ) board to the extension boards. This connector is described in more detail in the base station and block controller chapter.
 
 \begin{longtable}{@{}|l|l|l|l|p{0.4\linewidth}@{}}
     \caption{Controller Attributes} \\
@@ -220,7 +214,7 @@ When using all four bridge signal output pairs, each each output pair is rated u
 
 \section{Summary}
 
-This chapter introduced the basic architecture of a hardware modules, it connectors and board layout. A key concept is the idea of a common component, the main controller, and extension that can be connected. Nevertheless, there are good cases for combining a main controller and the extension hardware into one monolithic board. But in any case, the connectors and their purposes stay the same from board to board. While the main controller boards always have the LCS bus and power input on the left side, the extension connector and tack line connector on the right, extension boards come in two flavors. 
+This chapter introduced the basic ideas behind a hardware module, it connectors and board layout. A key concept is the idea of a common component, the main controller, and extensions that can be connected. Nevertheless, there are good cases for combining a main controller and the extension hardware into one monolithic board. But in any case, the connectors and their purposes stay the same from board to board. While the main controller boards always have the LCS bus and power input on the left side, the extension connector and track line connector on the right, extension boards come in two flavors. 
 
 The first extension board type has male connectors for track line and extension lines on the left side of the board while the second type has not. Both types have female track line and extension line connectors on their right. The first type can just be plugged into the main controller type boards, additional extension boards are simply plugged into the previous extension board. The second extension type is intended for a backplane type design where main controller boards as well as up to four extension board types are plugged into a backplane board. Throughout the chapter to come, you will see how easy boards can be combined using the two connectors lanes and standards behind them. 
 
