@@ -64,7 +64,8 @@
 \renewcommand{\footrulewidth}{0pt}
 
 %-------------------------------------------------------------------------------------------------------
-% Listing style for showing source code files
+% Listing style for showing source code files. The appendix will optional include the source files 
+% of the layout control system components.
 %
 %-------------------------------------------------------------------------------------------------------
 \lstdefinestyle{listingstyle}{ 
@@ -83,7 +84,7 @@
 } 
 
 %-------------------------------------------------------------------------------------------------------
-% Listing style for showing code snippets
+% Listing style for showing code snippets. This style is used for showing short code sequences.
 %
 %-------------------------------------------------------------------------------------------------------
 \lstdefinestyle{codesnippetstyle}{ 
@@ -102,26 +103,42 @@
 }
 
 %-------------------------------------------------------------------------------------------------------
-% Document start
+% Document start.
 %
 %-------------------------------------------------------------------------------------------------------
 \begin{document}
 
     %---------------------------------------------------------------------------------------------------
-    % Example for a conditional execution of blocks.
+    % Toggles.
     %
     %---------------------------------------------------------------------------------------------------
-    \newtoggle{exampleToggle1}
-    \toggletrue{exampleToggle1} 
+    \newtoggle{includeListings}
+    \togglefalse{includeListings} 
 
-    \iftoggle{exampleToggle1}{
-        % Code to include
-    }{
-        % Code to exclude
-    }
-
+    %---------------------------------------------------------------------------------------------------
+    %
+    %
+    %---------------------------------------------------------------------------------------------------
     \setlength{\emergencystretch}{3em}
     \raggedbottom
+
+    %---------------------------------------------------------------------------------------------------
+    % Common TIKZ styles for my pictures.
+    %
+    %---------------------------------------------------------------------------------------------------
+    \tikzstyle{tsLargeBold} = [text=black, font=\bfseries\large]
+    \tikzstyle{tsWraptext} = [tsLargeBold, text centered, align=left]
+
+    \tikzstyle{tsRoundedRectangle} = [  rectangle,
+                                        tsWraptext,
+                                        rounded corners,
+                                        draw=black,
+                                        line width=1mm]
+
+    \tikzstyle{tsEllipse} = [   ellipse,
+                                tsWraptext,
+                                draw=black,
+                                line width=1mm]
 
     %---------------------------------------------------------------------------------------------------
     % Title page.
@@ -135,6 +152,7 @@
         \vspace{ 2cm }
        
         {\Large Helmut Fieres}
+
         {\large \today}
     \end{center}
 
@@ -146,9 +164,8 @@
     \tableofcontents    
 
     \mainmatter             
-    %\include{chapters/Introduction}
-    
-    %\include{chapters/LCS-Concepts-General}
+    \include{chapters/Introduction}
+    \include{chapters/LCS-Concepts-General}
     %\include{chapters/LCS-Concepts-Message-Formats}
     %\include{chapters/LCS-Concepts-Message-Protocols}
 
@@ -216,7 +233,9 @@
     % \include{appendices/Generic-Power-Supply}
     % \include{appendices/Inspiring-Work-And-Links} 
     % \include{appendices/About-This-Book}
-    % \include{appendices/listings}
+
+    \iftoggle{includeListings}{ \include{appendices/listings} }
+    
     % \include{appendices/Notes}
 
     \include{appendices/tests}
