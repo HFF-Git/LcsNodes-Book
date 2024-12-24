@@ -227,3 +227,67 @@ Another test with tikzstyle. It still is a lot of work to even make simple pictu
     \draw[<->, ultra thick, line cap=round] (a.south) -- ($(le.north) + (0.4,0)$);
 \end{tikzpicture}
 
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{tikzpicture}
+    \draw[help lines, gray!50, dashed] (0,0) grid(16,12);
+
+  
+    % Define nodes
+    \node[  tsRoundedRectangle, 
+            minimum width=12cm,
+            minimum height=1.5cm,
+            text width=3cm,
+            text centered,
+            fill=red!50] (fl) at (8,10) {Firmware Layer};
+
+    \node[  tsRoundedRectangle, 
+            minimum width=3cm,
+            minimum height=1.5cm,
+            text width=3cm,
+            text centered,
+            fill=red!50] (rl) at (8,7) {LCS Runtime Library};
+
+    \node[  tsRoundedRectangle, 
+            minimum width=3cm,
+            minimum height=1.5cm,
+            text width=3cm,
+            text centered,
+            fill=red!50] (mh) at (13,10) {Module Hardware};
+
+    % Connecting arrows to LCS bus
+    %\path[name path=p1] (gw.south) -- (3,8); % Define arrow path
+    %\path[name intersections={of=lcsline and p1, by=intpoint1}];
+    %\coordinate (adjustedPoint1) at ($(intpoint1) + (0,0.75mm)$);
+    %\draw[<->, ultra thick, line cap=round] (gw.south) -- (adjustedPoint1);
+
+    % Arrow from Base Station
+    %\path[name path=p2] (bs.south) -- (7,8); % Define arrow path
+    %\path[name intersections={of=lcsline and p2, by=intpoint2}]; % Find intersection
+    %\coordinate (adjustedPoint2) at ($(intpoint2) + (0,0.75mm)$);
+    %\draw[<->, ultra thick, line cap=round] (bs.south) -- (adjustedPoint2); % Draw to intersection
+
+    % Arrow from Cab Handheld
+    %\path[name path=p3] (ch.south) -- (13,8);
+    %\path[name intersections={of=lcsline and p3, by=intpoint3}];
+    %\coordinate (adjustedPoint3) at ($(intpoint3) + (0,0.75mm)$);
+    %\draw[<->, ultra thick, line cap=round] (ch.south) -- (adjustedPoint3);
+
+
+   
+   % \draw[<->, ultra thick, line cap=round] (bc.south) -- (blk.north);
+   % \draw[<->, ultra thick, line cap=round] (s.south) -- ($(le.north) - (0.4,0)$);
+   % \draw[<->, ultra thick, line cap=round] (a.south) -- ($(le.north) + (0.4,0)$);
+\end{tikzpicture}
+
+
