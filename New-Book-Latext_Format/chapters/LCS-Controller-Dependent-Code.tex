@@ -9,8 +9,57 @@ Enough software talk ? Well not quite. The previous chapter presented the main c
 
 The figure depicted below shows the refined overall structure of the node firmware. There is the core library discussed in a previous chapters and a new layer, which is the \textbf{controller dependent code layer}. The layer essentially encapsulates the required controller functions, such as a timer or a digital I/O pin, and offers a common interface to core library and firmware layer that directly uses the controller functions. The picture also shows a component labelled "extension driver". An extension driver is piece of software that knows how to handle an extension board. We get this this part later when we talk about more about extensions.
 
+\begin{center}
+    \begin{tikzpicture} [scale=0.9, transform shape]
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,12);
 
-% !\href{./Figures/Schematic_LcsNodes-Core-Library-Overview-Refined.png }{Schematic_LcsNodes-Core-Library-Overview-Refined.png}
+        % Define nodes
+        \node[  tsRoundedRectangle, 
+                minimum width=16cm,
+                minimum height=2.5cm,
+                text width=12cm,
+                text centered,
+                fill=yellow!50] (fl) at (8,10.5) {Firmware Layer};
+
+        \node[  tsRoundedRectangle, 
+                minimum width=8cm,
+                minimum height=2.5cm,
+                text width=6cm,
+                text centered,
+                fill=green!80] (rl) at (12,7) {LCS Runtime Library};
+
+        \node[  tsRoundedRectangle, 
+                minimum width=3cm,
+                minimum height=2.5cm,
+                text width=3cm,
+                text centered,
+                fill=green!80] (dr) at (5.5,7) {Driver Library};
+
+        \node[  tsRoundedRectangle, 
+                minimum width=14cm,
+                minimum height=1.5cm,
+                text width=6cm,
+                text centered,
+                fill=red!60] (cdc) at (9,4) {Controller dependent code};
+
+        \node[  tsRoundedRectangle, 
+                minimum width=16cm,
+                minimum height=2cm,
+                text width=6cm,
+                text centered,
+                fill=red!60] (mh) at (8,1) {Module Hardware};
+
+        \draw[<->, ultra thick, line cap=round] (1,2) -- (1,9.2);
+        \draw[<->, ultra thick, line cap=round] (3,4.8) -- (3,9.2);
+        \draw[<->, ultra thick, line cap=round] (7.125,7) -- (8,7);
+        \draw[<->, ultra thick, line cap=round] (cdc.south) -- (9,2);
+        \draw[<->, ultra thick, line cap=round] (dr.south) -- (5.5,4.8);
+        \draw[<->, ultra thick, line cap=round] (rl.south) -- (12,4.8);
+        \draw[<->, ultra thick, line cap=round] (5.5,9.2) -- (dr.north);
+        \draw[<->, ultra thick, line cap=round] (12,9.2) -- (rl.north);
+
+    \end{tikzpicture}
+\end{center}
 
 Using the CDC layer does not mean that access to the bare bones controller chip is not possible. Any controller HW function can be accessed directly at the expense of that the code will most likely not be portable between different controller families. Still, here may be good reasons for the direct path. The following sections describe will now what the CDC library is offering across all controller platforms.
 
@@ -120,7 +169,7 @@ Analog input configures the respective controller input ports for reading an ana
 
 The analog to digital converter system for the Raspberry PI PICO is compared to the Atmega really fast. A typical 12-bit conversion takes about 2 microseconds. The PICO ADC unit resolution will be scaled down to 1024 to match the Atmega resolution.
 
-\subsection{PWM Output}
+\section{PWM Output}
 
 Depending on the controller, some digital pins can be configured with a time period and pulse width ratio. The capabilities of the underlying processor also determine what kind of PWM is possible. For example, in the main controller board Atmega1284 processor version, Timer 2 is used, allowing for two separate channels. Both channels can be set to either a fast PWM where the timer just counts up, or a phase correct mode, where the timer counts up and then down, essentially dividing the PWM period by two. Since the PWM channels are configured as two independent channels, the PWM period can only be set according to the processor clock frequency divided by the pre-scaler fixed values.
 

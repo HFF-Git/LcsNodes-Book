@@ -20,15 +20,86 @@ As said before, the trend is to use a layout control system with a dedicated bus
 
 The key task of the locomotive session management is to generate the DCC packets for running and configuring mobile and stationary decoders. There are also packets, such as RESET or IDLE, that concern all decoders on the track. The DCC packets are described officially in the NMRA specifications. The *RailCommunity* specification documents ( RCN-xxx) also have an excellent description of the packets layout and their interpretation. Each bit is either a zero or a one. A "one" bit has a period of 116 microseconds, a zero bit a period of 232 microseconds. The exact timings are listed on the DCC standard, for now, this is a good enough description. The appendix contains links to their web pages for diving into all the details of the DCC packet format and protocol.
 
-The base station part that produces DCC packets is not concerned with how these packets are actually transmitted to the locomotive. This is the task of the DCC track management component, which will be presented shortly. In general, a DCC packet is a stream of bits consisting of the preamble, a decoder address and the command bytes followed by a checksum byte. The preamble is to sync a decoder with the upcoming data stream. The address tells which decoder is address and the command bytes actually tell what needs to be done. Finally, the checksum makes sure that there was no error in transmitting the packet. The following figure shows a simple packet.
+The base station part that produces DCC packets is not concerned with how these packets are actually transmitted to the locomotive. This is the task of the DCC track management component, which will be presented shortly. In general, a DCC packet is a stream of bits consisting of the preamble, a decoder address and the command bytes followed by a checksum byte. The preamble is to sync a decoder with the upcoming data stream. The address tells which decoder is address and the command bytes actually tell what needs to be done. Finally, the checksum makes sure that there was no error in transmitting the packet. The following figure depicts a simple packet.
 
-picture 
+\begin{center}
+    \begin{tikzpicture} [scale=0.9, transform shape]
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,4);
+        
+        % Parameters
+        \def\bitOneWidth{0.058}    % Width of a '1'
+        \def\bitZeroWidth{0.116}   % Width of a '0'
+        \def\amplitude{2}          % Amplitude of the wave
+        \def\scaleFactor{4}        % Scale factor for drawing (to adjust units)
+        
+        % Start point
+        \coordinate (current) at (2,1.5);
+        
+        % Function to draw a single bit
+        \newcommand{\drawBit}[1]{
+            % Argument #1: Width of the bit
+            \pgfmathsetmacro{\width}{#1 * \scaleFactor}
+            % Draw bit
+            \draw[thick] (current) -- ++(0,\amplitude) -- ++(\width/2,0) -- ++(0,-\amplitude) -- ++(+\width/2,0);
+            %update current
+            \coordinate (current) at ($(current) + (#1 * \scaleFactor,0)$);
+        }
+        
+        % Function to draw the bit sequence
+        \newcommand{\drawBitSequence}{
+        % 16 ones
+        \foreach \i in {1,...,16} {
+            \drawBit{\bitOneWidth}
+        }
+        % 1 zero
+        \drawBit{\bitZeroWidth}
+        % 8 ones
+        \foreach \i in {1,...,8} {
+            \drawBit{\bitOneWidth}
+        }
+        % 1 zero
+        \drawBit{\bitZeroWidth}
+        % 9 zeroes
+        \foreach \i in {1,...,9} {
+            \drawBit{\bitZeroWidth}
+        }
+        % 8 ones
+        \foreach \i in {1,...,8} {
+            \drawBit{\bitOneWidth}
+        }
+        % 1 zero
+        \drawBit{\bitZeroWidth}
+        }
+        
+        % Draw the bit sequence
+        \drawBitSequence{}
+        
+        % Add axes for clarity
+        \draw[thick,->] (0.5,\amplitude/2+1.5) -- (15,\amplitude/2+1.5) node[right] {Time};
+        \draw[thick,<->] (0.5,2.5-\amplitude/2) node[below] {V-}  -- (0.5, 2.5 + \amplitude/2)  node[above] {V+} ;
 
-\begin{figure}[h]
-    \centering
-   % \includegraphics[page=1, width=\textwidth]{./figures/Schematic_LcsNodes-Layout-Overview.pdf}
-   %![Schematic_LcsNodes-DCC-Packet-Structure.png](./Figures/Schematic_LcsNodes-DCC-Packet-Structure.png )
-\end{figure}
+        \node[  minimum width=2cm,
+                minimum height=1cm,
+                text width=2cm,
+                text centered ] at (4, 0.5) {Preamble};
+
+        \node[  minimum width=2cm,
+                minimum height=1cm,
+                text width=2cm,
+                text centered ]at (6.75, 0.5) {Byte1};
+
+        \node[  minimum width=2cm,
+                minimum height=1cm,
+                text width=2cm,
+                text centered ]at (9.5, 0.5) {Byte2};
+            
+        \node [ minimum width=2cm,
+                minimum height=1cm,
+                text width=2cm,
+                text centered ]at (13.5, 0.5) {Checksum};
+        
+    \end{tikzpicture}
+\end{center}
 
 The high level LCS DCC commands are translated by the base station into the corresponding DCC packets. There are two modes of transmission. With the first mode, any incoming command is translated and sent out immediately with an optional repeat count. Consider a locomotive speed stop command. This has of course top priority. The second mode of transmission is a one time fixed sequence of DCC packets for a high level LCS command, such as it is used for programming a decoder.
 
@@ -64,13 +135,14 @@ RailCom was invented to address the problem of effective back communication on t
 
 The following figure depicts the overall signal timing for RailCom support. All the details can be found in the NMRA and RailCommunity standard document including a hardware reference implementation for a RailCom decoder and detector. After the last bit of a packet and during the first bits of the DCC packet preamble, the track signal is turned off, the track is short circuited. The decoder can now send out data to the track and a signal detector can receive that data. The signal is a simple serial signal with a baud rate of 250 Kbits. The following figure shows the overall DCC and RailCom signal timing.
 
-picture 
+\begin{center}
+    \begin{tikzpicture} [scale=0.9, transform shape]
 
-\begin{figure}[h]
-    \centering
-   % \includegraphics[page=1, width=\textwidth]{./figures/Schematic_LcsNodes-Layout-Overview.pdf}
-   %![Schematic_LcsNodes-RailCom-Packet-Structure.png](./Figures/Schematic_LcsNodes-RailCom-Packet-Structure.png )
-\end{figure}
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,4);
+        \node at ( 7,2) {picture to come};
+
+    \end{tikzpicture}
+\end{center}
 
 The NMRA and RailCommunity standards describe the data format used when sending the RailCom data. There are two channels defined which in total send a maximum 8 bytes during the cutout period. Channel one takes up two bytes, channel two takes up four bytes. To ensure data transmission integrity, the bytes itself are encoded as values with four bits one and four bits zero. This leaves 64 useful values that the byte contains. All else is an invalid data byte. Put together, there are up to 48 bits of data in a RailCom message.
 
