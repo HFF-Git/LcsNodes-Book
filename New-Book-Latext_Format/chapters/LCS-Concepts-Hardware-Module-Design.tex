@@ -85,6 +85,7 @@ Every hardware module needs the LCS bus interface to connect to the bus. Some mo
 \begin{table}[!ht]
     \begin{center}
         \caption{Bus Connector Pins}
+
         \begin{tabular}{|l|l|p{0.72\textwidth}|}
             \toprule
             \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
@@ -115,8 +116,8 @@ For interchangeability of extensions, there is a standardized \textbf{extension 
 
 The I2C interface will be the main communication method between the boards. In fact all current extension boards shown in later chapters use the I2C communication channel. Nevertheless, a rather rich set of outputs from the controller should be available to the extension board for flexibility. There should be ports for digital input and output, analog input, PWM outputs, serial outputs and so on. The raspberry pi pico offers a great flexibility on assigning function blocks such as an SPI or I2C interface to pins. The extension connector outlined below offers a set of pins which are mapped to the PICO capabilities. The following table shows the connector pin assignments for the communication between a main controller board and extension boards. All boards will have a 40-pin connector organized as 2 rows of 20 pins.
 
-\begin{longtable}{@{}|p{0.05\linewidth}|p{0.1\linewidth}|p{0.05\linewidth}|p{0.1\linewidth}|p{0.4\linewidth}|@{}}
-    \caption{Controller Attributes} \\
+\begin{longtable}{@{}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.4\linewidth}|@{}}
+    \caption{Extension Connector} \\
     \toprule
     \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
     \midrule
