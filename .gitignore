@@ -6,10 +6,6 @@
 */._.DS_Store
 
 # old book ignores
-*/Boards
-*/Figures
-*/Schematics
-*/zzz Old Book content
 *Book-Text.pdf
 *Book-Text_tmp.html
 
