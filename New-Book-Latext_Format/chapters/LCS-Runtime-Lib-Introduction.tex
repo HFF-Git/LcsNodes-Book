@@ -8,13 +8,42 @@ The key design objective for the runtime library is to relief the LCS nodes firm
 
 The following figure depicts the overall structure of a LCS hardware module and node. At the bottom is the hardware module, which contains the communication interfaces, the controller and the node specific functions. The core library offers a set of APIs and callbacks to the node firmware. The firmware programmer can perform functions such as sending a message or accessing a node attribute through the APIs provided. The library in turn communicates with the firmware solely via registered callbacks.
 
-picture 
-
-\begin{figure}[h]
-    \centering
-   % \includegraphics[page=1, width=\textwidth]{./figures/Schematic_LcsNodes-Layout-Overview.pdf}
-   %![Schematic_LcsNodes-Core-Library-Overview.png](./Figures/Schematic_LcsNodes-Core-Library-Overview.png )
-\end{figure}
+\begin{center}
+    \begin{tikzpicture}
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,10);
+    
+        % Define nodes
+        \node[  tsRoundedRectangle, 
+                minimum width=12cm,
+                minimum height=2cm,
+                text width=12cm,
+                text centered,
+                fill=yellow!50] (fl) at (8,9) {Firmware Layer};
+    
+        \node[  tsRoundedRectangle, 
+                minimum width=8cm,
+                minimum height=3cm,
+                text width=6cm,
+                text centered,
+                fill=green!80] (rl) at (10,5) {LCS Runtime Library};
+    
+        \node[  tsRoundedRectangle, 
+                minimum width=12cm,
+                minimum height=2cm,
+                text width=6cm,
+                text centered,
+                fill=red!60] (mh) at (8,1) {Module Hardware};
+    
+        \draw[->, ultra thick, line cap=round] (8,8) -- (8,6.5) node [midway, right] {function call};
+        \draw[->, ultra thick, line cap=round] (8,3.5) -- (8,2) node [midway, right] {function call};
+    
+        \draw[<-, ultra thick, line cap=round] (12,8) -- (12,6.5) node [midway, right] {\textit{callback}};
+        \draw[<-, ultra thick, line cap=round] (12,3.5) -- (12,2) node [midway, right] {\textit{callback}};
+        
+        \draw[<->, ultra thick, line cap=round] (4,2) -- (4,8) node [midway, left] {direct calls};
+    
+    \end{tikzpicture}
+\end{center}
 
 The firmware has of course also direct access to the hardware module capabilities. This is however outside the scope for the LCS core library. As we will see in the coming chapters, the library has a rich set of functions and does also perform many actions resulting form the protocol implementation transparently to the firmware programmer. It is one of the key ideas, that the firmware programmer can concentrate on the module design and not so much on the inner workings of the LCS layout system. Events, ports, nodes and attributes form a higher level foundation for writing LCS control system firmware. Not all of the functionality will of course be used by every node. A base station and a handheld cab control will for example make heavy use of the DCC commands. A turnout device node will use much more of the port and event system. Size and functions of the various library components can be configured for a node.
 

@@ -24,14 +24,94 @@ Before diving into details, this section shows how support for an analog system 
 
 However, an analog engine has no concept being directly addressable. The typical solution is to divide the track into sections and control the sections where the locomotive currently is. The section is called a block and a block itself consist of one or more sub sections. The track subsections each have a sensor to detect that there is something drawing current from the track and the block controller has a way to know which locomotive is in which block. The following figure depicts an analog layout using the LCS components.
 
-picture 
-
-\begin{figure}[!ht]
-    \centering
-   % \includegraphics[page=1, width=\textwidth]{./figures/Schematic_LcsNodes-Layout-Overview.pdf}
-   %![Schematic_LcsNodes-Analog-Block-Control.png](./Figures/Schematic_LcsNodes-Analog-Block-Control.png )
-\end{figure}
-
+\begin{center}
+    \begin{tikzpicture} [scale=0.8, transform shape]
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,8);
+    
+        \node at ( 1, 7.75) {Track Sections};
+    
+        % Tracks
+        \draw[-, blue, ultra thick, line cap=round] (4, 7.5) -- (6, 7.5);
+        \draw[-, blue, ultra thick, line cap=round] (4,8) -- (6, 8);
+     
+        \draw[-, blue, ultra thick, line cap=round] (7, 7.5) -- (9, 7.5);
+        \draw[-, blue, ultra thick, line cap=round] (7, 8) -- (9, 8);
+     
+        \draw[-, blue, ultra thick, line cap=round] (10, 7.5) -- (12, 7.5);
+        \draw[-, blue, ultra thick, line cap=round] (10, 8) -- (12, 8);
+     
+        \draw[-, blue, ultra thick, line cap=round] (13, 7.5) -- (15, 7.5);
+        \draw[-, blue, ultra thick, line cap=round] (13, 8) -- (15, 8);
+     
+        % Booster nodes
+        \node[  tsRoundedRectangle, 
+                minimum width=5cm,
+                minimum height=1.5cm,
+                text width=3cm,
+                text centered,
+                fill=orange!50] (bs1) at (6.5,5) {Block Controller};
+    
+        \node[  tsRoundedRectangle, 
+                minimum width=5cm,
+                minimum height=1.5cm,
+                text width=3cm,
+                text centered,
+                fill=orange!50] (bs2) at (12.5,5) {Block Controller};
+    
+        % Arrows from booster to tracks
+        \draw[<->, ultra thick, line cap=round] (5, 5.75 + 0.05) -- (5, 7.5);
+        \draw[<->, ultra thick, line cap=round] (8, 5.75 + 0.05) -- (8, 7.5);
+        \draw[<->, ultra thick, line cap=round] (11, 5.75 + 0.05) -- (11, 7.5);
+        \draw[<->, ultra thick, line cap=round] (14, 5.75 + 0.05) -- (14, 7.5);
+       
+         % Thick horizontal line (LCS bus) with text
+        \draw[line width=1.5mm, <->, line cap=round, draw=gray, name path=lcsline] 
+         (0,3) -- (16,3)
+        node[pos= 0.9, tsLargeBold, below] {LCS bus};
+    
+        % Vertical arrows to LCS bus \path[name path=p3] (bc.north) -- (4,8);
+        \path[name path=p5] (6.5, 5) -- (6.5, 3);
+        \path[name intersections={of=lcsline and p5, by=intpoint5}];
+        \coordinate (adjustedPoint5) at ($(intpoint5) + (0,0.75mm)$);
+        \draw[<->, ultra thick, line cap=round] (bs1.south) -- (adjustedPoint5);
+    
+        % Vertical arrows to LCS bus \path[name path=p3] (bc.north) -- (4,8);
+        \path[name path=p6] (12.5, 5) -- ( 12.5, 3);
+        \path[name intersections={of=lcsline and p6, by=intpoint6}];
+        \coordinate (adjustedPoint6) at ($(intpoint6) + (0,0.75mm)$);
+        \draw[<->, ultra thick, line cap=round] (bs2.south) -- (adjustedPoint6);
+    
+        %Base Station
+        \node[  tsRoundedRectangle, 
+                minimum width=4cm,
+                minimum height=1.5cm,
+                text width=4cm,
+                text centered,
+                fill=green!60] (bs) at (2,1) {Base Station};
+    
+        % Handheld
+        \node[  tsRoundedRectangle, 
+                minimum width=3cm,
+                minimum height=1.5cm,
+                text width=3cm,
+                text centered,
+                fill=gray!60] (ch) at (7,1) {Handheld};
+    
+        % Vertical arrows to LCS bus \path[name path=p3] (bc.north) -- (4,8);
+        \path[name path=p7] (bs.north) -- (2,4);
+        \path[name intersections={of=lcsline and p7, by=intpoint7}];
+        \coordinate (adjustedPoint7) at ($(intpoint7) - (0,0.75mm)$);
+        \draw[<->, ultra thick, line cap=round] (bs.north) -- (adjustedPoint7);
+    
+        % Vertical arrows to LCS bus \path[name path=p3] (bc.north) -- (4,8);
+        \path[name path=p8] (ch.north) -- (7,4);
+        \path[name intersections={of=lcsline and p8, by=intpoint8}];
+        \coordinate (adjustedPoint8) at ($(intpoint8) - (0,0.75mm)$);
+        \draw[<->, ultra thick, line cap=round] (ch.north) -- (adjustedPoint8);
+    
+    \end{tikzpicture}
+\end{center}
+    
 The LCS base station that manages all active locomotives, will not work differently for a digital or analog locomotive. It will create a session and also emit DCC data packets for controlling among other thongs speed and direction. The DCC signal is broadcasted via the LCS bus. This way it will also reach all block controllers that manage a block. The block controller will then decode the DCC packet and if it concerns a locomotive that according to the block controller data is currently in the block will put the respective PWM signal on the track. This is different to a normal DCC booster. A DCC booster just amplifies the incoming DCC signal and puts it onto the track. A block controller will decode the DCC signal and put a corresponding PWM signal on the track.
 
 \section{Locomotive session management}

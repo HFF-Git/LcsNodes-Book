@@ -3,7 +3,7 @@
 %
 %
 %-------------------------------------------------------------------------------------------------------
-\documentclass[a4paper, 12pt]{book}  
+\documentclass[a4paper, 11pt]{book}  
 
 %-------------------------------------------------------------------------------------------------------
 % Packages
@@ -129,11 +129,13 @@
     \tikzstyle{tsLargeBold} = [text=black, font=\bfseries\large]
     \tikzstyle{tsWraptext} = [tsLargeBold, text centered, align=left]
 
-    \tikzstyle{tsRoundedRectangle} = [  rectangle,
-                                        tsWraptext,
-                                        rounded corners,
+    \tikzstyle{tsRectangle} = [  rectangle,
+                                        tsWraptext,               
                                         draw=black,
                                         line width=1mm]
+
+    \tikzstyle{tsRoundedRectangle} = [  tsRectangle,
+                                        rounded corners]
 
     \tikzstyle{tsEllipse} = [   ellipse,
                                 tsWraptext,
@@ -169,14 +171,14 @@
     %\include{chapters/LCS-Concepts-Message-Formats}
     %\include{chapters/LCS-Concepts-Message-Protocols}
 
-    %\include{chapters/LCS-Runtime-Lib-Introduction}
+    \include{chapters/LCS-Runtime-Lib-Introduction}
     %\include{chapters/LCS-Runtime-Lib-Storage}
     %\include{chapters/LCS-Runtime-Lib-API}
     %\include{chapters/LCS-Runtime-Lib-Callbacks}
     %\include{chapters/LCS-Runtime-Lib-Example}
     
-    %\include{chapters/LCS-Concepts-DCC-Subsystem}
-    %\include{chapters/LCS-Concepts-Analog-Subsystem}
+    \include{chapters/LCS-Concepts-DCC-Subsystem}
+    \include{chapters/LCS-Concepts-Analog-Subsystem}
     \include{chapters/LCS-Concepts-Hardware-Module-Design}
     %\include{chapters/LCS-Controller-Dependent-Code}
 
