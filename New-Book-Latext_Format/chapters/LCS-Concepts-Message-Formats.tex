@@ -38,7 +38,7 @@ The byte fields names in an LCS message are explained in greater detail when we 
 
 \section{General Management}
 
-The general management message group contains commands for dealing with the layout system itself. The reset command \texttt{(RESET)} directs all hardware modules, a node, or a port on a node to perform a reset. The entire bus itself can be turned on and off \texttt{(BUS-ON, BUS-OFF)}, enabling or suppressing the message flow. Once the bus is off, all nodes wait for the bus to be turned on again. Finally, there are messages for pinging a node \texttt{(PING)} and request acknowledgement \texttt{(ACK/ERR)}.
+The general management message group contains commands for dealing with the layout system itself. The reset command \texttt{(RESET)} directs all hardware modules, a node, or a port on a node to perform a reset. The entire bus itself can be turned on and off \texttt{(BUS-ON, BUS-OFF)}, enabling or suppressing the message flow. Once the bus is off, all nodes wait for the bus to be turned on again. Finally, there are messages for pinging a node \texttt{(PING)}, perform data synchronization operations \texttt{(SYNC)} and request acknowledgement \texttt{(ACK/ERR)}.
 
 \begin{table}[h!]
     \begin{center}
@@ -53,6 +53,7 @@ The general management message group contains commands for dealing with the layo
             SYS-TIME & arg1 & arg2 & arg3 & arg4 & & & \\
             LCS-INFO & arg1 & arg2 & arg3 & arg4 & & & \\
             PING & npId-H & npId-L & & & & & \\
+            SYNC & npId-H & npId-L & arg & & & & \\
             ACK & npId-H & npId-L & & & & & \\
             ERR & npId-H & npId-L & code & arg1 & arg2 & & \\
             \bottomrule
