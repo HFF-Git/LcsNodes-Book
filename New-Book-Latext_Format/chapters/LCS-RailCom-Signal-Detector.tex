@@ -1,11 +1,11 @@
-\chapterr{\textit{Railcom Signal Detector}}
+\chapter{Railcom Signal Detector}
 
 Although a standalone component, the RailCom detector is typically a part of the power section. It sits between the power module and the track. DCC is a broadcasting protocol. To address programming engines on the MAIN track the problem of providing a back channel had to be solved. First, the DCC signal generator needs to be able to include a cutout period in the bitstream. As shown in the DCC subsystem chapter, the cutout period happens right after the last bit of a packet sent as part of the preamble section of the next packet. The power module short circuits the track during this period. The decoder uses the period to send a short bit stream which in turn is detected by the RailCom detector. This section will just discuss the hardware part for receiving the RailCom bitstream in the cutout period. There is of course a software part that receives and decodes the RailCom datagrams. The details of RailCom message processing are described in the base station chapter.
 
-!\href{./Schematics/Schematic_LcsNodes-Building-Block-Dual-RailCom-Detector.png }{Schematic_LcsNodes-Building-Block-Dual-RailCom-Detector.png}
+% !\href{./Schematics/Schematic_LcsNodes-Building-Block-Dual-RailCom-Detector.png }{Schematic_LcsNodes-Building-Block-Dual-RailCom-Detector.png}
 
 The above schematic shows a dual RailCom detector. As we will see in the block controller chapter, there is the requirement to have two or even four such detectors on one board. This allows for using chips that have four comparators, as shown here. If only one channel is required, a schematic with for example an LM393 would be the solution. The principle of operation is the same. All the examples will rest on the cutout capability of the power module and the detector circuitry shown here.
 
-\section{\textit{Summary}}
+\section{Summary}
 
 The RailCom channel was an important addition to the DCC standard. With RailCom capable decoders data can be queried and set while the engine is on the main track. This chapter showed a simple building block that allows to detect a RailCom stream. It is actually a very modest hardware addition, so that each H-Bridge delivering DCC signals should be equipped with such a detector. We will make use of this building block for all power modules found in the base station and block controller designs.

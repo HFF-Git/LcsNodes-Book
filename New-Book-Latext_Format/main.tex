@@ -64,76 +64,10 @@
 \renewcommand{\footrulewidth}{0pt}
 
 %-------------------------------------------------------------------------------------------------------
-% Listing style for showing source code files. The appendix will optional include the source files 
-% of the layout control system components.
+% Document styles.
 %
 %-------------------------------------------------------------------------------------------------------
-\lstdefinestyle{listingstyle}{ 
-    backgroundcolor=\color{gray!10}, 
-    basicstyle={\ttfamily\tiny}, 
-    keywordstyle=\color{magenta},
-    identifierstyle=\ttfamily\color{blue},
-    numberstyle={\ttfamily\tiny\color{gray}},
-    commentstyle=\ttfamily\color{teal},
-    showstringspaces=false,
-    numbers=left,
-    frame=single,
-    texcl=false,
-    alsoletter={\#},
-    morekeywords={\#include, \#define, \#ifdef, \#endif, \#pragma}
-} 
-
-%-------------------------------------------------------------------------------------------------------
-% Listing style for showing code snippets. This style is used for showing short code sequences.
-%
-%-------------------------------------------------------------------------------------------------------
-\lstdefinestyle{codesnippetstyle}{ 
-    backgroundcolor=\color{gray!10}, 
-    basicstyle={\ttfamily\relsize{-1}}, 
-    keywordstyle=\color{magenta},
-    identifierstyle={\ttfamily\color{blue}}, 
-    numberstyle={\ttfamily\relsize{-1}\color{gray}}, 
-    commentstyle={\ttfamily\color{teal}}, 
-    showstringspaces=false,
-    numbers=left,
-    frame=single,
-    texcl=false,
-    alsoletter={\#},
-    morekeywords={\#include, \#define, \#ifdef, \#endif, \#pragma}
-}
-
-%-------------------------------------------------------------------------------------------------------
-% Common TIKZ styles for my pictures.
-%
-%---------------------------------------------------------------------------------------------------
-\tikzstyle{tsLargeBold} = [ 
-    text=black, 
-    font=\bfseries\large
-]
-
-\tikzstyle{tsWraptext} = [ 
-    tsLargeBold, 
-    text centered, 
-    align=left
-]
-
-\tikzstyle{tsRectangle} = [ 
-    rectangle,
-    tsWraptext,               
-    draw=black,
-    line width=1mm]
-
-\tikzstyle{tsRoundedRectangle} = [  
-    tsRectangle,
-    rounded corners
-]
-
-\tikzstyle{tsEllipse} = [   
-    ellipse,
-    tsWraptext,
-    draw=black,
-    line width=1mm
-]
+\input{styles.tex}
 
 %-------------------------------------------------------------------------------------------------------
 % Document start.
@@ -185,31 +119,32 @@
     \include{chapters/LCS-Concepts-Message-Protocols}
 
     \include{chapters/LCS-Runtime-Lib-Introduction}
-    %\include{chapters/LCS-Runtime-Lib-Storage}
-    %\include{chapters/LCS-Runtime-Lib-API}
-    %\include{chapters/LCS-Runtime-Lib-Callbacks}
-    %\include{chapters/LCS-Runtime-Lib-Example}
+    \include{chapters/LCS-Runtime-Lib-Storage}
+    \include{chapters/LCS-Runtime-Lib-API}
+    \include{chapters/LCS-Runtime-Lib-Callbacks}
+    \include{chapters/LCS-Runtime-Lib-Command-Interface}
+    \include{chapters/LCS-Runtime-Lib-Example}
     
     \include{chapters/LCS-Concepts-DCC-Subsystem}
     \include{chapters/LCS-Concepts-Analog-Subsystem}
     \include{chapters/LCS-Concepts-Hardware-Module-Design}
     \include{chapters/LCS-Controller-Dependent-Code}
 
-    % \include{chapters/Lcs Nodes firmware design
-    % \include{chapters/LCS-Power-Module-Design}
-    % \include{chapters/LCS-Railcom-Signal-Detector}
+    \include{chapters/LCS-Concepts-Firmware-Design}
+    \include{chapters/LCS-Power-Module-Design}
+    \include{chapters/LCS-Railcom-Signal-Detector}
 
-    % \include{chapters/LCS-Base_station-Intro}
-    % \include{chapters/LCS-Base_station-Hardware}
-    % \include{chapters/LCS-Base_station-Firmware}
+    \include{chapters/LCS-Base-Station-Intro}
+    % \include{chapters/LCS-Base-Station-Hardware}
+    % \include{chapters/LCS-Base-Station-Firmware}
 
-    % \include{chapters/LCS-Cab-Handheld-Intro}
+    \include{chapters/LCS-Cab-Handheld-Intro}
     % \include{chapters/LCS-Cab-Handheld-Firmware-Development}
     % \include{chapters/LCS-Cab-Handheld-Basic}
     % \include{chapters/LCS-Cab-Handheld-Firmware}
     % \include{chapters/LCS-Cab-Handheld-Diesel}
 
-    % \include{chapters/LCS-Concepts-Signaling-Block-Control}
+    \include{chapters/LCS-Concepts-Signaling-Block-Control}
 
     % \include{chapters/LCS-Block-Controller-Boards}
     % \include{chapters/LCS-Block-Controller-Hardware}
