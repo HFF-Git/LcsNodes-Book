@@ -3,6 +3,7 @@
 \chapter{LCS Hardware Module Design}
 
 So far we covered the general concepts, messages, protocols as well as the LCS core library and a glimpse how all of this might be used. Let's take a break from all that concepts and mostly software talk. For the software to run, hardware modules need to be built. Welcome to the next big part of this book. Here, we will talk about the lCS hardware modules. A hardware module conceptually consist of three key parts.
+
 \begin{itemize}
 \item communication
 \item controller
@@ -58,7 +59,7 @@ As time goes by, there will be for sure other capable controller entering the ma
     \textbf{Serial I/O} & The serial I/O is used in some hardware modules for implementation of RailCom detectors. The PICO features two hardware UARTS and the option to implement more in software using the PIO state machines. \\
     \midrule
     \textbf{Console I/O} & Serial I/O is used for console I/O. Rather than using dedicated I/O pins and a UART block in the controller, the PICO serial I/O will be implemented via the USB connector. \\
-    \textbf{LEDs, Button and Dip Switches} & A hardware module could make use of LEDs to indicate readiness and activity, as well as a set of switches to configure a hardware option. Not really required but certainly useful. \\
+    \textbf{LEDs, Buttons and Dip Switches} & A hardware module could make use of LEDs to indicate readiness and activity, as well as providing a set of switches to configure a hardware option. Not really required but certainly useful. \\
     \midrule
     \textbf{WLAN} & WLAN is optional. But there is a PICO version with WLAN capability integrated. \\
 \end{longtable}

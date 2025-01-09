@@ -10,7 +10,7 @@ This chapter presents a high level overview of the available maps and their purp
 
 The node map is a node private data structure only accessible to the library firmware. It contains the information about the configured maps, the node options, nodeId, canId and other data such as the library version. When a node is initially created the configuration descriptor contains all the required information to set up a node map. Nodes need volatile and non-volatile storage. Our design implements a mirroring scheme. For the LCS storage there is a memory and an EEPROM version with the same layout. When a node is running the memory version is the storage to use for performance reasons. Also, it can be expected that the memory contents changes very often during operation. EEPROMs do have a limited number of writes in their lifetime and are not that performant for a write cycle. On the other the other hand the data is stored non-volatile. Information that needs to be changed and available across a restart is therefore synced from MEM to NVM. On restart, the NVM data is just copied to MEM. We always start with a defined state. The following figure shows the nodeMap data structure.
 
-\begin{tikzpicture}
+\begin{tikzpicture}[scale=0.9, transform shape]
 
     \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
     \node at (8,4) {high level structure of node storage};

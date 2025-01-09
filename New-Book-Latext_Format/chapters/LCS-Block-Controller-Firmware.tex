@@ -25,7 +25,6 @@ The block controller will define many items that refer to node and pot map attri
 \section{Block Port}
 
 \begin{itemize}
-\begin{itemize}
 \item block state ( free, used, running, locked, etc. )
 \item block actual direction
 \item neighbor blocks
@@ -41,7 +40,6 @@ The block controller will define many items that refer to node and pot map attri
 \item associated signals ( indices into turnout signal data entries )
 \item periodic events to fire
 \end{itemize}
-\end{itemize}
 
 | Node Info Item | comment |
 |--------|--------|
@@ -54,7 +52,6 @@ The block controller will define many items that refer to node and pot map attri
 \section{Section Port}
 
 \begin{itemize}
-\begin{itemize}
 \item associated block port
 \item section type ( normal section, brake section, etc. )
 \item timestamp on entry
@@ -65,7 +62,6 @@ The block controller will define many items that refer to node and pot map attri
 \item events to fire on section entry and exit
 \item periodic events to fire
 \item hardware address information for extension board addressing ( tbd )
-\end{itemize}
 \end{itemize}
 
 | Node Info Item | comment |
@@ -79,7 +75,6 @@ The block controller will define many items that refer to node and pot map attri
 \section{H-Bridge Port}
 
 \begin{itemize}
-\begin{itemize}
 \item actual power consumption
 \item actual current consumption limit
 \item initial current consumption limit at restart
@@ -87,7 +82,6 @@ The block controller will define many items that refer to node and pot map attri
 \item bridge mode ( OFF, DCC, PWM-F, PWM-B )
 \item events to fire on limit overflow
 \item periodic events to fire
-\end{itemize}
 \end{itemize}
 
 | Node Info Item | comment |
@@ -102,14 +96,12 @@ The block controller will define many items that refer to node and pot map attri
 \section{Turnout Port}
 
 \begin{itemize}
-\begin{itemize}
 \item actual turnout setting
 \item initial setting after restart
 \item turnout hardware type ( servo, magnet, etc. )
 \item turnout feedback for actual turnout setting
 \item hardware address information for extension board addressing ( tbd )
 \item periodic events to fire on turnout setting
-\end{itemize}
 \end{itemize}
 
 | Node Info Item | comment |
@@ -123,12 +115,10 @@ The block controller will define many items that refer to node and pot map attri
 \section{Signal Port}
 
 \begin{itemize}
-\begin{itemize}
 \item actual signal state
 \item delays for setting "STOP" or "GO" a signal after command has been received
 \item initial setting after restart
 \item hardware address information for extension board addressing ( tbd )
-\end{itemize}
 \end{itemize}
 
 | Node Info Item | comment |
@@ -143,11 +133,9 @@ The block controller will define many items that refer to node and pot map attri
 \section{Block Controller Node}
 
 \begin{itemize}
-\begin{itemize}
 \item global data for the block controller
 \item nodeId and node type
 \item number of blocks
-\end{itemize}
 \end{itemize}
 
 | Node Info Item | comment |
@@ -162,16 +150,13 @@ The block controller will define many items that refer to node and pot map attri
 \section{Info, Control and Events}
 
 \begin{itemize}
-\begin{itemize}
 \item events are the key mechanism to broadcast the block state. when an engine is entering a block, the event is broadcasted. The configured previous block and the follow-on block are interested in this event and react. In addition, the status can be queried from other nodes anytime.
 \item a central station does not control the actual sections of a block. It will do rather the high level setting of turnouts that build the actual chain of blocks.
 \item setting of turnouts and actual block occupancy are non-volatile data to be recovered at restart or after power fail. At restart, block occupancy and turnouts direction are set from this data.
 \end{itemize}
-\end{itemize}
 
 \section{To think about}
 
-\begin{itemize}
 \begin{itemize}
 \item layout turn on: what setting for each engine ? automatic ramp up to previous speed levels ?
 \item layout turn off: what setting for each engine ? automatic ramp down to previous speed levels ?
@@ -179,16 +164,13 @@ The block controller will define many items that refer to node and pot map attri
 \item automatism for speed acceleration or deceleration based on block entry speed...
 \item short rains and block sections, a train should perhaps stop in the middle if desired...
 \end{itemize}
-\end{itemize}
 
 \section{Summary}
 
-\begin{itemize}
 \begin{itemize}
 \item a rather complex firmware with a lot of functions.
 \item blocks largely work with events to each other.
 \item any block, turnout, signal etc. can be access manually.
 \item events produced can be consumed by any other node, e.g. a central switch board, etc.
 \item detection of a train loosing some of its cars... ( previous block not released after some time )
-\end{itemize}
 \end{itemize}

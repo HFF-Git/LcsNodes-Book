@@ -2,7 +2,12 @@
 
 The general handheld for controlling a locomotive is just one possible implementation. There is a company, Iowa Scale Engineering, that has built a handled called the \textbf{\textit{Protothrottle}}. This wireless handheld implements as the control elements the cab of a diesel engine. Wow. There is a lever for the diesel engine prime mover, a level for the direction and one for the brakes. You operate the engine with setting the prime mover notch, release the brakes and then the engine moves. When putting the prime mover to "idle", the engine just roll until you apply the brakes. In short, a much more realistic way to operate a diesel locomotive.
 
-!\href{../Figures/Diesel-Cab-Handheld-Sketch.png }{Diesel-Cab-Handheld-Sketch.png}
+\begin{tikzpicture}[scale=0.9, transform shape]
+
+    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
+    \node at (8,4) {picture};
+
+\end{tikzpicture}
 
 Leveraging the cab handheld hardware from the previous chapter, the diesel cab handheld just differs in the lever for throttle and brake instead of the speed knob. All else is fairly the same. Let's get started.
 
@@ -39,5 +44,5 @@ Leveraging the cab handheld hardware from the previous chapter, the diesel cab h
 \item one could come up with a steam or electric engine handheld. 
 \item the firmware already goes a long way to quickly realize further cab handhelds.
 \item would we ever build a handheld with other non-engine functionality... who knows... not right now.
-\item would we build a version that can be integrated into a "Stellwerk" table ? perhaps... just a main controller and an cab UI Elements extension
+\item would we build a version that can be integrated into a |\"Stellwerk\" table ? perhaps... just a main controller and an cab UI Elements extension
 \end{itemize}

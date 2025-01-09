@@ -1,25 +1,40 @@
-\chapterr{\textit{Cab Control Extension Board}}
+\chapter{Cab Control Extension Board}
 
 A cab control extension is essentially a cab handheld put in a stationary place. Consider a rail yard control stand with all the buttons and signals to manage that rail yard. There is no reason why for example one of two cab control stands could also be part of this control stand. All we need is a main controller board and an extension PCB that hosts the buttons and knobs for managing a locomotive. That's it.
 
-\section{\textit{Block Diagram}}
+\section{Block Diagram}
 
 The cab control extension board will contains the same arrangement of buttons, knobs and display as we have seen with the cab handheld. However, in contrast to the cab handheld, there is no controller directly managing these buttons and knobs. All there is, is the I2C bus to an extension board. The cab control extension therefore needs an I2C IO expander chip for the buttons and encoders.
 
-// ??? \textbf{note} picture goes here...
+\begin{tikzpicture}[scale=0.9, transform shape]
 
-\section{\textit{Connectors and Logic}}
+    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
+    \node at (8,4) {picture};
 
-// ??? \textbf{note} standard extension board connectors.
+\end{tikzpicture}
 
-\section{\textit{PCB}}
+\section{Connectors and Logic}
 
-An 8x10cm board, based on the extension board concept.
+\begin{tikzpicture}[scale=0.9, transform shape]
 
-\section{\textit{Firmware}}
+    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
+    \node at (8,4) {picture};
+
+\end{tikzpicture}
+
+\section{PCB}
+
+\begin{tikzpicture}[scale=0.9, transform shape]
+
+    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
+    \node at (8,4) {picture};
+
+\end{tikzpicture}
+
+\section{Firmware}
 
 The firmware is almost actually identical to a cab handheld. The difference is just how we access the buttons and encoders. Instead of a plain digital IO pin, we now use the I2C bus to access them.
 
 \section{Summary}
 
-// ??? \textbf{note} to be done later ...
+to be done later ...
