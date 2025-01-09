@@ -28,6 +28,7 @@
 *.snm
 
 ../New-Book-Latex_Format/main.pdf
+main.pdf
 
 # Ignore specific directories if needed
 */_minted*  # If you use minted
