@@ -127,7 +127,11 @@ The CDC library offers a set of routines for handling an external interrupt. Whi
 
 The main controller board features two LEDs. They are the ready and the activity LED. They are accessed via the \textbf{writeDio} routine. The LCS core library will use the ready LED to indicate that the node is ready. The activity LED is used to show library activities such as receiving a LCS message. The recommended colors for the LEDs are a green for the READY LED and yellow for the ACTIVE LED. The following just shows an example how to control the LEDs.
 
-// ??? this is done via nodeControl calls ...
+??? this is done via nodeControl calls ...
+
+\section{Watchdog}
+
+??? whatchdog facility
 
 
 \section{Timer}
@@ -217,7 +221,7 @@ SPI is the bus used for connecting NVM and CAN controller chips. The CDC library
     
 \end{lstlisting}
 
-\section{Extension Connector and hardware pins}
+\section{Extension Connector and Hardware Pins}
 
 The routines described have been implemented fairly flexible and their main purpose is to shield the upper library and firmware from the controller specific implementation methods. The same routines are also used to control the pins of the extension connector. If you recall, there are two ADC channels, a digital channels and an I2C communication channel available. The first two digital pins can be overlaid with an UART interface, and the last two digital pins allow a PWM capability.
 

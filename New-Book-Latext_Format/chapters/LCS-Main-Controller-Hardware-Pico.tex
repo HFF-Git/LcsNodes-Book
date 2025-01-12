@@ -1,11 +1,23 @@
 \chapter{A Main Controller Board with Raspberry PI Pico}
 
-The Raspberry PI Pico is a powerful controller with a dual core, generous program and memory sizes and USB also included. The Pico is a small board that can be soldered to a mother PCB or connected just like a big IC. This chapter will present our main controller board which is just the controller along to a CAN bus interface, the non-volatile memory and the level shifters to accommodate our 5V interface level standard. Although there will be more different controller boards in the chapters to come, this basic building block is the generic heart and can be used for many other projects in the LCS system.
+Time to design our first board. This chapter will present our main controller board which is just the controller along to a CAN bus interface, the non-volatile memory and the level shifters to accommodate our 5V interface level standard. We will use the Raspberry Pi Pico controller. It is a powerful controller with a dual core, generous program and memory sizes and USB also included. The Pico is a small board that can be soldered to a mother PCB or connected just like a big IC. 
 
+Although there will be more different controller board types in the chapters to come, this basic building block is the generic and versatile version and can be used for many projects in the LCS world.
 
-??? talk about the mapping of PICO pins to extension connector pins. Should allow that function blocks such as SPI, UART, I2C, etc can be accessed.
+\section{Block Diagram}
+
+The following schematic depicts the block diagram of our main controller. All of our schematics will start with a block diagram and the one or more parts of the overall schematic.
+
+\begin{tikzpicture}
+
+    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
+    \node at (8,4) {picture};
+
+\end{tikzpicture}
 
 \section{PICO Pin Mapping}
+
+??? talk about the mapping of PICO pins to extension connector pins. Should allow that function blocks such as SPI, UART, I2C, etc can be accessed.
 
 EXT             - pin 4
 
@@ -22,17 +34,6 @@ I2C EXT         - 16,17
 Ready Led       - 14
 Activity Led    - 15
 
-
-\section{Block Diagram}
-
-The following schematic depicts the block diagram of our main controller. All of our schematics will start with a block diagram and the one or more parts of the overall schematic.
-
-\begin{tikzpicture}
-
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-    \node at (8,4) {picture};
-
-\end{tikzpicture}
 
 \section{Main Controller}
 
@@ -67,7 +68,7 @@ And here is the PCB for the PICO based main controller. Note that there is quite
 
 \end{tikzpicture}
 
-\section{\Summary}
+\section{Summary}
 
 By now we have a core library which can handle the basics of just about any node and we have a main controller board that will form the heart of many projects to come for the layout control system. However, while LCS boards will all run the same core library, there are still differences how for example the controller pins are assigned on the boards. It is very likely that new software versions and perhaps different processors and boards layouts will require that the core library is adapted to each processor / board combination. This is especially true for monolithic board designs, where there is a great freedom which pins to use for what. At this point, many projects found on the web will now start a symphony of "ifdefs" in their coding. The conditional compiles often reach up to the highest layers of the firmware programming. 
 

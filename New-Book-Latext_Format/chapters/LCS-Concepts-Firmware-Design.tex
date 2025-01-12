@@ -18,7 +18,7 @@ It would be tempting to also offer a kind of macro capability to execute a macro
 
 The layout control system will over time contain many hardware and software components. The software therefore needs to be structured in a way that the firmware designer just will focus on the the tasks at hand and all else is being taken care of by the core library. Well, almost. The great variety of hardware requires a slightly more detailed picture.
 
-%!\href{./Figures/%Schematic_LcsNodes-Core-Library-Overview-Refined.png }
+// ??? what picture ... with extension driver ? we already showed that ...
 
 Besides whatever the node is designed for, there are the common firmware layers. It all starts with the \textbf{controller dependent code}, that shields the actual controller family from the rest of the library. This does not mean that any special hardware feature of the controller is not available it just means that the common capabilities to be found across the implementations are available via a common layer. Examples are the routines to mange a digital I/O pin, the analog input, hardware timers and so on. The \textbf{non-volatile memory} CDC library part implements a simple memory that is used by the node firmware but also the firmware designer. Some controllers do have a non volatile memory area, often an EEPROM, others don't. The library offers a simple abstraction for storing non volatile data. The \textbf{ CAN Bus} CDC library part is responsible for implementing the CAN bus interface, which is either implemented as a separate hardware chip or implemented in software using the controller special capabilities, such as the Raspberry Pi Pico programmable IO blocks.
 

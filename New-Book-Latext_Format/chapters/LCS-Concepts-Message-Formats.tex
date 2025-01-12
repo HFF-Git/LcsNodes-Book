@@ -310,7 +310,7 @@ Some DCC commands return an acknowledgment or an error for the outcome of a DCC 
 
 \begin{table}[ht!]
     \begin{center}
-        \caption{RRaw DCC Packet Management}
+        \caption{Raw DCC Packet Management}
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
             \toprule
             \textbf{Opcode}  & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
@@ -326,8 +326,35 @@ Some DCC commands return an acknowledgment or an error for the outcome of a DCC 
 
 The messages defined for the DCC locomotive session management as outlined above are also used for the analog engines. An analog engine will just like its digital counterpart have an allocated locomotive session and the speed/dir command is supported. All other commands will of course not be applicable. The speed/dir command will be sent out on the bus and whoever is in control of the track section where the analog engine is supposed to be, will manage that locomotive. In the following chapters we will answer the question of how exactly multiple analog engines can run on a layout.
 
+\section{Firmware Updates}
+
+LCS supports a method for updating the firmware remotely. This involves loading a new firmware image. A typical approach is to split the available program memory in two partitions and load the new image in the non-active partition. When the firmware is transmitted and valid, the next restart will boot using the new firmware. There is a whole chapter later in the book about the firmware update. The LCS message formats support the firmware update process with the \texttt{XXX} and \texttt{YYY} messages.
+
+??? need commands: //
+start-load <size>  4-bytes //
+start-block <blockId> 2-bytes //
+end-block <blockId> <CRC16 checksum> 2-bytes 2-bytes //
+end-load <CRC32 checksum> 4-bytes //
+
+send-data <sequenceId> <payload> 1-byte 4-byte //
+
+
+\begin{table}[ht!]
+    \begin{center}
+        \caption{Firmware Updates}
+        \begin{tabular}{|l|l|l|l|l|l|l|l|}
+            \toprule
+            \textbf{Opcode}  & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
+            \midrule
+            XXX & npId-H & npId-L & cmd & data1 & data2 & data3 & data4 \\
+            YYY & npId-H & npId-L & cmd & data1 & data2 & data3 & data4 \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+
 \section{Summary}
 
-The layout system is a system of nodes that talk to each other. At the heart are consequently messages. The message format is built upon an 8-byte message format that is suitable for the industry standard CAN bus. Although there are many other standards and communication protocols, the CAN bus is a widely used bus. Since all data is encoded in the message, there is no reason to select another communication media. But right now, it is CAN.
+The layout system is a system of nodes that talk to each other. At the heart are consequently messages. The message format is built upon an 8-byte message format that is suitable for the industry standard CAN bus. Although there are many other standards and communication protocols, the CAN bus is a widely used and robust bus. Since all data is encoded in the message, there is no reason to select other communication media. But right now, it is CAN.
 
 
