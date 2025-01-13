@@ -1,0 +1,133 @@
+%-------------------------------------------------------------------------------------------------------
+%
+%
+%
+%-------------------------------------------------------------------------------------------------------
+\documentclass[a4paper, 11pt]{book}  
+
+\input{packages}
+\input{styles}
+
+%-------------------------------------------------------------------------------------------------------
+% Document start.
+%
+%-------------------------------------------------------------------------------------------------------
+\begin{document}
+
+    %---------------------------------------------------------------------------------------------------
+    % Listing Path and Toggle
+    %
+    %---------------------------------------------------------------------------------------------------
+    \newcommand{\srcinputpath}{../../LcsNodes-Pico/}
+    \newtoggle{includeListings}
+    \togglefalse{includeListings} 
+
+    %---------------------------------------------------------------------------------------------------
+    %
+    %
+    %---------------------------------------------------------------------------------------------------
+    \setlength{\emergencystretch}{3em}
+    \raggedbottom
+
+    %---------------------------------------------------------------------------------------------------
+    % Title page.
+    %
+    %---------------------------------------------------------------------------------------------------
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{./figures/Frontpage-Picture.png}
+        \vspace{ 2cm }
+       
+        {\Huge \textbf{A Layout Control System for \\ Model Railroads}} 
+        \vspace{ 2cm }
+       
+        {\Large Helmut Fieres}
+
+        {\large \today}
+    \end{center}
+
+    %---------------------------------------------------------------------------------------------------
+    % Book body.
+    %
+    %---------------------------------------------------------------------------------------------------
+    \frontmatter            
+    \tableofcontents    
+
+    \mainmatter             
+    \include{Chapters/LCS-Introduction}
+    \include{Chapters/LCS-Concepts/LCS-Concepts-General}
+    \include{Chapters/LCS-Concepts/LCS-Concepts-Message-Formats}
+    \include{Chapters/LCS-Concepts/LCS-Concepts-Message-Protocols}
+
+    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Introduction}
+    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Storage}
+    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-API}
+    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Callbacks}
+    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Command-Interface}
+    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Example}
+    
+    \include{Chapters/LCS-Concepts/LCS-Concepts-DCC-Subsystem}
+    \include{Chapters/LCS-Concepts/LCS-Concepts-Analog-Subsystem}
+    \include{Chapters/LCS-Concepts/LCS-Concepts-Hardware-Module-Design}
+    \include{Chapters/LCS-Main-Controller-Hardware-Pico}
+    \include{Chapters/LCS-Controller-Dependent-Code}
+
+    \include{Chapters/LCS-Concepts/LCS-Concepts-Firmware-Design}
+    \include{Chapters/LCS-Power-Module-Design}
+    \include{Chapters/LCS-Railcom-Signal-Detector}
+
+    \include{Chapters/LCS-Base-Station/LCS-Base-Station-Intro}
+    \include{Chapters/LCS-Base-Station/LCS-Base-Station-Hardware}
+    \include{Chapters/LCS-Base-Station/LCS-Base-Station-Firmware}
+
+    \include{Chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Intro}
+    \include{Chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Firmware-Development}
+    \include{Chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Basic}
+    \include{Chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Firmware}
+    \include{Chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Diesel}
+
+    \include{Chapters/LCS-Concepts/LCS-Concepts-Signaling-Block-Control}
+
+    \include{Chapters/LCS-Block-Controller/LCS-Block-Controller-Boards}
+    \include{Chapters/LCS-Block-Controller/LCS-Block-Controller-Hardware}
+    \include{Chapters/LCS-Block-Controller/LCS-Block-Controller-Firmware}
+    
+    \include{Chapters/LCS-Concepts/LCS-Concepts-Sensors-And-Actors}
+    \include{Chapters/LCS-Concepts/LCS_Concepts-Hardware-Extension-Module-Design}
+
+    \include{Chapters/LCS-Extensions/LCS-Extension-Track-Occupancy-Detector}
+    \include{Chapters/LCS-Extensions/LCS-Extension-Servo}
+    \include{Chapters/LCS-Extensions/LCS-Extension-GPIO}
+    \include{Chapters/LCS-Extensions/LCS-Extension-Signal}
+    \include{Chapters/LCS-Extensions/LCS-Extension-Turnout}
+    \include{Chapters/LCS-Extensions/LCS-Extension-Relay}
+    \include{Chapters/LCS-Extensions/LCS-Extension-Combo-Board}
+    \include{Chapters/LCS-Extensions/LCS-Extension-Cab-Control}
+    \include{Chapters/LCS-Extensions/LCS-Extension-Prototype}
+
+    \include{Chapters/LCS-Layout-Connector}
+    \include{Chapters/LCS-Gateway-Module}
+    \include{Chapters/LCS-DCC-Monitoring}
+    \include{Chapters/LCS-Layout-System-Configuration}
+    \include{Chapters/LCS-Guidance-Computer}
+    \include{Chapters/LCS-Utility-Boards}
+    \include{Chapters/LCS-UI_Elements}
+    \include{Chapters/LCS-Outlook}
+
+    \appendix 
+
+    % \include{Appendices/LCS-Item-Reference}
+    % \include{Appendices/LCS-Command-Reference}
+    % \include{Appendices/DCC-PP-Command-Reference}
+    % \include{Appendices/LCS-Runtime-Lib-Reference}
+    % \include{Appendices/LCS-CDC-Lib-Reference}
+    \include{Appendices/LCS-Nodes-And-EasyEDA}
+    % \include{Appendices/Generic-Power-Supply}
+    % \include{Appendices/Inspiring-Work-And-Links} 
+    \include{Appendices/About-This-Book}
+    % \iftoggle{includeListings}{ \include{Appendices/listings} }
+    \include{Appendices/Notes}
+    \include{Appendices/tests}
+    
+    \backmatter             
+
+\end{document}

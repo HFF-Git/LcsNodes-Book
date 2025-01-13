@@ -14,9 +14,11 @@ To ease the development of LCS boards, the entire board and its connectors are a
 
 This section contains all the footprints available so far. There are three main categories. The first is anything that represents an LCS Controller portion. There are the connections to the LCS bus and the power input connector. On the left side are two connectors. The upper connector is reserved for up to four tack pow lines. Below is the LCS extension board connector. The basic LCS Main Controller Board for example is the 16cm x 10cm board shown below.
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[page=1, width=\textwidth]{./figures/LCS-FP-MAIN-CTRL-40-10X16.pdf}
+    \includegraphics[page=1, scale=0.7]{./Figures/LCS-FP-MAIN-CTRL-10X16.pdf}
+    \caption{LCS-FP-MAIN-CTRL-10X16}
+    %\label{fig:your-label}
 \end{figure}
 
 \FloatBarrier
@@ -25,18 +27,25 @@ The mounting holes may look a little odd. As shown in the text to follow, there 
 
 \section{Extension Boards Footprints}
 
-Next, there are the extension boards. They are straightforward and just offer the two connector lines on the right and optional on the left. Just the length varies. Boards with a connectors on the left and right are boards that can be just connected a main controller board or another extension board.  
+Next, there are the extension boards. They come in two flavors. The first is an extension board with just connectors on the right side. 
+This board is intended for designs that place main controller boards and extension boards into a backplane type PCB. The track and extension connectors are all connected via this backplane.
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
     \centering
-    \includegraphics[page=1, width=\textwidth]{./figures/LCS-FP-EXT-R-40-10X16.pdf}
+    \includegraphics[page=1, scale=0.7]{./Figures/LCS-FP-EXT-R-10X16.pdf}
+    \caption{LCS-FP-EXT-R-10X16}
+    %\label{fig:your-label}
 \end{figure}
 
 \FloatBarrier
 
-\begin{figure}[ht]
+The other type is an extension board that has the track connectors on both sides of the PCB. The left and side features a male connector so that it can directly be plugged into the main controller board. The right hand side has the female connectors where another extension board can be connected.   
+
+\begin{figure}[htbp]
     \centering
-    \includegraphics[page=1, width=\textwidth]{./figures/LCS-FP-EXT-L-R-40-10X16.pdf}
+    \includegraphics[page=1, scale=0.7]{./Figures/LCS-FP-EXT-L-R-10X16.pdf}
+    \caption{LCS-FP-EXT-L-R-10X16}
+    %\label{fig:your-label}
 \end{figure}
 
 \FloatBarrier

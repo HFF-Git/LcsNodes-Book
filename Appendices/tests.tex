@@ -1,34 +1,5 @@
 \chapter{Tests}
 
-\section{Schematics}
-
-float barrier command to ensure that text stays close to the picture but no text from after the picture.
-
-\subsection{part 1}
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[page=1, width=\textwidth]{./schematics/Schematic_LcsNodes-Main-Controller-Board.pdf}
-\end{figure}
-
-\FloatBarrier
-
-\subsection{part 2}
-\begin{figure}[ht]
-    \centering
-    \includegraphics[page=2, width=\textwidth]{./schematics/Schematic_LcsNodes-Main-Controller-Board.pdf}
-\end{figure}
-
-\FloatBarrier
-
-\subsection{part 3}
-\begin{figure}[ht]
-    \centering
-    \includegraphics[page=3, width=\textwidth]{./schematics/Schematic_LcsNodes-Main-Controller-Board.pdf}
-\end{figure}
-
-\FloatBarrier
-
 
 \section{Pictures}
 
@@ -128,6 +99,32 @@ We would need the split rectangle for the runtime area maps....
             minimum height=10cm,
             fill=yellow!50] (mem) at (13,5) {};
 
-
 \end{tikzpicture}
+
+
+\section{A picture built from graphics in pdf files}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+
+        % Include the first graphic
+        % \node at (0, 0) {\includegraphics[page=1, scale=0.5]{./figures/graphic1.pdf}};
+
+        % Include the second graphic, offset from the first
+        %\node at (5, 0) {\includegraphics[page=1, scale=0.5]{./figures/graphic2.pdf}};
+
+        % Include the third graphic, below the first
+        %\node at (0, -5) {\includegraphics[page=1, scale=0.5]{./figures/graphic3.pdf}};
+
+        % Add annotations or labels if needed
+        %\node[above] at (0, 0.5) {First Graphic};
+        %\node[above] at (5, 0.5) {Second Graphic};
+        %\node[below] at (0, -5.5) {Third Graphic};
+
+    \end{tikzpicture}
+    \caption{Composite image of multiple PDF graphics.}
+    \label{fig:composite-image}
+\end{figure}
+
 

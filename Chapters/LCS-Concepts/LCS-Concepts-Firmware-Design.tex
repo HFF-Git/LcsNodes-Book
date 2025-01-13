@@ -18,7 +18,13 @@ It would be tempting to also offer a kind of macro capability to execute a macro
 
 The layout control system will over time contain many hardware and software components. The software therefore needs to be structured in a way that the firmware designer just will focus on the the tasks at hand and all else is being taken care of by the core library. Well, almost. The great variety of hardware requires a slightly more detailed picture.
 
-// ??? what picture ... with extension driver ? we already showed that ...
+\begin{center}
+    \begin{tikzpicture}[scale=0.9, transform shape]
+        
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,8);
+        \node at (8,4) {Runtime Lib refined};
+    \end{tikzpicture}
+\end{center}
 
 Besides whatever the node is designed for, there are the common firmware layers. It all starts with the \textbf{controller dependent code}, that shields the actual controller family from the rest of the library. This does not mean that any special hardware feature of the controller is not available it just means that the common capabilities to be found across the implementations are available via a common layer. Examples are the routines to mange a digital I/O pin, the analog input, hardware timers and so on. The \textbf{non-volatile memory} CDC library part implements a simple memory that is used by the node firmware but also the firmware designer. Some controllers do have a non volatile memory area, often an EEPROM, others don't. The library offers a simple abstraction for storing non volatile data. The \textbf{ CAN Bus} CDC library part is responsible for implementing the CAN bus interface, which is either implemented as a separate hardware chip or implemented in software using the controller special capabilities, such as the Raspberry Pi Pico programmable IO blocks.
 
@@ -44,6 +50,12 @@ But ports are also the endpoint for events. Remember each node can broadcast an 
 
 When configuring a node, that node can register its interest in an event by adding an event ID / port ID combo to the event map. How to do this? Well, there is a reserved item function to just do that. A matching incoming event will result in a callback registered for the port. A node offers up to 15 ports. Since they also serve as a logical grouping of physical things on the layout, having 15 ports is a good compromise between number and resources needed by a port. When designing a firmware, the first thinking should be what a node manages and what ports will mange portions controlled by that node.
 
+first four ports map to extensions, port zero to the node.
+
+Attributes work from MEM, when in CFG then NVM is also used.
+
+when in OPS, items SYNC-MEM and SYNC-NVM are used to also update the counterpart.
+
 \section{Command Line and Display}
 
 The LCS library already offers a command line interface. It provides commands for the basic commands to manage a node and access its data. This interface, while not used in regular operation, is very useful for node firmware testing and debugging. All commands are also available via LCS messages, so that troubleshooting and monitoring can be done when the node is already installed. Following this philosophy, implementing node specific commands are a good idea. Writing your own serial commands is just writing a command line callback and registering it at node startup.
@@ -52,9 +64,25 @@ The LCS library already offers a command line interface. It provides commands fo
 
 The layout control system is an event driven system. A large part of layout configuration consist of creating an event Id, i.e. picking a number, and associating a port with the event. Upon event detection, the port callback is invoked. Configuration is therefore just entering the event/port pair in the node event table. The other direction, a situation at the node results in broadcasting an event, requires that the event ID is known. A good practice is to define port or node attributes that contain the event Id to use. This attribute can be set during node configuration. The LCS core library offers a periodic callback where the firmware designer can implement to manage the local sensor hardware data and decide to broadcast an event.
 
+tbd: how are events handled when the port is driver mapped ?
+
 \section{Periodic Tasks}
 
 Since the core library implement the outer loop, tasks that need to run periodically need to be implemented as callback for the core library to invoke. As always, one can write timer code and management outside of the core library, but this comes at the expense of being dependent on a particular controller hardware. For most cases, a simple callback, it does net even have to be precise to the microsecond, is sufficient. A good example is the checking for power consumption on a track. A firmware designer would provide a callback that is invoked periodically and would make use of the driver interface to obtain the actual data. If the the consumption is outside defined bounds, an event owl  due raised and the track turned ff. 
+
+\section{Extension Board Driver Function}
+
+Driver requests are handled via GET/PUT/REQ calls to the mapped port 1 .. 4.
+
+Concept of a path: \texttt{<node>:<port>:<channel>}
+
+A driver is just the REQ function. 
+
+GET/PUT mapped directly to what a port can do. Common items, attribute items. 
+
+Startup order is INIT, REGISTER, START 
+
+
 
 \section{Configuration}
 
@@ -72,9 +100,7 @@ The main code is just a set of firmware specific code and callback routines that
 
 This chapter gave a brief overview how one would go after writing node firmware. In short it is writing functions that can be registered as callbacks to the core library and that will in turn use the core library functions for implementing their purpose. It also introduced a more detailed picture of the overall software layers. The heavy lifting of message handling, event handling, node data management, extension board management and overall processing is handled by the LCS library. All the firmware programmer has to do is to write the node and specific functions. 
 
-
-// ??? GitHub has all the source code of the nodes i wrote ...
-
+The appendix contains a reference where all the hardware and software components can be found on \textbf{GitHub}. There are also further references to reading material and related projects.
 
 The following chapters will give several examples of how the firmware for the common nodes such as a base station, a cab handheld and a block controller is designed using the principles and guidelines mentioned in this chapter.
 
