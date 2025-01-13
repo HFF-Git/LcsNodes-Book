@@ -26,7 +26,7 @@ As time goes by, there will be for sure other capable controller entering the ma
 
  The following table gives some guidance on the capabilities needed in our designs. This list also applies in general to other controllers.
 
-\begin{longtable}{@{}p{0.25\linewidth}p{0.7\linewidth}@{}}
+\begin{longtable}{@{}p{0.25\linewidth}p{0.6\linewidth}@{}}
     \caption{Controller Attributes} \\
     \toprule
     \textbf{Attributes} & \textbf{Notes} \\
@@ -70,59 +70,55 @@ Hardware modules are described to large extent via schematics. The schematics sh
 
 A general word to the building blocks. They serve as examples of how the individual parts could be implemented and help to understand how each part works. Parts of the library software assume the presence of these blocks and how they basically work. Although the library has been written with as much as possible independence of the hardware, the final adaption of timers, serial lines, I/O pins and so on is required needs to be considered. Throughout the next chapters, you will find comments on what is perhaps generic and what would require some adaption if moving to another processor family.
 
-\section{Controller and Extension Board}
+\section{General Board Layout}
 
 Each node in the layout control system is a node and hence there is a controller for running the node firmware. Without a question, there will be many different nodes and as time goes by perhaps even a new controller families. However, each node would need at least some form of power supply, the CAN bus interface and depending on the storage demands and controller family, an external NVM. On top there is the node specific hardware. One approach is to design a board for each dedicated purpose. This board would include all the common portion for a LCS node and the hardware module specific portion. Another approach is to design a node controller board with extension boards that can be connected to it. In the remainder of this chapter, we will describe the main controller and extension concept. However, it is also perfectly all-right to design a hardware component with all the components integrated on one board. For a complex node such as the base station, this is a very reasonable solution. The building blocks shown in this chapter thus also form the basis for a more monolithic hardware module design. But first, let's look at the physical dimension of our boards.
 
-\begin{center}
-    \begin{tikzpicture} [scale=0.9, transform shape]
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[page=1, scale=0.7]{./Figures/LCS-FP-MAIN-CTRL-10X16.pdf}
+    \caption{LCS-FP-MAIN-CTRL-10X16}
+    %\label{fig:your-label}
+\end{figure}
 
-        \draw[help lines, gray!50, dashed] (0,0) grid(16,4);
-        \node at ( 7,2) {board dimensions picture};
-
-    \end{tikzpicture}
-\end{center}
-
-All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. In particular, the 10x16cm board should be very familiar. It has the "Euro PCB" dimensions. The main controller board has on the left side the connectors for the LCS bus and the power input. On the right side, there are two connectors toward an extension board. As described before, there are two types of extension boards. The usage of the individual connector pins are described in the upcoming chapter. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as symbols and PCB footprints in the EasyEDA library.
+All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. The figure above shows the 10cm by 16cm board form factor. In particular, this board should be very familiar. It has the \"Euro PCB\" dimensions. The main controller board has on the left side the connectors for the LCS bus and the power input. On the right side, there are two connectors toward an extension board. As described before, there are two types of extension boards. The usage of the individual connector pins are described in the upcoming chapter. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as symbols and PCB footprints in the EasyEDA library.
 
 \section{LCS Bus connector}
 
 Every hardware module needs the LCS bus interface to connect to the bus. Some modules may also draw power from this bus. The modules use an RJ45 connector for connecting to the bus. The bus signals can be grouped in several categories. The CAN bus differential lines represent the CAN bus. The VS line is intended for hardware modules with very little power consumptions so that they can directly be powered by the bus. The DCC signal lines are an exact copy of the DCC signal that would go to a track sent out by the DCC signal generating base station. The signal is intended to be routed from the base station to booster nodes, but also to hardware modules that analyze the DCC signal for some action. Finally there is the STOP signal line. This is a wired OR line that allows a simple button along the layout with access to this line to issue a STOP signal. The base station or any nodes interested in the signal can monitor this line. There are the following signal lines.
 
-\begin{center}
-    \begin{longtable}{@{}|l|l|p{0.6\linewidth}|@{}}
-        %\caption{Bus Connector Pins}
-        \toprule
-        \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
-        \midrule
-        \endfirsthead
-        \toprule
-        \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
-        \midrule
-        \endhead
-        \midrule
-        \multicolumn{2}{r}{\textit{Continued on next page}} \\
-        \midrule
-        \endfoot
-        \bottomrule
-        \endlastfoot
-        1 & DCC-Sig-1 & The DCC signal labelled "+" \\
-        \midrule
-        2 & DCC-Sig-2 & The DCC signal labelled "-" \\
-        \midrule
-        3 & GND & Common ground \\
-        \midrule
-        4 & RSV & reserved for future extensions. \\
-        \midrule
-        5 & RSV & reserved for future extensions. \\
-        \midrule
-        6 & PWR & The bus supplied 12V power line. This line is intended for devices with very little power consumption to get their power from. Any other module should connect to its own power supply line. \\
-        \midrule
-        7 & CAN-L &  Line L of the differential CAN bus signal. \\
-        \midrule
-        8 & CAN-H &  Line H of the differential CAN bus signal. \\
-    \end{longtable}
-\end{center}
+\begin{longtable}{@{}|l|l|p{0.6\linewidth}|@{}}
+    %\caption{Bus Connector Pins}
+    \toprule
+    \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    1 & DCC-Sig-1 & The DCC signal labelled "+" \\
+    \midrule
+    2 & DCC-Sig-2 & The DCC signal labelled "-" \\
+    \midrule
+    3 & GND & Common ground \\
+    \midrule
+    4 & RSV & reserved for future extensions. \\
+    \midrule
+    5 & RSV & reserved for future extensions. \\
+    \midrule
+    6 & PWR & The bus supplied 12V power line. This line is intended for devices with very little power consumption to get their power from. Any other module should connect to its own power supply line. \\
+    \midrule
+    7 & CAN-L &  Line L of the differential CAN bus signal. \\
+    \midrule
+    8 & CAN-H &  Line H of the differential CAN bus signal. \\
+\end{longtable}
 
 \section{LCS Nodes Extension Board Connector}
 
@@ -130,67 +126,65 @@ For interchangeability of extensions, there is a standardized \textbf{extension 
 
 The I2C interface will be the main communication method between the boards. In fact all current extension boards shown in later chapters use the I2C communication channel. Nevertheless, a rather rich set of outputs from the controller should be available to the extension board for flexibility. There should be ports for digital input and output, analog input, PWM outputs, serial outputs and so on. The raspberry pi pico offers a great flexibility on assigning function blocks such as an SPI or I2C interface to pins. The extension connector outlined below offers a set of pins which are mapped to the PICO capabilities. The following table shows the connector pin assignments for the communication between a main controller board and extension boards. All boards will have a 40-pin connector organized as 2 rows of 20 pins.
 
-\begin{center}
-    \begin{longtable}{@{}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.4\linewidth}|@{}}
-        \caption{Extension Connector} \\
-        \toprule
-        \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
-        \midrule
-        \endfirsthead
-        \toprule
-        \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
-        \midrule
-        \endhead
-        \midrule
-        \multicolumn{2}{r}{\textit{Continued on next page}} \\
-        \midrule
-        \endfoot
-        \bottomrule
-        \endlastfoot
-        1 & \textbf{DCC-1} & 2 & \textbf{DCC-2} & The DCC "+" and "-" signal as generated by the DCC Signal Generator. These pins are typically driven by the base station generating the layout DCC signal.\\
-        \midrule
-        3 & \textbf{GND} & 4 & \textbf{GND} & Common ground pins. \\
-        \midrule
-        5 & \textbf{ADC-0} & 6 & \textbf{ADC-1} & Analog input pins. The input is not protected. The analog voltage range is 0 to VCC. \\
-        \midrule
-        7 & \textbf{GND} & 8 & \textbf{GND} & Common ground pins. \\
-        \midrule
-        9 & \textbf{DIO-0} & 10 & \textbf{DIO-1} & Plain digital Pins, input or output. The pins are protected. \\
-        \midrule
-        11 & \textbf{DIO-2} & 12 & \textbf{DIO-3} & Plain digital Pins, input or output. The pins are protected. \\
-        \midrule
-        13 & \textbf{DIO-4} & 14 & \textbf{DIO-5} & Plain digital Pins, input or output. The pins are protected. \\
-        \midrule
-        15 & \textbf{DIO-6} & 16 & \textbf{DIO-7} & Plain digital Pins, input or output. The pins are protected. \\
-        \midrule
-        17 & \textbf{DIO-8} & 18 & \textbf{DIO-9} & Plain digital Pins, input or output. The pins are protected. \\
-        \midrule
-        19 & \textbf{DIO-10} & 20 & \textbf{DIO-11} & Plain digital Pins, input or output. The pins are protected. \\
-        \midrule
-        21 & \textbf{GND} & 22 & \textbf{GND} & Common ground pins. \\
-        \midrule
-        23 & \textbf{BI-0} & 24 & \textbf{BI-1} & Bus Address input lines. Up to four extension boards can be connected, the BI pins are used to determine the I2C root address on the I2C extension bus. \\ 
-        \midrule
-        25 & \textbf{BO-0} & 26 & \textbf{BO-1} & Bus Address output lines. The BO lines are computed form the BI lines. If for example BI is 1:0 the BO lines will become 1:1. The starting output pins values are 1:1. \\ 
-        \midrule
-        27 & \textbf{SCL} &  28 & \textbf{SDA} & I2C extension bus channel.  The lines are protected with a serial resistor and there is a pull-up resistor to VCC. \\
-        \midrule
-        29 & \textbf{RST} & 30 & \textbf{EXT} & RST is reset line. Active Low. EXT is the external interrupt line which be raised from an extension board. Active low. \\
-        \midrule
-        31 & \textbf{VCC} & 32 & \textbf{VCC} & VCC 5V supply to extension boards. \\
-        \midrule
-        33 & \textbf{GND} & 34 & \textbf{GND} & Common ground pins. \\
-        \midrule
-        35 & \textbf{VS} & 36 & \textbf{VS} & Board Input voltage forward. These  connector pins are primarily used by extension boards that need the high power input. Examples  are H-Bridges on such a board or boards that have their power supply circuitry. \\
-        % 35 & \textbf{VS} & 36 & \textbf{VS} & \multirow{2}{=}{Board Input voltage forward. These  connector pins are primarily used by extension boards that need the high power input. Examples  are H-Bridges on such a board or boards that have their power supply circuitry.} \\
-        % \cmidrule{1-4}
-        % \midrule
-        37 & \textbf{VS} & 38 & \textbf{VS} & Board Input voltage forward. \\
-        % 37 & \textbf{VS} & 38 & \textbf{VS} & \\
-        \midrule
-        39 & \textbf{GND} & 40 & \textbf{GND} & Common ground pins. \\
-    \end{longtable}  
-\end{center}
+\begin{longtable}{@{}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.4\linewidth}|@{}}
+    \caption{Extension Connector} \\
+    \toprule
+    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    1 & \textbf{DCC-1} & 2 & \textbf{DCC-2} & The DCC "+" and "-" signal as generated by the DCC Signal Generator. These pins are typically driven by the base station generating the layout DCC signal.\\
+    \midrule
+    3 & \textbf{GND} & 4 & \textbf{GND} & Common ground pins. \\
+    \midrule
+    5 & \textbf{ADC-0} & 6 & \textbf{ADC-1} & Analog input pins. The input is not protected. The analog voltage range is 0 to VCC. \\
+    \midrule
+    7 & \textbf{GND} & 8 & \textbf{GND} & Common ground pins. \\
+    \midrule
+    9 & \textbf{DIO-0} & 10 & \textbf{DIO-1} & Plain digital Pins, input or output. The pins are protected. \\
+    \midrule
+    11 & \textbf{DIO-2} & 12 & \textbf{DIO-3} & Plain digital Pins, input or output. The pins are protected. \\
+    \midrule
+    13 & \textbf{DIO-4} & 14 & \textbf{DIO-5} & Plain digital Pins, input or output. The pins are protected. \\
+    \midrule
+    15 & \textbf{DIO-6} & 16 & \textbf{DIO-7} & Plain digital Pins, input or output. The pins are protected. \\
+    \midrule
+    17 & \textbf{DIO-8} & 18 & \textbf{DIO-9} & Plain digital Pins, input or output. The pins are protected. \\
+    \midrule
+    19 & \textbf{DIO-10} & 20 & \textbf{DIO-11} & Plain digital Pins, input or output. The pins are protected. \\
+    \midrule
+    21 & \textbf{GND} & 22 & \textbf{GND} & Common ground pins. \\
+    \midrule
+    23 & \textbf{BI-0} & 24 & \textbf{BI-1} & Bus Address input lines. Up to four extension boards can be connected, the BI pins are used to determine the I2C root address on the I2C extension bus. \\ 
+    \midrule
+    25 & \textbf{BO-0} & 26 & \textbf{BO-1} & Bus Address output lines. The BO lines are computed form the BI lines. If for example BI is 1:0 the BO lines will become 1:1. The starting output pins values are 1:1. \\ 
+    \midrule
+    27 & \textbf{SCL} &  28 & \textbf{SDA} & I2C extension bus channel.  The lines are protected with a serial resistor and there is a pull-up resistor to VCC. \\
+    \midrule
+    29 & \textbf{RST} & 30 & \textbf{EXT} & RST is reset line. Active Low. EXT is the external interrupt line which be raised from an extension board. Active low. \\
+    \midrule
+    31 & \textbf{VCC} & 32 & \textbf{VCC} & VCC 5V supply to extension boards. \\
+    \midrule
+    33 & \textbf{GND} & 34 & \textbf{GND} & Common ground pins. \\
+    \midrule
+    35 & \textbf{VS} & 36 & \textbf{VS} & Board Input voltage forward. These  connector pins are primarily used by extension boards that need the high power input. Examples  are H-Bridges on such a board or boards that have their power supply circuitry. \\
+    % 35 & \textbf{VS} & 36 & \textbf{VS} & \multirow{2}{=}{Board Input voltage forward. These  connector pins are primarily used by extension boards that need the high power input. Examples  are H-Bridges on such a board or boards that have their power supply circuitry.} \\
+    % \cmidrule{1-4}
+    % \midrule
+    37 & \textbf{VS} & 38 & \textbf{VS} & Board Input voltage forward. \\
+    % 37 & \textbf{VS} & 38 & \textbf{VS} & \\
+    \midrule
+    39 & \textbf{GND} & 40 & \textbf{GND} & Common ground pins. \\
+\end{longtable}  
 
 The extension board connectors on the main controller boards are female connectors placed on the right hand side of the board. Male connectors are used on an extension board to connect into the main controller or a previous extension board. There are EasyEDA symbols and PCB footprints that offer the connector pins without you going through these details. The appendix contains EasyEDA symbols for the most common board dimensions with the connectors placed in the correct location. A new projects can just start with these EasyEDA symbols.
 
@@ -205,15 +199,15 @@ In addition to the extension board connector, there is the \textbf{track power c
 \begin{longtable}{@{}|l|l|l|l|p{0.4\linewidth}|@{}}
     \caption{Controller Attributes} \\
     \toprule
-    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name}& \textbf{Purpose}\\
+    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
     \midrule
     \endfirsthead
     \toprule
-    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name}& \textbf{Purpose}\\
+    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
     \midrule
     \endhead
     \midrule
-    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \multicolumn{5}{r}{\textit{Continued on next page}} \\
     \midrule
     \endfoot
     \bottomrule
@@ -224,12 +218,41 @@ In addition to the extension board connector, there is the \textbf{track power c
     \midrule
     5 & \textbf{DCC-SIG-B2} & 6 & \textbf{DCC-SIG-B2} & Bridge-2 DCC Signal "+" and "-". \\
     \midrule
-    7 & \textbf{DCC-SIG-B3} & 8 & \textbf{DCC-SIG-B2} & Bridge-3 DCC Signal "+" and "-". \\
-\end{longtable} 
-
-\FloatBarrier
+    7 & \textbf{DCC-SIG-B3} & 8 & \textbf{DCC-SIG-B3} & Bridge-3 DCC Signal "+" and "-". \\
+\end{longtable}%
 
 When using all four bridge signal output pairs, each each output pair is rated up to 3Amps. For high power bridges with up to 6Amps, two pairs can be combined and the number of bridges signals passed on is two.
+
+\section{Controller and Extension Board}
+
+Controller and Extension boards make up a node. The main controller board will connect via two main bus connectors to an extension board. The pins of the connectors were shown in the previous sections. The following figure depicts how the two boards are connected. There are two basic cases. The first case, shown here, is an extension board that simply is plugged into the connector of the main controller or another extension board. Think of a train of boards where the main controller is the locomotive and the extension board the cars. 
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[scale=1, transform shape]
+        \useasboundingbox (0,0) rectangle (15,6);
+        \draw[help lines, gray!50, dashed] (0,0) grid(15,6);
+
+        \node at (3, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-MAIN-CTRL-Sketch.pdf}};
+
+        \node at (10.5, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-EXT-L-R-Sketch.pdf}};
+
+        \node at (3, 5) {\textbf{Main Controller}};
+        \node at (10, 5) {\textbf{Extension Board}};
+        \node at (3.5, 3.7) {Track Bus};
+        \node at (3.5, 1.7) {Extension Bus};
+
+        \draw[line width=1mm, gray!40, ->] (5,3.7) -- (15,3.7);
+        \draw[line width=1mm, gray!40, ->] (5,1.7) -- (15,1.7);
+    
+    \end{tikzpicture}
+    \caption{Connecting boards}
+    %\label{fig:composite-image}
+\end{figure}
+
+Since there are only up to four extension boards supported on one controller, the length is reasonable. For a more compact arrangement, extension boards with only the right hand side connector can be plugged into a backplane style board with the main controller next to it. Nothing else as far as connectivity goes is changed. However, extension boards designed for the train alike arrangement need to forward any inputs relevant for the next board from the left connector to the right connector. On a busy board, this can be quite a hurdle. In the backplane style arrangement, this is not an issue since there is no need to forward any input line needed on the output side.
+
+The appendix on the board design details has the detailed layout of such a board.
 
 \section{Summary}
 

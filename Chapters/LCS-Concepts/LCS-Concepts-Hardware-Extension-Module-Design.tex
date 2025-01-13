@@ -8,12 +8,32 @@ Each hardware module almost certainly has additional requirements. Depending on 
 
 As with any LCS library part presented, the key goal is to unify and simplify access to an extension board, while still allowing for great flexibility in actual extension board design. We want to be able to connect pretty much any extension board to a main controller, base station and block controller, as well as connecting several extension boards. For example, take the block controller. As shown before, the block controller exports the track power lines and the extension connector. We would like to be able to connect an extension board that implements the track occupancy detectors. We would also like to connect a further extension board that implements the turnout and signal drivers. And of course we want to connect boards then combine one or many of these functions. A key requirement is therefore to communicate to the main controller what is actually connected and how to access the available functions.
 
-\begin{tikzpicture}
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[scale=0.9, transform shape]
 
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-    \node at (8,4) {picture};
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,6);
 
-\end{tikzpicture}
+        % Include the first graphic
+        \node at (3, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-MAIN-CTRL-Sketch.pdf}};
+
+        %Include the second graphic, offset from the first
+        \node at (10.5, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-EXT-L-R-Sketch.pdf}};
+
+    % Add annotations or labels if needed
+    \node at (3, 5) {\textbf{Main Controller}};
+    \node at (10, 5) {\textbf{Extension Board}};
+
+    \node at (3.5, 3.7) {Track Bus};
+    \node at (3.5, 1.7) {Extension Bus};
+
+    \draw[line width=1mm, gray!40, ->] (5,3.7) -- (15,3.7);
+    \draw[line width=1mm, gray!40, ->] (5,1.7) -- (15,1.7);
+   
+    \end{tikzpicture}
+    \caption{Connecting boards}
+    %\label{fig:composite-image}
+\end{figure}
 
 Typical electronic modules found for digital model railroad control offers configuration options via software and perhaps a set of DIP switches or on board jumpers. As extension boards become more rich in the features they offers and also the combination of more than one board, a methods is needed to uniquely identify and address a board on the extension connectors and a methods to interrogate the capabilities of that particular board.
 
@@ -42,11 +62,17 @@ For a new board design, the development process is therefore to define the NVM d
 An extension board design assumes that the key ICs on the board are I2C addressable chips. As already mentioned, I2C ICs have a fixed I2C address part and a some address bits that can be set by hardware. Most of the I2C chips used in our designs have a four bit fixed address portion and a configurable portion to be supplied via address pins of the chip. We will use the configurable portion to identify the board, from A2 to A1 and reserve the last bit A0 for selecting two chips of the same kind on an extension board.
 
 | IC | A6 | A5 | A4 | A3 | A2 | A1 | A0 | Comment |
+
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|
+
 | MCP23017 | 0 | 1 | 0 | 0 | B1 | B0 | x | |
+
 | PCA9685  | 1 | 1 | 1 | 1 | B1 | B0 | 0 | Set to "1100" as the upper four bits. |
+
 | PCA9955  | 1 | 1 | 0 | 1 | B1 | B0 | 0 | Set to "1011" as the upper four bits. |
+
 | PCA9555  | 0 | 1 | 0 | 0 | B1 | B0 | 0 | |
+
 | ST24LC04 | 1 | 0 | 1 | 0 | B1 | B0 | 0 | |
 
 The PCA 9955 and 9685 have a high number of address selection inputs. This allows to connect more than typically 8 chips on one I2C bus. We will not make use of this capability for now and assign a fixed 4-bit chip I2C address portion.
@@ -72,24 +98,7 @@ No LCS concept without a library. This section describes the LCS extension libra
 
 The management of the drivers is part of the core library. This will be presented in a later section. First, let's look at how a driver presents itself to the firmware programmer. To the firmware designer, all boards are accessed to a small set of functions common to all boards using the board Id, an endpoint, which we call \textbf{pad}s.
 
-\texttt{}\texttt{
-struct LcsCoreLib {
-
-   ...
-
-   uint8_t drvInit( uint8_t boardId, uint16_t flags );
-   uint8_t drvReset( uint8_t boardId, uint16_t flags );
-   uint8_t drvControl( uint8_t boardId, uint8_t padId, uint8_t item, uint16_t arg1, uint16_t arg2 = 0 );
-   uint8_t drvInfo( uint8_t boardId, uint8_t padId, uint8_t item, uint16_t \textit{arg1, uint16_t }arg2 = nullptr );
-   uint8_t drvRead( uint8_t boardId, uint8_t padId, uint16_t *arg );
-   uint8_t drvWrite( uint8_t boardId, uint8_t padId, uint16_t arg );
-   uint8_t drvRead( uint8_t boardId, uint8_t padId, uint8_t \textit{buf, uint8_t }len );
-   uint8_t drvWrite( uint8_t boardId, uint8_t padId, uint8_t *buf, uint8_t len );
-
-   ...
-
-   };
-}\texttt{}
+// ??? code snippets here ?
 
 The core library will locate the board descriptor and the invoke the desired driver routine. That is it. For example, take a write operation. The firmware programmer would simply make a call with the board ID, endpoint ID and data to be written using the core library APIs. The library will locate the board and then call the driver write methods passing the data along. This pretty much sounds like every operations system would do. And in fact, the concept is very similar. While it may sound like an overkill for a simple embedded controller who just wants to make an LED blink, the concept of drivers and a common I/O library allows for building a family of extension boards with common software interfaces and operating concepts. But we also have to acknowledge that it does come with the demand for more processing power. Luckily the Raspberry PI Pico and alike do provide that power. For the Atmega platform that we started with, the limits are reached probably here.
 
@@ -103,48 +112,9 @@ How does a driver know all the details of the board? It has access to the extens
 
 OK, time to present the extension board memory. The LCS core library will simply build the I2C address of the NVM chip on a board and read in the memory data found. The data is rather simple There is a header section which contains information about the board type and how many endpoints are managed. The following code fragment shows the structure of the extension board memory layout.
 
-\texttt{}\texttt{cpp
-   struct LcsDrvBoardDesc {
+// ??? header layout ...
 
-      uint16_t  magicWord;
-      uint16_t  boardType;
-      uint32_t  boardUID;
-
-      uint16_t  numOfChips;
-      uint16_t  chipTabEntrySize;
-
-      uint16_t  numOfEndPoints;
-      uint16_t  endPointEntrySize;
-
-      char      extBoardName[ 16 ];
-    };
-}\texttt{}
-
-\texttt{}\texttt{cpp
-   struct LcsDrvChipDesc {
-
-     uint16_t chipType;
-     uint16_t i2cAdr;
-   };
-}\texttt{}
-
-\texttt{}\texttt{cpp
-   struct LcsDrvEndpointDesc {
-
-       uint16_t devType;
-       uint16_t padId;
-       uint16_t flags;
-       uint16_t initVal;
-   };
-}\texttt{}
-
-\begin{itemize}
-\item end point entry structure ( 8 bytes )
-\item device type ( DIO out, DIO IN/PullUp, DIO general I/O,  AnalogIn, PWM, Servo, ...)
-\item flags
-\item initial value / state
-\item I2C address
-\end{itemize}
+// ??? rework text ...
 
 The entry point table is just a simple array with an entry for each in or out channel. For example, a digital IO pin on a general purpose IO extension board would describe each pin with an endpoint descriptor. IN addition. an endpoint could also represent a more complex channel. Take the GPIO board example again. The GPIO chip on such a board, e.g. an MCP23017, would allow to set values on all pins simultaneously. An endpoint could then represent with a 16-bit word all bits to set or read from the chip. It just depends what options the driver will support and what was configured in the extension board NVM.
 
@@ -152,28 +122,7 @@ The entry point table is just a simple array with an entry for each in or out ch
 
 Now, we not only know what boards are actually connected but also what software would be required to access the board. We will call this piece of software, essentially a library for each board type, \textbf{extension driver}. The following code fragment will show the common driver class that all actual drivers inherit from. We will see more of actual drivers when discussing a particular extension board implementation.
 
-\texttt{}\texttt{cpp
-struct LcsDrv {
-
-   public:
-
-      LcsDrv( );
-
-      virtual uint8_t init( uint16_t flags ) = 0;
-      virtual uint8_t config( uint8_t padId, uint8_t item, uint16_t arg1, uint16_t arg2 = 0 ) = 0;
-      virtual uint8_t control( uint8_t padId, uint8_t item, uint16_t arg1, uint16_t arg2 = 0 ) = 0;
-      virtual uint8_t info( uint8_t padId, uint8_t item, uint16_t \textit{arg1, uint16_t }arg2 = nullptr ) = 0;
-      virtual uint8_t read( uint8_t padId, uint16_t *arg ) = 0;
-      virtual uint8_t write( uint8_t padId, uint16_t arg ) = 0;
-
-      virtual uint8_t read( uint8_t padId, uint8_t \textit{buf, uint8_t }bufLen ) = 0;
-      virtual uint8_t write( uint8_t padId, uint8_t *buf, uint8_t bufLen ) = 0;
-
-   private:
-
-      LcsDrvData *dataPtr;
-  };
-}\texttt{}
+// ??? code snippet, changed concepts !!
 
 // ??? \textbf{note} what could we do about "real" interrupts from an extension board ?
 
@@ -181,7 +130,7 @@ struct LcsDrv {
 
 The structure on each extension board is from the extension library perspective a read-only structure. But of course initially it needs to be filled with valid data. The hardware offers a jumper on the board to enable writing to the NVM chip. Any main controller board could be used to just write to the extension board. This is accomplished with a little utility program or a set of commands implemented in the command line interface of the core library.
 
-// ??? \textbf{note}  to be decided and implemented. I like the idea for simple commands on the core library level... easiest way to move quickly forward.
+// ??? to be decided and implemented. I like the idea for simple commands on the core library level... easiest way to move quickly forward.
 
 \section{Summary}
 
