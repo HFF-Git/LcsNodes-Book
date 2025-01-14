@@ -81,7 +81,7 @@ The PCA 9955 and 9685 have a high number of address selection inputs. This allow
 
 Now that we talked about I2C address, how does a board get a unique board address without jumpers or alike ? Each board must have a way to contribute to an I2C address its own portion. When an I2C address is sent on the bus, it will have a board ID, this ID is used in the final I2C address. Each extension board features a common set of circuitry for this purpose. The following schematic shows the connectors, the board address generation logic and the NMV chip.
 
-\begin{tikzpicture}
+\begin{tikzpicture}[scale=0.9, transform shape]
 
     \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
     \node at (8,4) {picture};
