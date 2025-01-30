@@ -2,27 +2,6 @@
 
 The Raspberry PI Pico is a powerful controller with a dual core, generous program and memory sizes and USB also included. The Pico is a small board that can be soldered to a mother PCB or connected just like a big IC. This chapter will present our main controller board which is just the controller along to a CAN bus interface, the non-volatile memory and the level shifters to accommodate our 5V interface level standard. Although there will be more different controller boards in the chapters to come, this basic building block is the generic heart and can be used for many other projects in the LCS system.
 
-
-??? talk about the mapping of PICO pins to extension connector pins. Should allow that function blocks such as SPI, UART, I2C, etc can be accessed.
-
-\section{PICO Pin Mapping}
-
-EXT             - pin 4
-
-DIO 0,1         - 6,7
-DIO 2,3         - 8,9
-DIO 4,5         - 10,11
-DIO 6,7         - 12,13
-DIO 8,9         - 18,19
-DIO 10,11       - 20,21
-
-CAN             - 0,1
-I2C NVM         - 2,3
-I2C EXT         - 16,17
-Ready Led       - 14
-Activity Led    - 15
-
-
 \section{Block Diagram}
 
 The following schematic depicts the block diagram of our main controller. All of our schematics will start with a block diagram and the one or more parts of the overall schematic.
@@ -50,6 +29,37 @@ The first part of the schematics shows the PICO processor, LEDS, Button, CAN bus
 \section{Connectors and Level Shifters}
 
 The second part depicts the connectors and the level shifters. The ADC inputs also need a divider to map the incoming voltage range of 0 to 5V to 0 to 3V3. A simple resistor divider does the job.
+
+
+??? talk about the mapping of PICO pins to extension connector pins. Should allow that function blocks such as SPI, UART, I2C, etc can be accessed.
+
+\section{PICO Pin Mapping}
+
+EXT             - pin 4
+
+DIO 0,1         - 6,7
+
+DIO 2,3         - 8,9
+
+DIO 4,5         - 10,11
+
+DIO 6,7         - 12,13
+
+DIO 8,9         - 18,19
+
+DIO 10,11       - 20,21
+
+CAN             - 0,1
+
+I2C NVM         - 2,3
+
+I2C EXT         - 16,17
+
+Ready Led       - 14
+
+Activity Led    - 15
+
+
 
 \begin{figure}[htbp]
     \centering

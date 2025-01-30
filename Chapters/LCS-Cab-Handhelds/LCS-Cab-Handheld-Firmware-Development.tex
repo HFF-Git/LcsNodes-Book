@@ -2,30 +2,32 @@
 
 A cab handheld as shown in the sketch above consists of the controller portion and a set of buttons and dials. Usually, for the very first steps in firmware design a breadboard implementation of the hardware is used. But why not just create a PCB with all the user elements on it? From experience with breadboards, this setup is by far more robust and you will not chase firmware bugs that turn out to be just a loose connection on a breadboard. This is by the way a lesson learned. With the very reasonable prices for a PCB board, it is almost easier to build a PCB rather early in the design phase and if it has an error, just correct it and order another set of PCBs. Although one could also build the module on a an experimental PCB board, having the schematics done, it is a small step to a dedicated PCB. Definitively worth the small extra effort of making a robust prototype PCB. The following schematic shows the extension board developed for the can handheld firmware development. First, here is the block diagram.
 
-\begin{tikzpicture}[scale=0.9, transform shape]
-
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-    \node at (8,4) {picture};
-
-\end{tikzpicture}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[page=1, width=0.7\textwidth]{./Schematics/Schematic_LcsNodes-Cab-Dev.pdf}
+    \caption{Block Diagram}
+    %\label{fig:schematic}
+\end{figure}
+\FloatBarrier
 
 There is essentially a main controller part with the Raspberry Pi Pico, a CAN bus interface and the non-volatile memory. This part should be very familiar by now. Besides the two I2C connections and the CAN bus pins, almost all GPIO pins are dedicated to a button or encoder. Since the GPIOs can be configured with internal pull-up, no external resistors are necessary. The power supply will be fed from the LCS bus. The whole board can also be fed from the USB port of the PICO. Again, this is very handy for initial debugging the firmware. The LCS Bus connector will connect the cab handheld to the LCS layout. We use only the CAN Bus lines and optional the power line input.
 
-\begin{tikzpicture}[scale=0.9, transform shape]
-
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-    \node at (8,4) {picture};
-
-\end{tikzpicture}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[page=2, width=0.7\textwidth]{./Schematics/Schematic_LcsNodes-Cab-Dev.pdf}
+    \caption{Block Diagram}
+    %\label{fig:schematic}
+\end{figure}
+\FloatBarrier
 
 Finally, there is the part with all the buttons, encoders and the OLED Display. The following schematic completes the cap handheld schematic for firmware development.
 
-\begin{tikzpicture}[scale=0.9, transform shape]
-
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-    \node at (8,4) {picture};
-
-\end{tikzpicture}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[page=3, width=0.7\textwidth]{./Schematics/Schematic_LcsNodes-Cab-Dev.pdf}
+    %\label{fig:schematic}
+\end{figure}
+\FloatBarrier
 
 Granted, it is not really a cab handheld to hold in your hands. Although the final version will have pretty much the same hardware ingredients, the form factor needs to be different. But for development, the setup will be quite helpful and robust. You will avoid chasing software problems that turn out to be just a loose connection on a breadboard. The following figure shows the development cab handheld as a nice 3D picture to show the components.
 

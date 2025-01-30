@@ -15,13 +15,32 @@ A layout control system needs a form of DCC signal generator. They can be direct
 
 While a power module can vary in capacity and technology components, our logical design expect to send the same digital signals to a power module, no matter what it's design. It is a key requirements to derive from the DCC signal on the bus connector the state "+", "-" and "short circuit". The latter is needed for the cutout option. There is also the need to detect a logic "one" on both signal inputs and interpret this as setting the bridge to a high impedance state. This requirement comes primarily from the capability to also issue PWM signals, which will depending in the direction alternate between a positive or negative voltage and the high impedance state. There is a whole family of H-Bridge ICs and breakout boards. If a particular H-Bridge IC does not map the inputs to the table below, some gate logic needs to be added. The following table depicts the power module digital input management signals. The table below fits the L6205 H-Bridge nicely.
 
-%|Enable|DCC-Sig-1|DCC-Sig-2|Meaning|
-%|:-:|:-:|:-:|:--|
-%|1|0|0| Cutout period. The track will be short circuited. Out1 and Ou2 are connected.|
-%|1|1|0| The track is polarized "+". Out1 is connected to VS, Out2 is is connected to GND.|
-%|1|0|1| The track is polarized "-". Out1 is connected to GND, Out2 is is connected to VS.|
-%|X|1|1| The track is put into high impedance, i.e. not connected. |
-%|0|X|X| The track is put into high impedance, i.e. not connected. |
+\begin{longtable}{@{}|l|l|l|p{0.4\linewidth}|@{}}
+    %\caption{Bus Connector Pins}
+    \toprule
+    \textbf{Enable} & \textbf{DCC-Sig-1} & \textbf{DCC-Sig-2} & \textbf{Meaning} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Enable} & \textbf{DCC-Sig-1} & \textbf{DCC-Sig-2} & \textbf{Meaning} \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    1 & 0 & 0 & Cutout period. The track will be short circuited. Out1 and Ou2 are connected. \\
+    \midrule
+    1 & 1 & 1 & The track is polarized "+". Out1 is connected to VS, Out2 is is connected to GND. \\
+    \midrule
+    1 & 0 & 1 & The track is polarized "-". Out1 is connected to GND, Out2 is is connected to VS. \\
+    \midrule
+    X & 1 & 1 & The track is put into high impedance, i.e. not connected. \\
+    \midrule
+    0 & X & X & The track is put into high impedance, i.e. not connected. \\
+\end{longtable}
 
 The standards also specify which side of the track is the positive side, i.e. OUT1 in the table above. The right hand track side, usually connected with a red cable is the positive side, the left track side, connected with a black cabe, is the negative side. If the H-Bridge is enabled, sending a "DCC One" will mean to raise the digital output of the controller port DCC-SIG-1 to HIGH and controller port DCC-SIG-2 to LOW for 58 microseconds, followed by the reverse bit setting for another 58 microseconds. The DCC packet is broken down, bit by bit and the digital signal is produced. The H-Bridge hardware then takes the zero and ones and essentially reverses the track polarity accordingly to digital zeroes and ones.
 
