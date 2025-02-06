@@ -164,9 +164,9 @@ The I2C interface will be the main communication method between the boards. In f
     \midrule
     21 & \textbf{GND} & 22 & \textbf{GND} & Common ground pins. \\
     \midrule
-    23 & \textbf{BI-0} & 24 & \textbf{BI-1} & Bus Address input lines. Up to four extension boards can be connected, the BI pins are used to determine the I2C root address on the I2C extension bus. \\ 
+    23 & \textbf{BC-0} & 24 & \textbf{BC-1} & Bus Address lines. Up to four extension boards can be connected, the BC pins are used to determine the I2C root address on the I2C extension bus. \\ 
     \midrule
-    25 & \textbf{BO-0} & 26 & \textbf{BO-1} & Bus Address output lines. The BO lines are computed form the BI lines. If for example BI is 1:0 the BO lines will become 1:1. The starting output pins values are 1:1. \\ 
+    25 & \textbf{BC-2} & 26 & \textbf{BC-3} & Bus Address lines. Reserved. \\ 
     \midrule
     27 & \textbf{SCL} &  28 & \textbf{SDA} & I2C extension bus channel.  The lines are protected with a serial resistor and there is a pull-up resistor to VCC. \\
     \midrule
@@ -233,17 +233,17 @@ Controller and Extension boards make up a node. The main controller board will c
         \useasboundingbox (0,0) rectangle (15,6);
         \draw[help lines, gray!50, dashed] (0,0) grid(15,6);
 
-        \node at (3, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-MAIN-CTRL-Sketch.pdf}};
+        \node at (3.5, 2.5) {\includegraphics[page=1, width=0.4\textwidth]{./Figures/LCS-FP-MAIN-CTRL-Sketch.pdf}};
 
-        \node at (10.5, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-EXT-L-R-Sketch.pdf}};
+        \node at (11.5, 2.5) {\includegraphics[page=1, width=0.4\textwidth]{./Figures/LCS-FP-EXT-L-Sketch.pdf}};
 
-        \node at (3, 5) {\textbf{Main Controller}};
-        \node at (10, 5) {\textbf{Extension Board}};
-        \node at (3.5, 3.7) {Track Bus};
+        \node at (3, 5.5) {\textbf{Main Controller}};
+        \node at (11, 5.5) {\textbf{Extension Board}};
+        \node at (3.5, 4.3) {Track Bus};
         \node at (3.5, 1.7) {Extension Bus};
 
-        \draw[line width=1mm, gray!40, ->] (5,3.7) -- (15,3.7);
-        \draw[line width=1mm, gray!40, ->] (5,1.7) -- (15,1.7);
+        \draw[line width=1mm, gray!40, ->] (5, 4.3) -- (11,4.3);
+        \draw[line width=1mm, gray!40, ->] (5,1.7) -- (11,1.7);
     
     \end{tikzpicture}
     \caption{Connecting boards}
