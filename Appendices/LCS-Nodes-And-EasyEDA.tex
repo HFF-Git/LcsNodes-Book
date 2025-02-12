@@ -27,8 +27,7 @@ The mounting holes may look a little odd. As shown in the text to follow, there 
 
 \section{Extension Boards Footprints}
 
-Next, there are the extension boards. They come in two flavors. The first is an extension board with just connectors on the right side. 
-This board is intended for designs that place main controller boards and extension boards into a backplane type PCB. The track and extension connectors are all connected via this backplane.
+Next, there are the extension boards. The extension board has the LCS connectors on the left side. The right hand side will typically host the connectors to the layout. These boards can either directly plugged into a controller board or into a bus PCB which hosts controller and more than one extension board. In either case, the extension boards are the same.
 
 \begin{figure}[htbp]
     \centering
@@ -39,9 +38,20 @@ This board is intended for designs that place main controller boards and extensi
 
 \FloatBarrier
 
-In addition to the basic 16cm x 10cm form factor, is a set of 12cm x 10cm boards. They have exactly the same layout, except that their length is 12cm instead of 16cm. 
+In addition to the basic 16cm x 10cm form factor, is a set of 12cm x 10cm boards. They have exactly the same layout, except that their length is 12cm instead of 16cm. As always, there could be many more combinations as new boards with different demands are developed. Nevertheless it is important that when connectors are used, that they have the same meaning and are placed at the same location. This is the whole idea of using footprints to ensure this exact fitting.
 
-As always, there could be many more combinations as new boards with different demands are developed. Nevertheless it is important that when connectors are used, that they have the same meaning and are placed at the same location. This is the whole idea of using footprints to ensure this exact fitting.
+\section{Pad Numbers}
+
+In EasyEDA, the symbol pads and the PCB pads meet via PAD numbers. 
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[page=1, scale=0.4]{./Figures/PCB-Connector-Footprint-Pad-Numbers.pdf}
+    \caption{PCB-Connector-Footprint-Pad-Numbers}
+    %\label{fig:your-label}
+\end{figure}
+
+\FloatBarrier
 
 \section{Links}
 

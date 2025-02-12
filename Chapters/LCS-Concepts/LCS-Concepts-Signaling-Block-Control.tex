@@ -75,6 +75,66 @@ Imagine a single direction line with several blocks. The control element is the 
 
 /// ??? \textbf{note} fill in ...
 
+
+\section{Layering...}
+
+
+\begin{center}
+    \begin{tikzpicture}[scale=0.9, transform shape]
+        
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,12);
+    
+        \node[  tsRoundedRectangle, 
+                minimum width=10cm,
+                minimum height=1.5cm,
+                text width=3cm,
+                text centered,
+                fill=red!50] (orders) at (6,10) {Orders};
+    
+        \node[  tsRoundedRectangle, 
+                minimum width=10cm,
+                minimum height=1.5cm,
+                text width=3cm,
+                text centered,
+                fill=red!50] (signaling) at (6,7) {Signaling};
+    
+        \node[  tsRoundedRectangle, 
+                minimum width=10cm,
+                minimum height=1.5cm,
+                text width=3cm,
+                text centered,
+                fill=red!50] (blocks) at (6,4) {Blocks};
+    
+        \node[  tsRoundedRectangle,  
+                minimum width=4cm,
+                minimum height=1.5cm,
+                text width=3cm,
+                text centered,
+                fill=yellow!50] (sensors) at (3,1) {Sensors};
+    
+        \node[  tsRoundedRectangle, 
+                minimum width=4cm,
+                minimum height=1.5cm,
+                text centered,
+                text width=3cm, fill=yellow!50] (actors) at (9,1) {Actors};
+    
+        \draw[<->, ultra thick, line cap=round] (orders.south) -- (signaling.north);
+        \draw[<->, ultra thick, line cap=round] (signaling.south) -- (blocks.north);
+        \draw[->, ultra thick, line cap=round] (sensors.north) -- ($(blocks.south) - (3,0)$);
+        \draw[<-, ultra thick, line cap=round] (actors.north) -- ($(blocks.south) + (3,0)$);
+
+        \draw[decorate,decoration={brace,amplitude=8pt,mirror,mirror}, line width=2pt] (12,0) -- (12,5);
+        \node at (14, 2.5) {\parbox{2cm}{\textbf{Layout Elements}}};
+
+        \draw[decorate,decoration={brace,amplitude=8pt,mirror,mirror}, line width=2pt] (12,6) -- (12,8);
+        \node at (14, 7) {\parbox{2cm}{\textbf{Safety Rules}}};
+
+        \draw[decorate,decoration={brace,amplitude=8pt,mirror,mirror}, line width=2pt] (12,9) -- (12,11);
+        \node at (14, 9) {\parbox{2cm}{\textbf{Route Planning}}};
+    
+    \end{tikzpicture}
+\end{center}
+
 \section{Summary}
 
 This chapter gave a brief overview on block signaling control concepts and the key algorithms to implement. Our block signaling system will implement single direction ABS, single line ABS and APB using signals on the line. The layout will be divided into blocks with subsections. The length of the block accommodates the largest train length and subsections are granularity of knowing where the trains actually is. Each block is managed by a block controller node, which manages the train hosted, associated signal and turnouts for the block. It also manages communicates the state to the other block controls and the central train authorization system. ( CTC ).

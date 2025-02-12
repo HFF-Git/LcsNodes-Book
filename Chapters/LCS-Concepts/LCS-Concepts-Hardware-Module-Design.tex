@@ -81,7 +81,7 @@ Each node in the layout control system is a node and hence there is a controller
     %\label{fig:your-label}
 \end{figure}
 
-All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. The figure above shows the 10cm by 16cm board form factor. In particular, this board should be very familiar. It has the \"Euro PCB\" dimensions. The main controller board has on the left side the connectors for the LCS bus and the power input. On the right side, there are two connectors toward an extension board. As described before, there are two types of extension boards. The usage of the individual connector pins are described in the upcoming chapter. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as symbols and PCB footprints in the EasyEDA library.
+All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. The figure above shows the 10cm by 16cm board form factor. The main controller board has on the left side the connectors for the LCS bus and the power input. On the right side, there are two connectors toward an extension board. As described before, there are two types of extension boards. The usage of the individual connector pins are described in the upcoming chapter. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as symbols and PCB footprints in the EasyEDA library.
 
 \section{LCS Bus connector}
 
@@ -122,7 +122,16 @@ Every hardware module needs the LCS bus interface to connect to the bus. Some mo
 
 \section{LCS Nodes Extension Board Connector}
 
-For interchangeability of extensions, there is a standardized \textbf{extension board connector} between controller and extensions. Extension boards come in two flavors. The first will have the extension connector on both sides of the board. Main controller boards and extension board will have a female connector on the right hand side. The first flavor extension board will have a matching connector on the left side. This way main controller and extension boards can be placed next to each other, just like a train. The second type of extension boards only have the connectors on the right hand side. They are intended for a backplane style layout where main controller and extension boards are plugged next to each other. The overall concept is very similar to the the shield concept found in the Arduino or Raspberry PI universe, except that we can stack boards, as well as placing them next to each other. 
+For interchangeability of extensions, there is a standardized \textbf{extension board connector} between controller and extensions. Extension boards have a male connector set on the left hand side. Main controller boards will have a female connector on the right hand side. This way main controller and extension boards can be placed next to each other, just like a train. Like the controller board, they come in different lengths. The following figure shows the 10x16cm board. 
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[page=1, scale=0.7]{./Figures/LCS-FP-EXT-L-10X16.pdf}
+    \caption{LCS-FP-EXT-R-10X16}
+    %\label{fig:your-label}
+\end{figure}
+
+Extension boards can also be put into a PCB backplane along with the main controller. This way, more than one extension board can connect to the controller board. The overall concept is very similar to the the shield concept found in the Arduino or Raspberry PI universe, except that we can stack boards, as well as placing two of them next to each other. 
 
 The I2C interface will be the main communication method between the boards. In fact all current extension boards shown in later chapters use the I2C communication channel. Nevertheless, a rather rich set of outputs from the controller should be available to the extension board for flexibility. There should be ports for digital input and output, analog input, PWM outputs, serial outputs and so on. The raspberry pi pico offers a great flexibility on assigning function blocks such as an SPI or I2C interface to pins. The extension connector outlined below offers a set of pins which are mapped to the PICO capabilities. The following table shows the connector pin assignments for the communication between a main controller board and extension boards. All boards will have a 40-pin connector organized as 2 rows of 20 pins.
 

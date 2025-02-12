@@ -10,26 +10,22 @@ As with any LCS library part presented, the key goal is to unify and simplify ac
 
 \begin{figure}[htbp]
     \centering
-    \begin{tikzpicture}[scale=0.9, transform shape]
+    \begin{tikzpicture}[scale=1, transform shape]
+        \useasboundingbox (0,0) rectangle (15,6);
+        \draw[help lines, gray!50, dashed] (0,0) grid(15,6);
 
-        \draw[help lines, gray!50, dashed] (0,0) grid(16,6);
+        \node at (3.5, 2.5) {\includegraphics[page=1, width=0.4\textwidth]{./Figures/LCS-FP-MAIN-CTRL-Sketch.pdf}};
 
-        % Include the first graphic
-        \node at (3, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-MAIN-CTRL-Sketch.pdf}};
+        \node at (11.5, 2.5) {\includegraphics[page=1, width=0.4\textwidth]{./Figures/LCS-FP-EXT-L-Sketch.pdf}};
 
-        %Include the second graphic, offset from the first
-        \node at (10.5, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-EXT-L-Sketch.pdf}};
+        \node at (3, 5.5) {\textbf{Main Controller}};
+        \node at (11, 5.5) {\textbf{Extension Board}};
+        \node at (3.5, 4.3) {Track Bus};
+        \node at (3.5, 1.7) {Extension Bus};
 
-    % Add annotations or labels if needed
-    \node at (3, 5) {\textbf{Main Controller}};
-    \node at (10, 5) {\textbf{Extension Board}};
-
-    \node at (3.5, 3.7) {Track Bus};
-    \node at (3.5, 1.7) {Extension Bus};
-
-    \draw[line width=1mm, gray!40, ->] (5,3.7) -- (15,3.7);
-    \draw[line width=1mm, gray!40, ->] (5,1.7) -- (15,1.7);
-   
+        \draw[line width=1mm, gray!40, ->] (5, 4.3) -- (11,4.3);
+        \draw[line width=1mm, gray!40, ->] (5,1.7) -- (11,1.7);
+    
     \end{tikzpicture}
     \caption{Connecting boards}
     %\label{fig:composite-image}
@@ -61,19 +57,33 @@ For a new board design, the development process is therefore to define the NVM d
 
 An extension board design assumes that the key ICs on the board are I2C addressable chips. As already mentioned, I2C ICs have a fixed I2C address part and a some address bits that can be set by hardware. Most of the I2C chips used in our designs have a four bit fixed address portion and a configurable portion to be supplied via address pins of the chip. We will use the configurable portion to identify the board, from A2 to A1 and reserve the last bit A0 for selecting two chips of the same kind on an extension board.
 
-| IC | A6 | A5 | A4 | A3 | A2 | A1 | A0 | Comment |
 
-|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-
-| MCP23017 | 0 | 1 | 0 | 0 | B1 | B0 | x | |
-
-| PCA9685  | 1 | 1 | 1 | 1 | B1 | B0 | 0 | Set to "1100" as the upper four bits. |
-
-| PCA9955  | 1 | 1 | 0 | 1 | B1 | B0 | 0 | Set to "1011" as the upper four bits. |
-
-| PCA9555  | 0 | 1 | 0 | 0 | B1 | B0 | 0 | |
-
-| ST24LC04 | 1 | 0 | 1 | 0 | B1 | B0 | 0 | |
+\begin{longtable}{@{}|l|l|l|l|l|l|l|l|p{0.3\linewidth}|@{}}
+    \caption{I2C Chip} \\
+    \toprule
+    \textbf{IC} & \textbf{A6} & \textbf{A5} & \textbf{A4} & \textbf{A3} & \textbf{A2} & \textbf{A1} & \textbf{A0} & \textbf{Type} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{IC} & \textbf{A6} & \textbf{A5} & \textbf{A4} & \textbf{A3} & \textbf{A2} & \textbf{A1} & \textbf{A0} & \textbf{Type} \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{5}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    \textbf{MCP23017} & 0 & 1 & 0 & 0 & B1 & B0 & x & 16 port DIO \\
+    \midrule
+    \textbf{PCA9555} & 0 & 1 & 0 & 0 & B1 & B0 & x & 16 port DIO \\
+    \midrule
+    \textbf{PCA9955} & 1 & 1 & 0 & 1 & B1 & B0 & x & 16 port LED driver \\
+    \midrule
+    \textbf{PCA9685} & 1 & 1 & 1 & 1 & B1 & B0 & x & 16 port servo driver \\
+    \midrule
+    \textbf{24AA256} & 1 & 0 & 1 & 0 & B1 & B0 & x & Non volatile memory \\
+\end{longtable}%
 
 The PCA 9955 and 9685 have a high number of address selection inputs. This allows to connect more than typically 8 chips on one I2C bus. We will not make use of this capability for now and assign a fixed 4-bit chip I2C address portion.
 
