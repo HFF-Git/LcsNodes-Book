@@ -124,14 +124,13 @@ Imagine a single direction line with several blocks. The control element is the 
         \draw[<-, ultra thick, line cap=round] (actors.north) -- ($(blocks.south) + (3,0)$);
 
         \draw[decorate,decoration={brace,amplitude=8pt,mirror,mirror}, line width=2pt] (12,0) -- (12,5);
-        \node at (14, 2.5) {\parbox{2cm}{\textbf{Layout Elements}}};
-
         \draw[decorate,decoration={brace,amplitude=8pt,mirror,mirror}, line width=2pt] (12,6) -- (12,8);
-        \node at (14, 7) {\parbox{2cm}{\textbf{Safety Rules}}};
-
         \draw[decorate,decoration={brace,amplitude=8pt,mirror,mirror}, line width=2pt] (12,9) -- (12,11);
-        \node at (14, 9) {\parbox{2cm}{\textbf{Route Planning}}};
-    
+      
+        \node at (14.5, 2.5) {\textbf{\parbox{3cm}{Layout\\Elements}}};
+        \node at (14.5, 7) {\textbf{\parbox{3cm}{Safety\\Rules}}};
+        \node at (14.5, 10) {\textbf{\parbox{3cm}{Route\\Planning}}};
+
     \end{tikzpicture}
 \end{center}
 

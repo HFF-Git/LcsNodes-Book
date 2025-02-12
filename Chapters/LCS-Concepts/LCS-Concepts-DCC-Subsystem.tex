@@ -2,7 +2,7 @@
 
 The LCS runtime library builds the software foundation for implementing the layout control software. So far we have discussed the general working, node and port functions and callbacks. One part that was only touched upon briefly so far is the digital command control \texttt{(DCC)} subsystem. A significant part of the LCS messages deal with the control of running equipment decoder, stationary decoders and the track itself.
 
-This chapter now dives a little deeper into the DCC subsystem. At the heart of this subsystem is the base station node that is in charge for of managing locomotives and tracks. It receives LCS messages from devices such as a cab throttle and translates these commands into a series of DCC packets. The packets are the basis for the DCC track power modules to actually produce the electrical signals on the track. The power module is either a part of the base station or a separate booster. Base station, boosters and throttles are just nodes making use of the DCC commands in the LCS message set. They too can implement reacting to events and send themselves events. First we will look at a base station and what it takes to manage a locomotive session and to generate the DCC packets for mobile and stationary decoders. Next, we will look into how a DCC packet actually gets out on the track.
+This chapter dives a little deeper into the DCC subsystem. At the heart of this subsystem is the base station node that is in charge for of managing locomotives and tracks. It receives LCS messages from devices such as a cab throttle and translates these commands into a series of DCC packets. The packets are the basis for the DCC track power modules to actually produce the electrical signals on the track. The power module is either a part of the base station or a separate booster. Base station, boosters and throttles are just nodes making use of the DCC commands in the LCS message set. They too can implement reacting to events and send themselves events. First we will look at a base station and what it takes to manage a locomotive session and to generate the DCC packets for mobile and stationary decoders. Next, we will look into how a DCC packet actually gets out on the track.
 
 \section{Locomotive session management}
 
@@ -25,6 +25,11 @@ The base station part that produces DCC packets is not concerned with how these 
 \begin{center}
     \begin{tikzpicture} [scale=0.9, transform shape]
         \draw[help lines, gray!50, dashed] (0,0) grid(16,4);
+
+        \fill[gray!10] (2,0) rectangle (5.7,4);
+        \fill[gray!10] (6.2,0) rectangle (8,4);
+        \fill[gray!10] (8.5,0) rectangle (12,4);
+        \fill[gray!10] (12.7,0) rectangle (14.7,4);
 
         % Parameters
         \def\bitOneWidth{0.058}    % Width of a '1'
@@ -75,8 +80,8 @@ The base station part that produces DCC packets is not concerned with how these 
         \drawBitSequence{}
         
         % Add axes for clarity
-        \draw[thick,->] (0.5,\amplitude/2+1.5) -- (15,\amplitude/2+1.5) node[right] {Time};
-        \draw[thick,<->] (0.5,2.5-\amplitude/2) node[below] {V-}  -- (0.5, 2.5 + \amplitude/2)  node[above] {V+} ;
+        \draw[->, thick, gray] (0.5,\amplitude/2+1.5) -- (15,\amplitude/2+1.5) node[right] {Time};
+        \draw[->, thick, gray] (0.5,2.5-\amplitude/2) node[below] {V-}  -- (0.5, 2.5 + \amplitude/2)  node[above] {V+} ;
 
         \node[  minimum width=2cm,
                 minimum height=1cm,
@@ -86,12 +91,12 @@ The base station part that produces DCC packets is not concerned with how these 
         \node[  minimum width=2cm,
                 minimum height=1cm,
                 text width=2cm,
-                text centered ]at (6.75, 0.5) {Address};
+                text centered ]at (7, 0.5) {Address};
 
         \node[  minimum width=2cm,
                 minimum height=1cm,
                 text width=2cm,
-                text centered ]at (9.5, 0.5) {Command};
+                text centered ]at (10.5, 0.5) {Command};
             
         \node [ minimum width=2cm,
                 minimum height=1cm,
@@ -139,10 +144,66 @@ The following figure depicts the overall signal timing for RailCom support. All 
 
 \begin{center}
     \begin{tikzpicture} [scale=0.9, transform shape]
-
         \draw[help lines, gray!50, dashed] (0,0) grid(16,4);
-        \node at ( 7,2) {CUTOUT period};
 
+        % highlight area of interest
+        \fill[gray!10] (3.8,0) rectangle (7.3,4);
+
+        % Text
+        \node[  minimum width=4cm,
+                minimum height=1cm,
+                text width=4cm,
+                text centered ] at (5.5, 0.5) {Cutout Area};
+        
+        % Parameters
+        \def\baseWidth{0.029}           % 
+        \def\bitOneWidth{0.058}         % Width of a '1'
+        \def\bitZeroWidth{0.116}        % Width of a '0'
+        \def\cutoutWidth{0.029}         % Width of the cutout period
+        \def\amplitude{2}               % Amplitude of the wave
+        \def\scaleFactor{8}             % Scale factor for drawing (to adjust units)
+        
+        % Start point
+        \coordinate (current) at (2,1.5);
+
+         % Add axes for clarity
+         \draw[->, thick, gray] (0.5,\amplitude/2+1.5) -- (15,\amplitude/2+1.5) node[right] {Time};
+         \draw[<->, thick, gray] (0.5,2.5-\amplitude/2) node[below] {V-}  -- (0.5, 2.5 + \amplitude/2)  node[above] {V+} ;
+        
+        % Function to draw a single bit
+        \newcommand{\drawBit}[1]{
+            % Argument #1: Width of the bit
+            \pgfmathsetmacro{\width}{#1 * \scaleFactor}
+            % Draw bit
+            \draw[thick] (current) -- ++(0,\amplitude) -- ++(\width/2,0) -- ++(0,-\amplitude) -- ++(+\width/2,0);
+            %update current
+            \coordinate (current) at ($(current) + (#1 * \scaleFactor,0)$);
+        }
+        
+        % Function to draw the bit sequence
+        \newcommand{\drawBitSequence}{
+
+            \pgfmathsetmacro{\width}{\baseWidth * \scaleFactor}
+            
+            % packet end, cutout start
+            \draw[thick] (current) -- ++(0,\amplitude) -- ++(\width*4,0) -- ++(0,-\amplitude) -- ++(\width*4,0)
+            -- ++(0, \amplitude) -- ++(\width,0) -- ++(0,-\amplitude/2) -- ++(13*\width,0);
+
+            \coordinate (current) at ($(current) + ( 22 * \width, \amplitude/2)$);
+
+            % cutout end
+            \draw[thick] (current) -- ++( 0, -\amplitude/2) -- ++(\width,0);
+            \coordinate (current) at ($(current) + ( 1 * \width,-\amplitude/2)$);
+
+            % preamble start
+            \foreach \i in {1,...,4} {
+                \drawBit{\bitOneWidth*2}
+            }
+        }
+        
+        % Draw the bit sequence
+        \drawBitSequence{}
+        
     \end{tikzpicture}
 \end{center}
 
@@ -150,10 +211,86 @@ The NMRA and RailCommunity standards describe the data format used when sending 
 
 \begin{center}
     \begin{tikzpicture} [scale=0.9, transform shape]
-
         \draw[help lines, gray!50, dashed] (0,0) grid(16,4);
-        \node at ( 7,2) {RailCom message in the cutout period};
 
+        % highlight area of interest
+        \fill[gray!10] (4.8,0) rectangle (10.8,4);
+
+        % Text
+        \node[  minimum width=4cm,
+                minimum height=1cm,
+                text width=4cm,
+                text centered ] at (7, 0.5) {Cutout Area};
+        
+        % Parameters
+        \def\baseWidth{0.029}           % 
+        \def\bitOneWidth{0.058}         % Width of a '1'
+        \def\bitZeroWidth{0.116}        % Width of a '0'
+        \def\cutoutWidth{0.029}         % Width of the cutout period
+        \def\amplitude{2}               % Amplitude of the wave
+        \def\scaleFactor{14}             % Scale factor for drawing (to adjust units)
+        
+        % Start point
+        \coordinate (current) at (1.5,1.5);
+
+         % Add axes for clarity
+         \draw[->, thick, gray] (0.5,\amplitude/2+1.5) -- (15,\amplitude/2+1.5) node[right] {Time};
+         \draw[<->, thick, gray] (0.5,2.5-\amplitude/2) node[below] {V-}  -- (0.5, 2.5 + \amplitude/2)  node[above] {V+} ;
+        
+        % Function to draw a single bit
+        \newcommand{\drawBit}[1]{
+            % Argument #1: Width of the bit
+            \pgfmathsetmacro{\width}{#1 * \scaleFactor}
+            % Draw bit
+            \draw[thick] (current) -- ++(0,\amplitude) -- ++(\width/2,0) -- ++(0,-\amplitude) -- ++(+\width/2,0);
+            %update current
+            \coordinate (current) at ($(current) + (#1 * \scaleFactor,0)$);
+        }
+        
+        % Function to draw the bit sequence
+        \newcommand{\drawBitSequence}{
+
+            \pgfmathsetmacro{\width}{\baseWidth * \scaleFactor}
+            
+            % packet end, cutout start
+            \draw[thick] (current) -- ++(0,\amplitude) -- ++(\width*4,0) -- ++(0,-\amplitude) -- ++(\width*4,0)
+            -- ++(0, \amplitude) -- ++(\width,0) -- ++(0,-\amplitude/2) -- ++(13*\width,0);
+
+            \coordinate (current) at ($(current) + ( 22 * \width, \amplitude/2)$);
+
+            % cutout end
+            \draw[thick] (current) -- ++( 0, -\amplitude/2) -- ++(\width,0);
+            \coordinate (current) at ($(current) + ( 1 * \width,-\amplitude/2)$);
+
+            % preamble start
+            \foreach \i in {1,...,2} {
+                \drawBit{\bitOneWidth*2}
+            }
+        }
+        
+        % Draw the bit sequence
+        \drawBitSequence{}
+
+        %draw the datagram packets
+
+        \node[  draw, 
+                rectangle, 
+                fill=black,
+                minimum width=1.5cm, 
+                minimum height=0.5cm, 
+                text height=0.5cm, 
+                 align=left] at (6, 2.5) 
+        { };
+
+        \node[  draw, 
+                rectangle, 
+                fill=black,
+                minimum width=3cm, 
+                minimum height=0.5cm, 
+                text height=0.5cm, 
+                align=left] at (8.5, 2.5) 
+        { };
+        
     \end{tikzpicture}
 \end{center}
 

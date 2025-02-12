@@ -2,18 +2,9 @@
 %-------------------------------------------------------------------------------------------------------
 \chapter{Message Formats}
 
-Before diving into the actual design of the software and hardware components, let us first have a look at the message data formats as they flow on the layout control bus. It is the foundation of the layout control subsystem. This chapter will provide the overview on the available messages and give a short introduction to what they do. Later chapters build on it and explain how the messages are used for designing LCS node functions. 
+Now that we know the concepts, let us first have a look at the message data formats as they flow on the layout control bus. It is the foundation of the layout control subsystem. This chapter will provide the overview on the available messages and give a short introduction to what they do. Later chapters build on it and explain how the messages are used for designing LCS node functions. 
 
-All nodes communicate via the layout control bus by broadcasting messages. Every node can send a message, and every node receives the message broadcasted. There is no central master. 
-
-\begin{center}
-\begin{tikzpicture}
-    \draw[draw](0,0) rectangle (8,4);
-    \node at (4, 2) { a picture to show a node sending}; 
-\end{tikzpicture}
-\end{center}
-
-Since all nodes receive all messages, a node needs to decide whether to react to a message or not. General management and emergency type messages are handled by all nodes. A reply to a specific request will only be handled by the requesting node. The layout control system defines a fairly large set of messages, which can be grouped into several categories:
+All nodes communicate via the layout control bus by broadcasting messages. Every node can send a message, and every node receives the message broadcasted. There is no central master. Since all nodes receive all messages, a node needs to decide whether to react to a message or not. General management and emergency type messages are handled by all nodes. A reply to a specific request will only be handled by the requesting node. The layout control system defines a fairly large set of messages, which can be grouped into several categories:
 
 \begin{itemize}
     \item General management
@@ -24,6 +15,7 @@ Since all nodes receive all messages, a node needs to decide whether to react to
     \item DCC Accessory Decoder management
     \item RailCom DCC Packet management
     \item Raw DCC Packet management
+    \item Firmware Download management
 \end{itemize}
 
 The current implementation is using the CAN bus, which ensures by definition that a message is correctly transmitted. However, it does not guarantee that the receiver actually processed the message. For critical messages, a request-reply scheme is implemented on top. Also, to address possible bus congestion, a priority scheme for messages is implemented to ensure that each message has a chance for being transmitted.
@@ -320,7 +312,7 @@ Some DCC commands return an acknowledgment or an error for the outcome of a DCC 
 
 The messages defined for the DCC locomotive session management as outlined above are also used for the analog engines. An analog engine will just like its digital counterpart have an allocated locomotive session and the speed/dir command is supported. All other commands will of course not be applicable. The speed/dir command will be sent out on the bus and whoever is in control of the track section where the analog engine is supposed to be, will manage that locomotive. In the following chapters we will answer the question of how exactly multiple analog engines can run on a layout.
 
-\section{Firmware Updates}
+\section{Firmware Download}
 
 LCS supports a method for updating the firmware remotely. This involves loading a new firmware image. A typical approach is to split the available program memory in two partitions and load the new image in the non-active partition. When the firmware is transmitted and valid, the next restart will boot using the new firmware. There is a whole chapter later in the book about the firmware update. The LCS message formats support the firmware update process with the \texttt{XXX} and \texttt{YYY} messages.
 

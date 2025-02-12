@@ -5,8 +5,19 @@
 %-------------------------------------------------------------------------------------------------------
 \documentclass[a4paper, 11pt]{book}  
 
+%-------------------------------------------------------------------------------------------------------
+% Get all packages and styles.
+%
+%-------------------------------------------------------------------------------------------------------
 \input{packages}
 \input{styles}
+
+%-------------------------------------------------------------------------------------------------------
+% Table of contents options.
+%
+%-------------------------------------------------------------------------------------------------------
+\setlength{\cftsecnumwidth}{3em}
+\setlength{\cftsecindent}{0em} 
 
 %-------------------------------------------------------------------------------------------------------
 % Document start.
@@ -23,7 +34,7 @@
     \togglefalse{includeListings} 
 
     %---------------------------------------------------------------------------------------------------
-    %
+    % Options to deal with how a line is filled.
     %
     %---------------------------------------------------------------------------------------------------
     \setlength{\emergencystretch}{3em}
@@ -53,81 +64,81 @@
     \tableofcontents    
 
     \mainmatter             
-    \include{Chapters/LCS-Introduction}
-    \include{Chapters/LCS-Concepts/LCS-Concepts-General}
-    \include{Chapters/LCS-Concepts/LCS-Concepts-Message-Formats}
-    \include{Chapters/LCS-Concepts/LCS-Concepts-Message-Protocols}
+    \include{chapters/LCS-Intro/LCS-Introduction}
+    \include{chapters/LCS-Concepts/LCS-Concepts-General}
+    \include{chapters/LCS-Concepts/LCS-Concepts-Message-Formats}
+    \include{chapters/LCS-Concepts/LCS-Concepts-Message-Protocols}
 
-    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Introduction}
-    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Storage}
-    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-API}
-    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Callbacks}
-    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Command-Interface}
-    \include{Chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Example}
+    \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Introduction}
+    \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Storage}
+    \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-API}
+    \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Callbacks}
+    \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Command-Interface}
+    \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Example}
     
-    \include{Chapters/LCS-Concepts/LCS-Concepts-DCC-Subsystem}
-    \include{Chapters/LCS-Concepts/LCS-Concepts-Analog-Subsystem}
-    \include{Chapters/LCS-Concepts/LCS-Concepts-Hardware-Module-Design}
-    \include{Chapters/LCS-Main-Controller-Hardware-Pico}
-    \include{Chapters/LCS-Controller-Dependent-Code}
+    \include{chapters/LCS-Concepts/LCS-Concepts-DCC-Subsystem}
+    \include{chapters/LCS-Concepts/LCS-Concepts-Analog-Subsystem}
+    \include{chapters/LCS-Concepts/LCS-Concepts-Hardware-Module-Design}
+    \include{chapters/LCS-Main-Controller/LCS-Main-Controller-Hardware-Pico}
+    \include{chapters/LCS-Cdc-Lib/LCS-Controller-Dependent-Code}
 
-    \include{Chapters/LCS-Concepts/LCS-Concepts-Firmware-Design}
-    \include{Chapters/LCS-Power-Module-Design}
-    \include{Chapters/LCS-Railcom-Signal-Detector}
+    \include{chapters/LCS-Concepts/LCS-Concepts-Firmware-Design}
+    \include{chapters/LCS-Power-Module-Design}
+    \include{chapters/LCS-Railcom-Signal-Detector}
 
-    \include{Chapters/LCS-Base-Station/LCS-Base-Station-Intro}
-    \include{Chapters/LCS-Base-Station/LCS-Base-Station-Hardware}
-    \include{Chapters/LCS-Base-Station/LCS-Base-Station-Firmware}
+    \include{chapters/LCS-Base-Station/LCS-Base-Station-Intro}
+    \include{chapters/LCS-Base-Station/LCS-Base-Station-Hardware}
+    \include{chapters/LCS-Base-Station/LCS-Base-Station-Firmware}
 
-    \include{Chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Intro}
-    \include{Chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Firmware-Development}
-    \include{Chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Basic}
-    \include{Chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Firmware}
-    \include{Chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Diesel}
+    \include{chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Intro}
+    \include{chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Firmware-Development}
+    \include{chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Basic}
+    \include{chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Firmware}
+    \include{chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld-Diesel}
 
-    \include{Chapters/LCS-Concepts/LCS-Concepts-Signaling-Block-Control}
+    \include{chapters/LCS-Concepts/LCS-Concepts-Signaling-Block-Control}
 
-    \include{Chapters/LCS-Block-Controller/LCS-Block-Controller-Hardware}
-    \include{Chapters/LCS-Block-Controller/LCS-Block-Controller-Boards}
-    \include{Chapters/LCS-Block-Controller/LCS-Block-Controller-Firmware}
+    \include{chapters/LCS-Block-Controller/LCS-Block-Controller-Hardware}
+    \include{chapters/LCS-Block-Controller/LCS-Block-Controller-Boards}
+    \include{chapters/LCS-Block-Controller/LCS-Block-Controller-Firmware}
     
-    \include{Chapters/LCS-Concepts/LCS-Concepts-Sensors-And-Actors}
-    \include{Chapters/LCS-Concepts/LCS-Concepts-Hardware-Extension-Module-Design}
+    \include{chapters/LCS-Concepts/LCS-Concepts-Sensors-And-Actors}
+    \include{chapters/LCS-Concepts/LCS-Concepts-Hardware-Extension-Module-Design}
 
-    \include{Chapters/LCS-Extensions/LCS-Extension-Track-Occupancy-Detector}
-    \include{Chapters/LCS-Extensions/LCS-Extension-Servo}
-    \include{Chapters/LCS-Extensions/LCS-Extension-GPIO}
-    \include{Chapters/LCS-Extensions/LCS-Extension-Signal}
-    \include{Chapters/LCS-Extensions/LCS-Extension-Turnout}
-    \include{Chapters/LCS-Extensions/LCS-Extension-Relay}
-    \include{Chapters/LCS-Extensions/LCS-Extension-Combo-Board}
-    \include{Chapters/LCS-Extensions/LCS-Extension-Cab-Control}
-    \include{Chapters/LCS-Extensions/LCS-Extension-Prototype}
+    \include{chapters/LCS-Extensions/LCS-Extension-Track-Occupancy-Detector}
+    \include{chapters/LCS-Extensions/LCS-Extension-Servo}
+    \include{chapters/LCS-Extensions/LCS-Extension-GPIO}
+    \include{chapters/LCS-Extensions/LCS-Extension-Signal}
+    \include{chapters/LCS-Extensions/LCS-Extension-Turnout}
+    \include{chapters/LCS-Extensions/LCS-Extension-Relay}
+    \include{chapters/LCS-Extensions/LCS-Extension-Combo-Board}
+    \include{chapters/LCS-Extensions/LCS-Extension-Cab-Control}
+    \include{chapters/LCS-Extensions/LCS-Extension-Prototype}
 
-    \include{Chapters/LCS-Layout-Connector}
-    \include{Chapters/LCS-Gateway-Module}
-    \include{Chapters/LCS-DCC-Monitoring}
-    \include{Chapters/LCS-Layout-System-Configuration}
-    \include{Chapters/LCS-Firmware-Update}
-    \include{Chapters/LCS-Guidance-Computer}
-    \include{Chapters/LCS-Utility-Boards}
-    \include{Chapters/LCS-UI_Elements}
-    \include{Chapters/LCS-Outlook}
+    \include{chapters/LCS-Layout-Connector}
+    \include{chapters/LCS-Gateway-Module}
+    \include{chapters/LCS-DCC-Monitoring}
+    \include{chapters/LCS-Layout-System-Configuration}
+    \include{chapters/LCS-Firmware-Update}
+    \include{chapters/LCS-Guidance-Computer}
+    \include{chapters/LCS-Utility-Boards}
+    \include{chapters/LCS-UI-Elements/LCS-UI_Elements}
+    \include{chapters/LCS-Outlook}
 
     \appendix 
 
-    % \include{Appendices/LCS-Item-Reference}
-    % \include{Appendices/LCS-Command-Reference}
-    % \include{Appendices/DCC-PP-Command-Reference}
-    % \include{Appendices/LCS-Runtime-Lib-Reference}
-    % \include{Appendices/LCS-CDC-Lib-Reference}
-    \include{Appendices/LCS-Nodes-And-EasyEDA}
-    % \include{Appendices/Generic-Power-Supply}
-    % \include{Appendices/Inspiring-Work-And-Links} 
-    \include{Appendices/About-This-Book}
-    % \iftoggle{includeListings}{ \include{Appendices/listings} }
-    \include{Appendices/Notes}
-    \include{Appendices/tests}
+    % \include{appendices/LCS-Item-Reference}
+    % \include{appendices/LCS-Command-Reference}
+    % \include{appendices/DCC-PP-Command-Reference}
+    % \include{appendices/LCS-Runtime-Lib-Reference}
+    % \include{appendices/LCS-CDC-Lib-Reference}
+    \include{appendices/LCS-Nodes-And-EasyEDA}
+    % \include{appendices/Generic-Power-Supply}
+    % \include{appendices/Inspiring-Work-And-Links} 
+    \include{appendices/About-This-Book}
+    % \iftoggle{includeListings}{ \include{appendices/listings} }
+    \include{appendices/Notes}
+    \include{appendices/tests}
     
     \backmatter             
 
