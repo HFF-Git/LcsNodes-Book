@@ -15,7 +15,7 @@ All nodes communicate via the layout control bus by broadcasting messages. Every
     \item DCC Accessory Decoder management
     \item RailCom DCC Packet management
     \item Raw DCC Packet management
-    \item Firmware Download management
+    \item Firmware Update management
 \end{itemize}
 
 The current implementation is using the CAN bus, which ensures by definition that a message is correctly transmitted. However, it does not guarantee that the receiver actually processed the message. For critical messages, a request-reply scheme is implemented on top. Also, to address possible bus congestion, a priority scheme for messages is implemented to ensure that each message has a chance for being transmitted.
@@ -32,13 +32,13 @@ The byte fields names in an LCS message are explained in greater detail when we 
 
 The general management message group contains commands for dealing with the layout system itself. The reset command \texttt{(RESET)} directs all hardware modules, a node, or a port on a node to perform a reset. The entire bus itself can be turned on and off \texttt{(BUS-ON, BUS-OFF)}, enabling or suppressing the message flow. Once the bus is off, all nodes wait for the bus to be turned on again. In case of an emergency the \texttt{(E-STOP)} message stops all running engines. The base station broadcasts a \texttt{(SYS-TIME)} message with the layout time, \texttt{(LCS-INFO)} broadcasts general system information on a regular basis. Finally, there are messages for pinging a node \texttt{(PING)}, perform data synchronization operations \texttt{(SYNC)} and request acknowledgement \texttt{(ACK/ERR)}.
 
-\begin{table}[h!]
-    \begin{center}
-        \caption{General Management}
+\begin{table}[ht!]
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
+            \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
             RESET & npId-H & npId-L & flags & & & & \\
             BUS-ON & & & & & & & \\
             BUS-OFF & & & & & & & \\
@@ -49,9 +49,10 @@ The general management message group contains commands for dealing with the layo
             SYNC & npId-H & npId-L & arg & & & & \\
             ACK & npId-H & npId-L & & & & & \\
             ERR & npId-H & npId-L & code & arg1 & arg2 & & \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{General Management}
 \end{table}
 
 \section{Node and Port Management}
@@ -59,19 +60,20 @@ The general management message group contains commands for dealing with the layo
 When a hardware module is powered on, the first task is to establish the node Id in order to broadcast and receive messages. The \texttt{(REQ-NID)} and \texttt{(REP-ID)} messages are the messages used to implement the protocol for establishing the nodeId. More on this in the chapter on message protocols. A virgin node has the hardware module-specific node type and a node Id of \texttt{NIL} also be set directly through the \texttt{(SET-NID)} command. This is typically done by a configuration tool.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{Node and Port Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
+            \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
             REQ-NID & nId-H & nId-L & nUID-4 & nUID-3 & nUID-2 & nUID-1 & flags \\
             REP-NID & nId-H & nId-L & nUID-4 & nUID-3 & nUID-2 & nUID-1 & flags \\
             SET-NID & nId-H & nId-L & nUID-4 & nUID-3 & nUID-2 & nUID-1 & flags \\
             NCOL    & nId-H & nId-L & nUID-4 & nUID-3 & nUID-2 & nUID-1 & \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{Node Id Management}
 \end{table}
 
 
@@ -80,55 +82,57 @@ All nodes monitor the message flow to detect a potential node collision. This co
 The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} are available to obtain attribute data from the node or port. The \texttt{(NODE-SET)} allows to set attributes for a node or port for the targeted node. Items are numbers assigned to a data location or an activity. There are reserved items such as getting the number of ports, or setting an LED. In addition, the firmware programmer can also define items with node specific meaning. The firmware programmer defined items are accessible via the \texttt{(NODE-REQ)} and \texttt{(NODE-REP)} messages.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{Node and Port Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
+            \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
             NODE-GET & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
             NODE-PUT & npId-H & npId-L & item & val1-H & val1-L & val2-H & val2-L \\
             NODE-REQ & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
             NODE-REP & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{Node and Port Management}
 \end{table}
 
 Nodes do not react to attribute and user defined request messages when in operations mode. To configure a node, the node needs to be put into configuration mode. The \texttt{(OPS)} and \texttt{(CFG)} commands are used to put a node into configuration mode or operation mode. Not all messages are supported in operations mode and vice versa. For example, to set a new nodeId, the node first needs to be put in configuration mode. During configuration mode, no operational messages are processed.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{Node and Port Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
+            \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
             OPS & npId-H & npId-L & & & & & \\
             CFG & npId-H & npId-L & & & & & \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{Operation and Configuration Mode}
 \end{table}
-
 
 \section{Event Management}
 
 The event management group contains the messages to configure the node event map and messages to broadcast an event and messages to read out event data. The (SET-NODE) with the item value to set and remove an event map entry from the event map is used to manage the event map. An inbound port can register for many events to listen to, and an outbound port will have exactly one event to broadcast. Ports and Events are numbered from 1 onward. When configuring, the portId \texttt{NIL} has a special meaning in that it refers to all portIds on the node.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{Event Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
+            \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
             EVT-ON & npId-H & npId-L & evId-H & evId-L & & & \\
             EVT-OFF & npId-H & npId-L & evId-H & evId-L & & & \\
             EVT & npId-H & npId-L & evId-H & evId-L & arg-H & arg-L & \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{Event Management}
 \end{table}
 
 \section{DCC Track Management}
@@ -136,17 +140,18 @@ The event management group contains the messages to configure the node event map
 Model railroads run on tracks. Imagine that. While on a smaller layout, there is just the track, the track on a larger layout is typically divided into several sections, each controlled by a track node \textnormal{(centralized node or decentralized port)}. The system allows to report back the track sections status \textnormal{(in terms of occupied, free, and detecting the number of engines currently present)}. These messages allow the control of turnouts and monitoring of sections' status.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{DCC Track Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
+            \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
             TON & npId-H & npId-L & & & & & \\
             TOF & npId-H & npId-L & & & & & \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{DCC Track Management}
 \end{table}
 
 \section{DCC Locomotive Decoder Management}
@@ -154,31 +159,32 @@ Model railroads run on tracks. Imagine that. While on a smaller layout, there is
 Locomotive management comprises the set of messages that the base station uses to control the running equipment. To control a locomotive, a session needs to be established \texttt{(REQ-LOC)}. This command is typically sent by a cab handheld and handled by the base station. The base station allocates a session and replies with the \texttt{(REP-LOC)} message that contains the initial settings for the locomotive speed and direction. \text{(REL-LOC)} closes a previously allocated session. The base station answers with the \texttt{(REP-LOC)} message. The data for an existing DCC session can requested with the \texttt{(QRY-LOC)} command. Data about a locomotive in a consist is obtained with the \texttt{(QRY-LCON)} command. In both cases the base station answers with the \texttt{(REP-LOC)} message.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{DCC Locomotive Decoder Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
+            \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
             REQ-LOC & adr-H & adr-L & flags & & & & \\
             REP-LOC & sId & adr-H & adr-L & spDir & fn1 & fn2 & fn3 \\
             REL-LOC & sId & & & & & & \\
             QRY-LOC & sId & & & & & & \\
             QRY-LCON & conId & index & & & & & \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{DCC Locomotive Decoder Management}
 \end{table}
 
 Once the locomotive session is established, the \texttt{(SET-LSPD)}, \texttt{(SET-LMOD)}, \texttt{(SET-LFON)}, \texttt{(SET-LOF)} and \texttt{(SET-FGRP)} are the commands sent by a cab handheld and executed by the base station to control the locomotive speed, direction and functions. \texttt{(SET-LCON)} deals with the locomotive consist management and \texttt{(KEEP)} is sent periodically to indicate that the session is still alive. The locomotive session management is explained in more detail in a later chapter when we talk about the base station.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{DCC Locomotive Decoder Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
+            \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
             SET-LSPD & sId & spDir & & & & & \\
             SET-LMOD & sId & flags & & & & & \\
             SET-LFON & sId & fNum  & & & & & \\
@@ -188,25 +194,27 @@ Once the locomotive session is established, the \texttt{(SET-LSPD)}, \texttt{(SE
             KEEP & sId & & & & & & \\
             \bottomrule
         \end{tabular}
-    \end{center}
+    }
+    \caption{DCC Locomotive Decoder Management}
 \end{table}
 
 Locomotive decoders contain configuration variables too. They are called CV variables. The base station node supports the decoder CV programming on a dedicated track with the \texttt{(REQ-CVS)}, \texttt{(REP-CVS)} and \texttt{(SET-CVS)} messages. The \texttt{(SET-CVM)} message supports setting a CV while the engine is on the main track. \texttt{(DCC-ERR)} is returned when an invalid operation is detected.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{DCC Locomotive Decoder Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
+            \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
             SET-LSPD & sId & cv-H & cv-L & mode & val & & \\
             REQ-CVS  & cv-H & cv-L & mode & val & & & \\
             REP-CVS  & cv-H & cv-L & val  & & & & \\
             SET-CVS  & cv-H & cv-L & mode & val & & & \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{DCC Locomotive Decoder Management}
 \end{table}
 
 The SET-CVM command allows to write to a decoder CV while the decoder is on the main track. Without the RailCom channel, CVs can be set but there is not way to validate that the operation was successful.
@@ -216,17 +224,18 @@ The SET-CVM command allows to write to a decoder CV while the decoder is on the 
 Besides locomotives, the DCC standards defines stationary decoders, called accessories. An example is a decoder for setting a turnout or signal. There is a basic and an extended format. The \texttt{(SET-BACC)} and \texttt{(SET-EACC)} command will send the DCC packets for stationary decoders. Similar to the mobile decoders, there are POM / XPOM messages to access the stationary decoder via RailCom capabilities.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{DCC Accessory Decoder Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
+            \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
             SET-BACC & adr-H & adr-L & flags & & & & \\
             SET-EACC & adr-H & adr-L & val & & & & \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{DCC Accessory Decoder Management}
 \end{table}
 
 These commands are there for completeness of the DCC control interfaces. There could be devices that are connected via the DCC track that we need to support. However, in a layout control system the setting of turnouts, signals and other accessory devices are more likely handled via the layout control bus messages and not via DCC packets to the track. This way, there is more bandwidth for locomotive decoder DCC packets.
@@ -236,21 +245,22 @@ These commands are there for completeness of the DCC control interfaces. There c
 With the introduction of the RailCom communication channel, the decoder can also send data back to a base station. The DCC POM and XPOM packets can now not only write data but also read out decoder data via the RailCom back channel. The following messages allow to send the POM / XPOM DCC packets and get their RailCom based replies.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{RailCom DCC Packet management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
-            \textbf{Opcode}  & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
+            \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
+            \hline
             SET-MPOM & sId & ctrl & arg1 & arg2 & arg3 & arg4 & \\
             REQ-MPOM & sId & ctrl & arg1 & arg2 & arg3 & arg4 & \\
             REP-MPOM & sId & ctrl & arg1 & arg2 & arg3 & arg4 & \\
             SET-APOM & adr-H & adr-L & ctrl & arg1 & arg2 & arg3 & arg4 \\
             REQ-APOM & adr-H & adr-L & ctrl & arg1 & arg2 & arg3 & arg4 \\
             REP-APOM & adr-H & adr-L & ctrl & arg1 & arg2 & arg3 & arg4 \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{RailCom DCC Packet management}
 \end{table}
 
 The XPOM messages are DCC messages that are larger than what a CAN bus packet can hold. With the introduction of DCC-A such a packet can hold up to 15 bytes. The LCS messages therefore are sent in chunks with a frame sequence number and it is the responsibility of the receiving node to combine the chunks to the larger DCC packet.
@@ -260,34 +270,36 @@ The XPOM messages are DCC messages that are larger than what a CAN bus packet ca
 The base station allows to send raw DCC packets to the track. The \texttt{(SEND-DCC3)}, \texttt{(SEND-DCC4)}, \texttt{(SEND-DCC5)} and \texttt{(SEND-DCC6)} are the messages to send these packets. Any node can broadcast such a message, the base station is the target for these messages and will just send them without further checking. So you better put the DCC standard document under your pillow.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{RRaw DCC Packet Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
-            \textbf{Opcode}  & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
+            \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
+            \hline
             SEND-DCC3 & arg1 & arg2 & arg3 & & & & \\
             SEND-DCC4 & arg1 & arg2 & arg3 & arg4 & & & \\
             SEND-DCC5 & arg1 & arg2 & arg3 & arg4 & arg5 & & \\
             SEND-DCC6 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 & \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{RRaw DCC Packet Management}
 \end{table}
 
 The above messages can send a packet with up to six bytes. With the evolving DCC standard, larger messages have been defined. The XPOM DCC messages are a good example. To send such a large DCC packet, it is decomposed into up to four LCS messages. The base station will assemble the DCC packet and then send it. 
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{RRaw DCC Packet Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
-            \textbf{Opcode}  & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
+            \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
+            \hline
             SEND-DCCM & ctrl & arg1 & arg2 & arg3 & arg4 & & \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{Raw DCC Packet Management}
 \end{table}
 
 \section{DCC errors and status}
@@ -295,49 +307,47 @@ The above messages can send a packet with up to six bytes. With the evolving DCC
 Some DCC commands return an acknowledgment or an error for the outcome of a DCC subsystem request. The \texttt{(DCC-ACK)} and \texttt{(DCC-ERR)} messages are defined for this purpose.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{Raw DCC Packet Management}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
-            \textbf{Opcode}  & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
+            \hline
+            \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
+            \hline
             DCC-ACK & & & & & & & \\
             DCC-ERR & code & arg1 & arg2 & & & & \\
-            \bottomrule
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{DCC Packet Error and Status}
 \end{table}
 
 \section{Analog Engines}
 
 The messages defined for the DCC locomotive session management as outlined above are also used for the analog engines. An analog engine will just like its digital counterpart have an allocated locomotive session and the speed/dir command is supported. All other commands will of course not be applicable. The speed/dir command will be sent out on the bus and whoever is in control of the track section where the analog engine is supposed to be, will manage that locomotive. In the following chapters we will answer the question of how exactly multiple analog engines can run on a layout.
 
-\section{Firmware Download}
+\section{Firmware Update Management}
 
-LCS supports a method for updating the firmware remotely. This involves loading a new firmware image. A typical approach is to split the available program memory in two partitions and load the new image in the non-active partition. When the firmware is transmitted and valid, the next restart will boot using the new firmware. There is a whole chapter later in the book about the firmware update. The LCS message formats support the firmware update process with the \texttt{XXX} and \texttt{YYY} messages.
-
-??? need commands: //
-start-load <size>  4-bytes //
-start-block <blockId> 2-bytes //
-end-block <blockId> <CRC16 checksum> 2-bytes 2-bytes //
-end-load <CRC32 checksum> 4-bytes //
-
-send-data <sequenceId> <payload> 1-byte 4-byte //
-
+LCS supports a method for updating the firmware remotely. This involves loading a new firmware image. A typical approach is to split the available program memory in two partitions and load the new image in the non-active partition. When the firmware is transmitted and valid, the next restart will boot using the new firmware. There is a whole chapter later in the book about the firmware update.
 
 \begin{table}[ht!]
-    \begin{center}
-        \caption{Firmware Updates}
+    \centering 
+    \resizebox{0.9\textwidth}{!}{ 
         \begin{tabular}{|l|l|l|l|l|l|l|l|}
-            \toprule
-            \textbf{Opcode}  & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
-            \midrule
-            XXX & npId-H & npId-L & cmd & data1 & data2 & data3 & data4 \\
-            YYY & npId-H & npId-L & cmd & data1 & data2 & data3 & data4 \\
-            \bottomrule
+            \hline
+            \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
+            \hline
+            START-LOAD & npId-H & npId-L & cmd & size-1 & size-2 & size-3 & size-4 \\
+            START-BLOCK & npId-H & npId-L & cmd & blockId-H & blockId-L & & \\
+            SEND-DATA & npId-H & npId-L & cmd & data1 & data2 & data3 & data4 \\
+            END-BLOCK & npId-H & npId-L & cmd & blockId-H & blockId-L & chkSum-H & chkSum-L \\
+            END-LOAD & npId-H & npId-L & cmd & chkSum-1 & chkSum-2 & chkSum-3 & chkSum-4 \\
+            \hline
         \end{tabular}
-    \end{center}
+    }
+    \caption{Firmware Update Messages}
 \end{table}
+
+A firmware update starts with the \texttt{(START-LOAD)} message. The transfer uses the \texttt{(START-BLOCK)}, \texttt{(SEND-DATA)} and \texttt{(END-BLOCK)} messages to transmit a block. Each block is validated with a 16-bit checksum. The \texttt{(END-LOAD)} message completes the download, the entire image is checked against a 32-bit checksum.
 
 \section{Summary}
 

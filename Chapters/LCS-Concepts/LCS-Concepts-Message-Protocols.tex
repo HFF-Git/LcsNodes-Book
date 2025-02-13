@@ -2,7 +2,9 @@
 %-------------------------------------------------------------------------------------------------------
 \chapter{Message Protocols}
 
-This chapter will present how the messages presented in the previous chapter are used to form the protocols for layout configuration and operations. We begin with node management and port management. Next, the event system is described. Finally, the DCC locomotive and track management related commands and messages round up this chapter. The protocols are described as a set of high level messages flow from requestor to receiver and back.
+This chapter will present how the messages presented in the previous chapter are used to form the protocols for layout configuration and operations. Nodes typically broadcast messages and in case of event messages other nodes interested in them can act. There are also messages that are targeted to a specific node. The addressed node reacts with the request information or acknowledgement of the message receipt.
+
+We begin with node management and port management. Next, the event system is described. Finally, the DCC locomotive and track management related commands and messages round up this chapter. The protocols are described as a set of high level messages flow from requestor to receiver and back.
 
 \section{Node startup}
 
@@ -11,16 +13,17 @@ Node startup includes all the software steps to initialize local data structures
 After sending the \texttt{(REQ-NID)} message the node awaits the reply \texttt{(REP-NID)}. The reply typically comes from a base station node or configuration software. In fact, any node can take on the role of assigning nodeIds. But a layout can only have one such node in charge of assigning nodeIds. The reply message contains the UID and the nodeId assigned. For a brand new module, this is will the node nodeId from now on.
 
 \begin{table}[ht!]
-    \centering
-    \caption{Node startup}
-    \begin{tabular}{|p{0.42\textwidth}|p{0.42\textwidth}|}
-        \toprule
-        \textbf{node} & \textbf{base Station} \\
-        \midrule
-        REQ-NID (nodeId, nodeUID) \texttt{->} & \\
-        & \texttt{<-} REP-NID (nodeId, nodeUID) or request timeout \\
-        \bottomrule
-    \end{tabular}
+    \begin{center}
+        \caption{Switching between Configuration and Operations mode}
+        \begin{tabular}{|p{0.42\textwidth}| c | p{0.42\textwidth}|}
+            \toprule
+            \textbf{base Station} & & \textbf{target node} \\
+            \midrule
+            REQ-NID (nodeId, nodeUID)  & \texttt{->} & \\
+            & \texttt{<-} & REP-NID (nodeId, nodeUID) or request timeout \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
 \end{table}
 
 The nodeUID plays an important role to detect nodeId conflicts. If there are two modules with the same nodeId, the nodeUID is still different. A requesting node will check the \texttt{(REP-NID)} answer, comparing the nodeUID in the message to its own nodeUID. If the UID matches, the nodeId in the message will be the nodeId to set. Note that it can be the one already used, or a new nodeId. If the UIDs do not match, we have two nodes assigned the same nodeId. Both nodes will enter the collision and await manual resolution.
@@ -34,7 +37,7 @@ After node startup, a node normally enters the operation state. During configura
 \begin{table}[ht!]
     \begin{center}
         \caption{Switching between Configuration and Operations mode}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{base Station} & & \textbf{target node} \\
             \midrule
@@ -52,7 +55,7 @@ A configuration tool can also set the node Id to a new value. This can only be d
 \begin{table}[ht!]
     \begin{center}
         \caption{Switching between Configuration and Operations mode}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{Base Station} & & \textbf{Node} \\
             \midrule
@@ -78,7 +81,7 @@ Any node can ping any other node. The target node responds with an (ACK) message
 \begin{table}[ht!]
     \begin{center}
         \caption{Node ping}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{requesting node} & & \textbf{ target node} \\
             \midrule
@@ -97,7 +100,7 @@ A node or individual port can be restarted. This command can be used in configur
 \begin{table}[ht!]
     \begin{center}
         \caption{Node and Port Reset}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{requesting node} & & \textbf{ target node} \\
             \midrule
@@ -118,7 +121,7 @@ The query node message specifies the target node and port attribute to retrieve 
 \begin{table}[ht!]
     \begin{center}
         \caption{Node and Port Access}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{requesting node} & & \textbf{ target node} \\
             \midrule
@@ -135,7 +138,7 @@ A node can also modify a node/port attribute at another node. Obviously, not all
 \begin{table}[ht!]
     \begin{center}
         \caption{Node and Port Access}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{requesting node} & & \textbf{ target node} \\
             \midrule
@@ -152,7 +155,7 @@ Some item numbers refer to functions rather than attributes. In addition, all fi
 \begin{table}[ht!]
     \begin{center}
         \caption{Node and Port Access}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{requesting node} & & \textbf{ target node} \\
             \midrule
@@ -172,7 +175,7 @@ Events play a key role in the layout control system. Nodes fire events and regis
 \begin{table}[ht!]
     \begin{center}
         \caption{Layout Event management}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{requesting node} & & \textbf{ target node} \\
             \midrule
@@ -191,7 +194,7 @@ Producers are configured by assigning an eventId to broadcast for this event. Th
 \begin{table}[ht!]
     \begin{center}
         \caption{Layout Event management}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{requesting node} & & \textbf{ interested node} \\
             \midrule
@@ -213,7 +216,7 @@ General bus management messages are message such as \texttt{(RESET)}, \texttt{(B
 \begin{table}[ht!]
     \begin{center}
         \caption{General LCS Bus Management}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{requesting node} & & \textbf{ any node} \\
             \midrule
@@ -232,7 +235,7 @@ DCC track management messages are commands sent by the base station such as turn
 \begin{table}[ht!]
     \begin{center}
         \caption{DCC Track Management}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{requesting node} & & \textbf{ any node} \\
             \midrule
@@ -249,7 +252,7 @@ Another command is the emergency stop \texttt{(ESTP)}. It follows the same logic
 \begin{table}[ht!]
     \begin{center}
         \caption{DCC Track Management}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{requesting node} & & \textbf{ any node} \\
             \midrule
@@ -268,7 +271,7 @@ Locomotive session management is concerned with running locomotives on the layou
 \begin{table}[ht!]
     \begin{center}
         \caption{Locomotive Session Management}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{sending node} & & \textbf{ bae station node} \\
             \midrule
@@ -285,7 +288,7 @@ When receiving a REQ-LOC message, the base station will allocate a session for l
 \begin{table}[ht!]
     \begin{center}
         \caption{Locomotive Session Management}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{sending node} & & \textbf{ base station node } \\
             \midrule
@@ -307,7 +310,7 @@ Locomotives can run in consists. A freight train with a couple of locomotive at 
 \begin{table}[ht!]
     \begin{center}
         \caption{Locomotive Session Management}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{sending node} & & \textbf{ base station node} \\
             \midrule
@@ -326,7 +329,7 @@ Locomotives need to be configured as well. Modern decoders feature a myriad of o
 \begin{table}[ht!]
     \begin{center}
         \caption{Locomotive Session Management}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{sending node} & & \textbf{ base station node} \\
             \midrule
@@ -344,7 +347,7 @@ Programming on the main track is accomplished with the \texttt{(SET-CVM)} messag
 \begin{table}[ht!]
     \begin{center}
         \caption{Locomotive Session Management}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{sending node} & & \textbf{ base station node} \\
             \midrule
@@ -369,7 +372,7 @@ The DCC stationary decoders are controlled with the \texttt{(SET-BACC)} and \tex
 \begin{table}[ht!]
     \begin{center}
         \caption{DCC Accessory Decoder Management}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{sending node} & & \textbf{ base station node} \\
             \midrule
@@ -389,7 +392,7 @@ The base station is the hardware module that receives the LCS messages for confi
 \begin{table}[ht!]
     \begin{center}
         \caption{Sending DCC packets}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{sending node} & & \textbf{ base station node} \\
             \midrule
@@ -407,7 +410,7 @@ Sending a large DCC packet will use the **SEND-DCCM** message. The "ctrl" byte d
 \begin{table}[ht!]
     \begin{center}
         \caption{Sending DCC packets}
-        \begin{tabular}{|p{0.42\textwidth} c p{0.42\textwidth}|}
+        \begin{tabular}{|p{0.42\textwidth}| c |p{0.42\textwidth}|}
             \toprule
             \textbf{sending node} & & \textbf{ base station node} \\
             \midrule
@@ -419,7 +422,11 @@ Sending a large DCC packet will use the **SEND-DCCM** message. The "ctrl" byte d
 
 Again, as the DCC packets are sent out without further checking you better know the packet format by heart. Perhaps put the NMRA DCC specification under your pillow.
 
+\section{Firmware Update Management}
+
+
+
 \section{Summary}
 
-This chapter introduced the general message flow for the layout control bus functions. By now you should have a good idea how the system will work from a message flow between the nodes perspective. Most of the messages dealing with nodes, ports and events follow a request reply scheme using the nodeId as the target address. The DCC messages and protocols implicitly refer to nodes that implement base station and handheld functions. The base station is the only node that actually produces DCC packets to be sent to the track. However, any node implementing DCC functions can act on these messages. All message functions as well as functions to configure and manage nodes, ports and events are available for the firmware programmer through the **LCS Runtime Library**. The next chapter will now concentrate on the library concepts and functions.
+This chapter introduced the general message flow for the layout control bus functions. By now you should have a good idea how the system will work from a message flow between the nodes perspective. Most of the messages dealing with nodes, ports and events follow a request reply scheme using the nodeId as the target address. The DCC messages and protocols implicitly refer to nodes that implement base station and handheld functions. The base station is the only node that actually produces DCC packets to be sent to the track. However, any node implementing DCC functions can act on these messages. All message functions as well as functions to configure and manage nodes, ports and events are available for the firmware programmer through the \textbf{LCS Runtime Library}. The next chapter will now concentrate on the library concepts and functions.
 

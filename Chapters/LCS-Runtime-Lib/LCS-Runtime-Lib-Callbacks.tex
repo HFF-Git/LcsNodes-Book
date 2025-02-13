@@ -3,6 +3,15 @@
 
 One key idea in LCS library message processing is the idea of a callback method to interact with the node firmware. The library inner loop function will continuously check for incoming messages, command line inputs and other periodic work to do. Most of this work is handled by the core library code itself transparently to the node firmware. For example, reading a port attribute from another node is done without any user written firmware interaction. There are other messages though that require the node firmware interaction. As an example, consider an incoming event. We check that there is port interested and if so, invoke a callback with the message and port information to handle the event. The same applies to the console command line handler and the generic loop callback. Since the library has complete control over the processing loop, the callbacks are essential to invoke other periodic work. Depending on the callback type, it is invoked before the action is taken or afterwards. For example, switching from configuration mode to operations mode, will first perform the switch and then invoke the bus management callback routine if there was one defined.
 
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
+   
+    show all callbacks in one picture...
+    
+\end{lstlisting}
+
+try to keep the sections short. perhaps one example how to define a callback and register it ...
+
 \section{General Callbacks}
 
 The general callback routine invokes the registered handler with messages that concern the general working of the node. Those are for example \texttt{(RESET)}, \texttt{(BUS\_ON)}, \texttt{(BUS\_OFF)}, but also \texttt{(ACK)} and \texttt{(ERR)}.
@@ -20,7 +29,7 @@ lcsLib -> registerMsgHandler( busMgtMsgHandler )
 
 \section{Node and Port Initialization Callback}
 
-Once the library is initialized the various handlers can be registered and all other firmware specific initialization can be done. The last step is the call to the **run** method, which will never return. The very first thing the **run** method does after some internal setup is to invoke the node and port initialization callback if registered. The callbacks are also invoked whenever a node is restarted with the (RES-NODE) command or the (RESET) command for nodes and ports. The following code snippet shows how to register such a callback.
+Once the library is initialized the various handlers can be registered and all other firmware specific initialization can be done. The last step is the call to the \textbf{run} method, which will never return. The very first thing the **run** method does after some internal setup is to invoke the node and port initialization callback if registered. The callbacks are also invoked whenever a node is restarted with the (RES-NODE) command or the (RESET) command for nodes and ports. The following code snippet shows how to register such a callback.
 
 \lstset{style=codesnippetstyle}
 \begin{lstlisting}

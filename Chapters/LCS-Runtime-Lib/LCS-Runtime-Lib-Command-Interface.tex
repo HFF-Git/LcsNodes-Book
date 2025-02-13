@@ -9,13 +9,13 @@ Perhaps the most important command is the help command, which lists all availabl
 
 \lstset{style=codesnippetstyle}
 \begin{lstlisting}
-<!?>
-<#?>
+
+show a node startup message then type "?" and show the list...
+
+
 \end{lstlisting}
 
 Any command not recognized is passed to a command line handler....
-
-<lcs-command-char [ arguments ] >
 
 
 will be passed to the registered command call back function, if there is one registered. The following summary shows the available LCS serial commands. The appendix contains a detailed description of of the commands implemented by the LCS library.
@@ -91,4 +91,4 @@ Note: to be implemented. Perhaps to simple library routines to create an ASCII v
 
 \section{Summary}
 
-The command line interface provides a way to interact with a node at the command line level. This is very useful for initial testing new hardware and software debugging. All that is needed is a USB interface and a computer. As we will see in the main controller chapter, a USB or serial interface is also necessary for downloading new firmware to the boards. Besides that, this interface is normally not used during regular operations.
+The command line interface provides a way to interact with a node at the command line level. This is very useful for initial testing new hardware and software debugging. All that is needed is a USB interface and a computer. Besides that, this interface is normally not used during regular operations.
