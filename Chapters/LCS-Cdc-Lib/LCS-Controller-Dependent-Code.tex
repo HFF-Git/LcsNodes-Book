@@ -60,6 +60,7 @@ The figure depicted below shows the refined overall structure of the node firmwa
 
     \end{tikzpicture}
 \end{center}
+\FloatBarrier
 
 Using the CDC layer does not mean that access to the bare bones controller chip is not possible. Any controller HW function can be accessed directly at the expense of that the code will most likely not be portable between different controller families. Still, here may be good reasons for the direct path. The following sections describe will now what the CDC library is offering across all controller platforms.
 
@@ -75,7 +76,7 @@ Each project therefore needs to define a structure containing some constants and
     ConfigInfo ...
     
 \end{lstlisting}
-
+\FloatBarrier
 
 While the whole idea of the CDC is isolating the firmware programmer from the controller layer and board revisions, the pin assignments cannot be chosen arbitrarily on all supported processor families. An application uses the default configuration routine to obtain an initialized configuration structure with controller specific values set. The application will then fill in the assigned pins and other configuration values. Note that the default configuration setting only fills in what are the controller limitations and leaves all else undefined. An application takes this initial structure and fills in what are board version specific. Throughout the life of the application, this structure is the "single source of truth" for pins. Under their defined name all upper layers refer to the configured IO capabilities. Once all is set, the \textbf{init} configuration routine, described later, does the sanity check for the given controller family hardware. For example, on the Atmega the UART pins numbers are fixed if used. On the PICO the pin numbers can be assigned to a couple of different slots. Whatever can be checked is checked. There is however no absolute guarantee that the configuration structure is valid in any cases.
 
@@ -93,6 +94,7 @@ To the firmware programmer, the library is a set of functions in the name space 
     Declaration part...
     
 \end{lstlisting}
+\FloatBarrier
 
 \section{General Controller Attributes and Functions}
 
@@ -104,6 +106,7 @@ The CDC layer provides a set of common low level functions. There is a function 
     Declaration part...
     
 \end{lstlisting}
+\FloatBarrier
 
 Some of the routines can also be found in the Arduino IDE and its libraries for the Arduino. As this project perhaps may also be implemented in an non-Arduino environment, this dependency is also hidden behind the CDC layer.
 
@@ -115,7 +118,6 @@ The main controller board features optional power failure detection. The power s
 // ??? has changed...
 
 
-
 \section{External Interrupt}
 
 The CDC library offers a set of routines for handling an external interrupt. While a controller typically allows for interrupts on almost any IO pin, there are one some controllers dedicated IO pins which offer an interrupt input with flexible setting and high resolution timing. A callback needs to be registered for this interrupt.
@@ -125,13 +127,13 @@ The CDC library offers a set of routines for handling an external interrupt. Whi
 
 \section{Status LEDs}
 
-The main controller board features two LEDs. They are the ready and the activity LED. They are accessed via the \textbf{writeDio} routine. The LCS core library will use the ready LED to indicate that the node is ready. The activity LED is used to show library activities such as receiving a LCS message. The recommended colors for the LEDs are a green for the READY LED and yellow for the ACTIVE LED. The following just shows an example how to control the LEDs.
+The main controller board features one LED. This is the activity LED, accessed via the \textbf{writeDio} routine. The LCS core library will use this LED to indicate that the node is ready and that there are library activities such as receiving a LCS message. The following just shows an example how to control the LEDs.
 
 ??? this is done via nodeControl calls ...
 
 \section{Watchdog}
 
-??? whatchdog facility
+??? watch dog facility
 
 
 \section{Timer}
@@ -144,6 +146,7 @@ Although the LCS core library itself does not make use of a timer, having a gene
     Declaration part...
     
 \end{lstlisting}
+\FloatBarrier
 
 Timers work slightly different on Atmega and PICO. Nevertheless, both versions allow to set the new limit, i.e. the timer value when the next interrupt would occur, while already counting toward the limit. Care needs to be taken however to set the new limit while the counter is below this limit. If the new limit value is below the timer counter value, we have passed the limit point already and the counter would simply continue to count and wrap around before hitting the new limit. Any carefully designed timer signal is gone. Again, better be quick in the interrupt handler.
 
@@ -159,6 +162,7 @@ The digital IO routines offer an interface to plain digital input and output ope
     Declaration part...
     
 \end{lstlisting}
+\FloatBarrier
 
 \section{Analog Input}
 
@@ -170,6 +174,7 @@ Analog input configures the respective controller input ports for reading an ana
     Declaration part...
     
 \end{lstlisting}
+\FloatBarrier
 
 The analog to digital converter system for the Raspberry PI PICO is compared to the Atmega really fast. A typical 12-bit conversion takes about 2 microseconds. The PICO ADC unit resolution will be scaled down to 1024 to match the Atmega resolution.
 
@@ -183,6 +188,7 @@ Depending on the controller, some digital pins can be configured with a time per
     Declaration part...
     
 \end{lstlisting}
+\FloatBarrier
 
 The pre-scale options for the Atmega are limited to what the particular timer allows. In other words, the frequency can only be set to the nearest value of what the pre-scale option will allow. Thee PICO is again far more flexible allowing for a true frequency setting.
 
@@ -196,6 +202,9 @@ The UART interface is used to offer a serial communication channel. This is requ
     Declaration part...
     
 \end{lstlisting}
+\FloatBarrier
+
+... rework text ... 
 
 The Raspberry PI Pico offers to implement the UART channel on one of the PIO state machines. This allows for more than the two UART blocks of the controller. The \textbf{UartMode} parameter selects what kind of UART HW is actually used.
 
@@ -209,6 +218,7 @@ Controller offers a serial wire IO block. The I2C will need two pins for clock a
     Declaration part...
     
 \end{lstlisting}
+\FloatBarrier
 
 \section{SPI}
 
@@ -220,6 +230,11 @@ SPI is the bus used for connecting NVM and CAN controller chips. The CDC library
     Declaration part...
     
 \end{lstlisting}
+\FloatBarrier
+
+\section{Programmable State Machines}
+
+... explain ...
 
 \section{Extension Connector and Hardware Pins}
 

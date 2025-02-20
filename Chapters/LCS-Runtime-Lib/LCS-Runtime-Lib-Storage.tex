@@ -10,6 +10,7 @@ Maps do of course have a size. For example, a port map for example will have a n
     \node at (8,4) {picture};
 
 \end{tikzpicture}
+\FloatBarrier
 
 This chapter presents a high level overview of the available maps and their purpose. Instead of painting many pictures, we will directly take code snippets from the runtime include files to show the data found in each map. Note that all maps are only accessible via runtime library routines.
 
@@ -27,6 +28,7 @@ struct LcsNodeMap {
 };
 \end{lstlisting}
 \end{center}
+\FloatBarrier
 
 Most of the data items deal with the location and entry sizes of the key maps. In addition, there are the nodeId, the node name, creation options, actual status flags and the set of node map attributes. Finally, the software version of the node version is kept here. For the firmware programmer there are methods to read from and write an item to the node. The library the \textbf{nodeGet}, \textbf{nodePut} and \textbf{nodeReq} routines offer a controlled access to the node map and other node data for node firmware programmers. They both use an item / value concept. Each routine passed an item Id for the data of interest and the data value. We will see an example later in this chapter. There are also three LCS messages, \texttt{(QRY-NODE)}, \texttt{(REP-NODE)} and \texttt{(SET-NODE)} which allow for access from another node. Since these messages come from another node, there is also the option to register a callback for access control checks to node data before the operation is performed.
 
@@ -47,6 +49,7 @@ struct LcsPortMapEntry {
 
 };
 \end{lstlisting}
+\FloatBarrier
 
 The port map entry contains flags that describe the port configuration options and the current operational setting. The event handling fields hold for an inbound port the current event received, the action and value as well as the a possible time delay before invoking the callback. For an outbound port the event fields describe the event to send when the condition for sending that event is encountered. The port map entries are located by just indexing into the port map.
 
@@ -74,6 +77,7 @@ The term "item" came up numerous times by now. Nodes and ports features to acces
     \end{center}
     \caption{Item ranges}
 \end{table}
+\FloatBarrier
 
 The first set of item numbers are reserved by the core library itself for node and port items that are standardized across all nodes. The range 128 to 255 describes the set of node or port attributes. A read or write from these attributes will always refer to the MEM storage. There is a synchronization control item to either load again from non-volatile memory or to write the memory value to non-volatile storage.
 
@@ -96,6 +100,7 @@ struct LcsEventMapEntry {
     uint16_t 	portId;
 };
 \end{lstlisting}
+\FloatBarrier
 
 Like all other maps, the event map is stored in two places. The non-volatile version of the eventMap is an array of event map entries. Whenever a new entry is added, a free entry is used to store this information. The memory version of the event map is a sorted version of all used non-volatile entries. There is a synchronization control item to write the map to non-volatile storage or re-initialize the memory map from that storage.
 
@@ -113,10 +118,19 @@ In addition to the runtime maps for node, ports, and events, the LCS runtime off
     User map \dots
 
 \end{lstlisting}
+\FloatBarrier
 
  \section{Pending Request Map}
 
 The pending request map, is a small map that keeps track of outstanding reply messages to a previously issued message request. If a node sends a request, an entry is added to this map that indicates that a reply from another node is pending. When a reply messages is detected, the firmware callback is only invoked if this reply matches a previous request. This map is a volatile structure, a restart will clear all outstanding requests.
+
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
+
+... code snippet here ...
+
+\end{lstlisting}
+\FloatBarrier
 
 ??? a timeout concept
 
@@ -128,6 +142,7 @@ The pending request map, is a small map that keeps track of outstanding reply me
 ... code snippet here ...
 
 \end{lstlisting}
+\FloatBarrier
 
 \section{Summary}
 

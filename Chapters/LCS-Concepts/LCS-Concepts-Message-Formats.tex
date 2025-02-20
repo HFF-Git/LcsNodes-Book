@@ -4,6 +4,39 @@
 
 Now that we know the concepts, let us first have a look at the message data formats as they flow on the layout control bus. It is the foundation of the layout control subsystem. This chapter will provide the overview on the available messages and give a short introduction to what they do. Later chapters build on it and explain how the messages are used for designing LCS node functions. 
 
+\begin{center}
+    \begin{tikzpicture} [scale=0.9, transform shape]
+
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,6);
+
+         % Thick horizontal line (LCS bus) with text
+         \draw[line width=1.5mm, <->, line cap=round, draw=gray, name path=lcsline] 
+         (0,2) -- (16,2)
+         node[pos= 0.9, tsLargeBold, below] {LCS bus};
+
+          % Define a node
+        \node[  tsRoundedRectangle, 
+        minimum width=3cm,
+        minimum height=1.5cm,
+        text width=3cm,
+        text centered,
+        fill=red!50] (n) at (3,4) {Node};
+
+         % Connecting arrows to LCS bus
+        \path[name path=p1] (n.south) -- (3,2); % Define arrow path
+        \path[name intersections={of=lcsline and p1, by=intpoint1}];
+        \coordinate (adjustedPoint1) at ($(intpoint1) + (0,0.75mm)$);
+        \draw[->, ultra thick, line cap=round] (n.south) -- (adjustedPoint1);
+
+        \draw[->, ultra thick, line cap=round] (8, 1.8) -- (8, 1);
+        \draw[->, ultra thick, line cap=round] (10, 1.8) -- (10, 1);
+        \draw[->, ultra thick, line cap=round] (12, 1.8) -- (12, 1);
+
+        \node at ( 10,0.5) {Broadcasting to all nodes};
+
+    \end{tikzpicture}
+\end{center}
+
 All nodes communicate via the layout control bus by broadcasting messages. Every node can send a message, and every node receives the message broadcasted. There is no central master. Since all nodes receive all messages, a node needs to decide whether to react to a message or not. General management and emergency type messages are handled by all nodes. A reply to a specific request will only be handled by the requesting node. The layout control system defines a fairly large set of messages, which can be grouped into several categories:
 
 \begin{itemize}

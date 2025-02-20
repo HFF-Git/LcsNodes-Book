@@ -4,7 +4,7 @@
 
 ??? this chapter needs to be reworked for new library call interface....
 
-The LCS runtime library is the foundation for any module firmware written. The library presents to the firmware programer a set of routines to configure, manage the LCS node and use the LCS functions, such as sending a message. This chapter will present the key functions used. We will look at library initialization, obtaining node information, controlling a node aspect, reacting to an event and sending message to other nodes.
+The LCS runtime library is the foundation for any module firmware written. The library presents to the firmware programer a set of routines to configure, manage the LCS node and use LCS functions, such as sending a message. This chapter will present the key functions used. We will look at library initialization, obtaining node information, controlling a node aspect, reacting to an event and sending message to other nodes.
 Refer to the appendix for a complete set of available LCS runtime functions.
 
 \section{Library initialization}
@@ -19,11 +19,12 @@ While there are many library functions to call, the only way for the library to 
     code snippet here
 
 \end{lstlisting}
+\FloatBarrier
 
 
 The final library call is a call to \textbf{run}. The run function processes the incoming LCS messages, manages the port event handling, reacts to console commands and finally invokes user defined callback functions. Being a loop, it will not return to the caller, but rather invoke the registered callback functions to interact with the node specific code. Before talking about the callback routines, let's have a look at the local functions available to the  programmer to call functions in the core library.
 
-\section{Obtaining node information}
+\section{Accessing attributes}
 
 Obtaining node or port information is an interface to query basic information about the node or port. A portID or \texttt{NIL\_PORT\_ID} will refer to the node, any other portID to a specific port on that node. The data is largely coming from the nodeMap and portMap data structures. The LCS library defines a set of data items that can be retrieved. 
 
@@ -36,8 +37,9 @@ The return result is stored in one or two 16-bit variables and is request item s
     code snippet here
     
 \end{lstlisting}
+\FloatBarrier
 
-\section{Controlling a node aspect}
+\section{Node requests}
 
 Very similar to how we retrieve node data, the nodeControl routine allows for setting node attribute. A node attribute does not necessarily mean that there is a data value associated with the attribute. For example, turning on the "ready" LED is a control item defined for the nodeControl routine. There is a detailed routine description in the appendix that contains the items that are defined. The following example turns on the ready LED on the module hardware.
 
@@ -47,10 +49,9 @@ Very similar to how we retrieve node data, the nodeControl routine allows for se
     code snippet here
     
 \end{lstlisting}
+\FloatBarrier
 
 The example shows that a node item is not only used to read or write a data item. It can also be used to execute a defined command, such as turning on an LED. In addition to the predefined node items, there is room for user defined items. In order to use them, a callback function that handles these items needs to be registered. This concept allows for a very flexible scheme how to interact with a node.
-
-\section{Controlling extension functions}
 
 // ??? the extension and driver stuff....
 

@@ -18,7 +18,7 @@ At the center of a hardware module is the \textbf{controller}. There is a great 
 
 The module designs described in this book initially used the AtMega controller platform along with the Arduino IDE to write the software. There is the Arduino IDE and by now a whole set of different processors. Since it was released, the Atmega controller family and boards such as Arduino UNO, Arduino NANO, Arduino MEGA are in widespread use. The LCS core library program and non-volatile storage requirements do place however a higher demand on the controller capabilities.
 
-Meanwhile, the Raspberry PI Pico \texttt{(PICO)} controller joined the club. And it has a lot to offer. The PICO is a dual core controller running at up to 133 Mhz. It features a whopping 16Mbytes of flash and 264 Kbytes of main memory. There are plenty of IO ports, and functional blocks for UARTS, SPI and I2C interfaces. What makes this controller especially interesting are the PIO state machines that allow for implementing your own I/O protocols. There is CAN bus software library built using these state machines. This way no extra CAN bus controller is needed. The PICO comes with its own software development kit and also an Arduino IDE integration is available.
+Meanwhile, the Raspberry PI Pico \texttt{(PICO)} controller joined the club. And it has a lot to offer. The PICO is a dual core controller running at up to 200 Mhz. It features a whopping 16Mbytes of flash and 264 Kbytes of main memory. There are plenty of IO ports, and functional blocks for UARTs, SPI and I2C interfaces. What makes this controller especially interesting are the programmable PIO state machines that allow for implementing your own I/O protocols. For example, there is CAN bus software library \texttt{(can2040)} built using these state machines. This way no extra CAN bus controller is needed. The PICO comes with its own software development kit and also an Arduino IDE integration is available.
 
 As time goes by, there will be for sure other capable controller entering the market. However, when you want to complete a project versus chasing the latest controllers, you will need to pick. In our case, the PICO is the controller of choice. Its capabilities match our requirements and will be a good choice for the years to come. nevertheless, the LCS library software should be designed as independent of a particular controller as possible. More on this later. 
 
@@ -59,6 +59,7 @@ As time goes by, there will be for sure other capable controller entering the ma
     \textbf{Serial I/O} & The serial I/O is used in some hardware modules for implementation of RailCom detectors. The PICO features two hardware UARTS and the option to implement more in software using the PIO state machines. \\
     \midrule
     \textbf{Console I/O} & Serial I/O is used for console I/O. Rather than using dedicated I/O pins and a UART block in the controller, the PICO serial I/O will be implemented via the USB connector. \\
+    \midrule
     \textbf{LEDs, Buttons and Dip Switches} & A hardware module could make use of LEDs to indicate readiness and activity, as well as providing a set of switches to configure a hardware option. Not really required but certainly useful. \\
     \midrule
     \textbf{WLAN} & WLAN is optional. But there is a PICO version with WLAN capability integrated. \\
@@ -205,29 +206,39 @@ For even more complex extension boards, it is perhaps the better idea to combine
 
 In addition to the extension board connector, there is the \textbf{track power connector}. This connector is only used by the base station, block controller and associated extensions. Its purpose is to pass the track power signals from the H-bridges on the base station or block controller ( or booster ) board to the extension boards. This connector is described in more detail in the base station and block controller chapter.
 
-\begin{longtable}{@{}|l|l|l|l|p{0.4\linewidth}|@{}}
+\begin{longtable}{@{}|l|l|p{0.4\linewidth}|@{}}
     \caption{Controller Attributes} \\
     \toprule
-    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
+    \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
     \midrule
     \endfirsthead
     \toprule
-    \textbf{Pin} & \textbf{Name} & \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
+    \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
     \midrule
     \endhead
-    \midrule
-    \multicolumn{5}{r}{\textit{Continued on next page}} \\
     \midrule
     \endfoot
     \bottomrule
     \endlastfoot
-    1 & \textbf{DCC-SIG-B0} & 2 & \textbf{DCC-SIG-B0} & Bridge-0 DCC Signal "+" and "-". \\
+    1, 2 & \textbf{GND} & Ground \\
     \midrule
-    3 & \textbf{DCC-SIG-B1} & 4 & \textbf{DCC-SIG-B1} & Bridge-1 DCC Signal "+" and "-". \\
+    3, 4 & \textbf{DCC-SIG-B0} & Bridge-0 DCC Signal "+". \\
     \midrule
-    5 & \textbf{DCC-SIG-B2} & 6 & \textbf{DCC-SIG-B2} & Bridge-2 DCC Signal "+" and "-". \\
+    5, 6 & \textbf{DCC-SIG-B0} & Bridge-0 DCC Signal "-". \\
     \midrule
-    7 & \textbf{DCC-SIG-B3} & 8 & \textbf{DCC-SIG-B3} & Bridge-3 DCC Signal "+" and "-". \\
+    7, 8 & \textbf{DCC-SIG-B1} & Bridge-1 DCC Signal "+". \\
+    \midrule
+    9, 10 & \textbf{DCC-SIG-B1} & Bridge-1 DCC Signal "-". \\
+    \midrule
+    11, 12 & \textbf{DCC-SIG-B2} & Bridge-2 DCC Signal "+". \\
+    \midrule
+    13, 14 & \textbf{DCC-SIG-B2} & Bridge-2 DCC Signal "-". \\
+    \midrule
+    15, 16 & \textbf{DCC-SIG-B3} & Bridge-3 DCC Signal "+". \\
+    \midrule
+    17, 18 & \textbf{DCC-SIG-B3} & Bridge-3 DCC Signal "-". \\
+    \midrule
+    19, 20 & \textbf{GND} & Ground \\
 \end{longtable}%
 
 When using all four bridge signal output pairs, each each output pair is rated up to 3Amps. For high power bridges with up to 6Amps, two pairs can be combined and the number of bridges signals passed on is two.
@@ -242,16 +253,16 @@ Controller and Extension boards make up a node. The main controller board will c
         \useasboundingbox (0,0) rectangle (15,6);
         \draw[help lines, gray!50, dashed] (0,0) grid(15,6);
 
-        \node at (3.5, 2.5) {\includegraphics[page=1, width=0.4\textwidth]{./Figures/LCS-FP-MAIN-CTRL-Sketch.pdf}};
+        \node at (3.5, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-MAIN-CTRL-Sketch.pdf}};
 
-        \node at (11.5, 2.5) {\includegraphics[page=1, width=0.4\textwidth]{./Figures/LCS-FP-EXT-L-Sketch.pdf}};
+        \node at (11.5, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-EXT-L-Sketch.pdf}};
 
         \node at (3, 5.5) {\textbf{Main Controller}};
         \node at (11, 5.5) {\textbf{Extension Board}};
         \node at (3.5, 4.3) {Track Bus};
         \node at (3.5, 1.7) {Extension Bus};
 
-        \draw[line width=1mm, gray!40, ->] (5, 4.3) -- (11,4.3);
+        \draw[line width=1mm, gray!40, ->] (5, 3.7) -- (11,3.7);
         \draw[line width=1mm, gray!40, ->] (5,1.7) -- (11,1.7);
     
     \end{tikzpicture}
