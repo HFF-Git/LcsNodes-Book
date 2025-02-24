@@ -55,7 +55,7 @@ The figure depicted below shows the refined overall structure of the node firmwa
         \draw[<->, ultra thick, line cap=round] (cdc.south) -- (9,2);
         \draw[<->, ultra thick, line cap=round] (dr.south) -- (5.5,4.8);
         \draw[<->, ultra thick, line cap=round] (rl.south) -- (12,4.8);
-        \draw[<->, ultra thick, line cap=round] (5.5,9.2) -- (dr.north);
+       % \draw[<->, ultra thick, line cap=round] (5.5,9.2) -- (dr.north);
         \draw[<->, ultra thick, line cap=round] (12,9.2) -- (rl.north);
 
     \end{tikzpicture}
@@ -66,7 +66,7 @@ Using the CDC layer does not mean that access to the bare bones controller chip 
 
 \section{Configuring the pins}
 
-The CDC library is rather low level hardware abstraction to give access to the pins which will work for the Atmega family and the Raspberry PI Pico and perhaps over time other controllers as well. The key identifier to access a hardware input/output is the pin number. Using the correct pin numbers according to the hardware developed is therefore very important. At the same time the upper layer code should not deal with these details. There needs to be a mapping of actual pin numbers and functions to the controller family and the hardware developed.
+The CDC library is rather low level hardware abstraction to give access to the pins of the Raspberry PI Pico and perhaps over time other controllers as well. The key identifier to access a hardware input/output is the pin number. Using the correct pin numbers according to the hardware developed is therefore very important. At the same time the upper layer code should not deal with these details. There needs to be a mapping of actual pin numbers and functions to the controller family and the hardware developed.
 
 Each project therefore needs to define a structure containing some constants and pin number assignments that are used through the node firmware. For this purpose, the CDC library defines a structure with all the pin names and a sensible default setting for a particular controller. Think of the structure a the superset of all pins and HW functions that can be configured for any controller. Using the structure, all the firmware programmer has to do is to set the controller pin numbers of the particular hardware module design to the names predefined in that structure. The upper layer code then just uses these names. The following figure shows the CDC configuration structure.
 
@@ -180,7 +180,7 @@ The analog to digital converter system for the Raspberry PI PICO is compared to 
 
 \section{PWM Output}
 
-Depending on the controller, some digital pins can be configured with a time period and pulse width ratio. The capabilities of the underlying processor also determine what kind of PWM is possible. For example, in the main controller board Atmega1284 processor version, Timer 2 is used, allowing for two separate channels. Both channels can be set to either a fast PWM where the timer just counts up, or a phase correct mode, where the timer counts up and then down, essentially dividing the PWM period by two. Since the PWM channels are configured as two independent channels, the PWM period can only be set according to the processor clock frequency divided by the pre-scaler fixed values.
+... text
 
 \lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
@@ -222,7 +222,7 @@ Controller offers a serial wire IO block. The I2C will need two pins for clock a
 
 \section{SPI}
 
-SPI is the bus used for connecting NVM and CAN controller chips. The CDC library will validate that the configured pins are actually available for the SPI IO block in the respective controller. By nature, the SPI communication exchanges a data item with between two entities. A master sends a byte and in return receives a byte from the slave. To avoid surprises such as filling a buffer sent with whatever is returned from the slave, the transfer routines available will NOT overwrite a buffer sent with whatever data returned. A future version may change this behavior and offer dedicated routines to do a write or read with the transfer semantics.
+SPI is another communication channel. Currently it is not used by the LCS runtime, however it is still implemented and available to the firmware programmer is required. The CDC library will validate that the configured pins are actually available for the SPI IO block in the respective controller. By nature, the SPI communication exchanges a data item with between two entities. A master sends a byte and in return receives a byte from the slave. To avoid surprises such as filling a buffer sent with whatever is returned from the slave, the transfer routines available will NOT overwrite a buffer sent with whatever data returned. A future version may change this behavior and offer dedicated routines to do a write or read with the transfer semantics.
 
 \lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
@@ -238,7 +238,7 @@ SPI is the bus used for connecting NVM and CAN controller chips. The CDC library
 
 \section{Extension Connector and Hardware Pins}
 
-The routines described have been implemented fairly flexible and their main purpose is to shield the upper library and firmware from the controller specific implementation methods. The same routines are also used to control the pins of the extension connector. If you recall, there are two ADC channels, a digital channels and an I2C communication channel available. The first two digital pins can be overlaid with an UART interface, and the last two digital pins allow a PWM capability.
+The routines described have been implemented fairly flexible and their main purpose is to shield the upper library and firmware from the controller specific implementation methods as much as possible. The same routines are also used to control the pins of the extension connector. If you recall, there are two ADC channels, a digital channels and an I2C communication channel available. The first two digital pins can be overlaid with an UART interface, and the last two digital pins allow a PWM capability.
 
 The configuration descriptor structure uses predefined names for the pins of the controller. If the hardware exports these pins via the extension connector, the connector pins can be accessed by these names. However, not all pins need to be provided to the extension connector. If for example, the digital pins DIO 0 .. 4 are used local to the board, the pins are left open on the extension connector. The only mandatory pins available on any extension connector are Power, ground, I2C, reset and E-Stop.
 
