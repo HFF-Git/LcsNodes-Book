@@ -12,7 +12,7 @@ The power line is not directly routed to the front panel connectors. There shoul
 
 The following schematic shows the LCS connector panel schematic. The upper part contains all the connectors and the option to connect an external power source to the front panel. The lower part shows a simple power supply, which could directly be hosted on the connector PCB.
 
-\begin{tikzpicture}
+\begin{tikzpicture}[scale=0.9, transform shape]
 
     \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
     \node at (8,4) {picture};
@@ -21,5 +21,5 @@ The following schematic shows the LCS connector panel schematic. The upper part 
 
 \section{Summary}
 
-This rather short chapter shows how a layout connector panel could be designed. Such panels are placed on strategic points around the layout. Besides connecting mobile devices to the LCS bus, there is also the option to feed these devices with an external power.  The panel is also a good spot to place emergency stop buttons around the layout.  The current panel is just connector routing panel.  Additional status information for power on, bus activity, and so on could also be put onto such a panel. However, anything more complex would require to put some controller logic on the panel as well.
+This rather short chapter presented how a layout connector panel could be designed. Such panels are placed on strategic points around the layout. Besides connecting mobile devices to the LCS bus, there is also the option to feed these devices with an external power.  The panel is also a good spot to place emergency stop buttons around the layout.  The current panel is just connector routing panel.  Additional status information for power on, bus activity, and so on could also be put onto such a panel. However, anything more complex would require to put some controller logic on the panel as well.
 
