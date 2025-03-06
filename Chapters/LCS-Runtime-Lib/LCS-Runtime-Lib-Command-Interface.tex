@@ -3,7 +3,7 @@
 
 ???  explain the general concept ...
 
-The primary communication method of the layout control system are LCS messages sent via the bus. In addition, each module that offers an USB connector or the serial I/O connector, implements also the serial command console interface. The interface is intended for testing and tracing purposes. LCS console commands are entered through the hardware module serial interface. 
+The primary communication method of the layout control system are LCS messages sent via the bus. In addition,the runtime library offers a command interface. Each module that offers an USB connector, implements the serial command console interface. The interface is intended for testing and tracing purposes. LCS console commands are entered through the hardware module serial interface. 
 
 Perhaps the most important command is the help command, which lists all available command and  their basic syntax.
 
@@ -15,33 +15,67 @@ show a node startup message then type "?" and show the list...
 
 \end{lstlisting}
 
-Any command not recognized is passed to a command line handler....
+Any command not recognized is passed to an optionally registered command line handler. This way, the command interface allows to implement node specific commands.
 
-
-will be passed to the registered command call back function, if there is one registered. The following summary shows the available LCS serial commands. The appendix contains a detailed description of of the commands implemented by the LCS library.
-
-\section{Configuration Mode Commands}
+\subsection{Configuration Mode Commands}
 
 The configuration mode commands will place a node into either operations or configuration mode.
 
-%|Command | Arguments | Operation |
-%|:----|:-----|:-----|
-%|!c | | enter node configuration mode |
-%|!o | | enter node operations mode |
+\begin{table}[ht!]
+    \begin{center}
+        \caption{Configuration mode commands}
+        \begin{tabular}{|l|l|p{0.42\textwidth}|}
+            \toprule
+            \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
+            \midrule
+            c & - & switches node to configuration mode\\
+            \midrule
+            o & - & switches node to operations mode\\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+\FloatBarrier
 
 \section{Event Commands}
 
 Event commands work with the event map. They add and remove an event, search the map for an event/port pair, or locally send an event to the node itself to test the event handling and so on.
 
-%%|:----|:-----|:-----|
-%|!a | eventId&nbsp; \[portId\] | add an event to the eventMap. If the portId is omitted, all eventMap %entries with a matching eventId will be removed.  |
-%|!r | eventId&nbsp;\[portId\]| remove an event the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed. |
-%|!f | eventId&nbsp; \[ portId \] | search an event in the eventMap. |
-%|!e | mode&nbsp;nodeId&nbsp;eventId&nbsp;\[arg\] | simulate sending an event ( mode: 0 - ON, 1 - OFF, 2 - EVT ) |
+\begin{table}[ht!]
+    \begin{center}
+        \caption{Event commands}
+        \begin{tabular}{|l|l|p{0.42\textwidth}|}
+            \toprule
+            \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
+            \midrule
+            a & eventId portId & add an event to the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed.\\
+            \midrule
+            r & eventId portId & remove an event the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed.\\
+            \midrule
+            e & mode nodeId eventId arg & simulate sending an event ( mode: 0 - ON, 1 - OFF, 2 - EVT ) \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+\FloatBarrier
 
 \section{Node Map and Attributes Commands}
 
 The node map and attribute map will examine and modify these maps.
+
+\begin{table}[ht!]
+    \begin{center}
+        \caption{ddd}
+        \begin{tabular}{|l|l|p{0.42\textwidth}|}
+            \toprule
+            \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
+            \midrule
+            a & b & \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+\FloatBarrier
 
 %%|:----|:-----|:-----|
 %|!n| item \[arg1\[arg2\]\]| lists a node or port map item.|

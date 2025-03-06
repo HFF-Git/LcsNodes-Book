@@ -16,6 +16,7 @@
 % Table of contents options.
 %
 %-------------------------------------------------------------------------------------------------------
+\setcounter{tocdepth}{1}
 \setlength{\cftsecnumwidth}{3em}
 \setlength{\cftsecindent}{0em} 
 
@@ -68,23 +69,21 @@
     \include{chapters/LCS-Concepts/LCS-Concepts-General}
     \include{chapters/LCS-Concepts/LCS-Concepts-Messages-Protocols}
 
-    \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Introduction}
-    \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Storage}
-    \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-API}
-    \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Callbacks}
+    \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib}
     \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Command-Interface}
     \include{chapters/LCS-Runtime-Lib/LCS-Runtime-Lib-Example}
+
+    \include{chapters/LCS-Cdc-Lib/LCS-Controller-Dependent-Code}
     
     \include{chapters/LCS-Concepts/LCS-Concepts-DCC-Subsystem}
     \include{chapters/LCS-Concepts/LCS-Concepts-Analog-Subsystem}
     \include{chapters/LCS-Concepts/LCS-Concepts-Hardware-Module-Design}
+    \include{chapters/LCS-Concepts/LCS-Concepts-Firmware-Design}
+
     \include{chapters/LCS-Main-Controller/LCS-Main-Controller-Hardware-Pico}
     \include{chapters/LCS-Power-Module-Design}
     \include{chapters/LCS-Railcom-Signal-Detector}
     
-    \include{chapters/LCS-Cdc-Lib/LCS-Controller-Dependent-Code}
-    \include{chapters/LCS-Concepts/LCS-Concepts-Firmware-Design}
-   
     \include{chapters/LCS-Base-Station/LCS-Base-Station}
     \include{chapters/LCS-Cab-Handhelds/LCS-Cab-Handheld}
     
