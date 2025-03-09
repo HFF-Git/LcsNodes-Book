@@ -115,19 +115,20 @@ The term "item" came up numerous times by now. Nodes and ports features to acces
 
 \begin{table}[!ht]
     \begin{center}
-        \begin{tabular}{|l|l|p{0.72\textwidth}|}
-            \toprule
+        
+        \begin{tabularx}{0.9\textwidth}{|l|l|X|}
+            \hline
             \textbf{Low} & \textbf{High} & \textbf{Purpose} \\
-            \midrule
+            \hline
             0 & & NIL Item \\
-            \midrule
+            \hline
             1 & 63 & Reserved items for node and ports with defined names. \\
-            \midrule
-            64 & 127 & user defined items passed to the registered callback function, accessed via the REQ calls. \\
-            \midrule
+            \hline
+            64 & 127 & User-defined items passed to the registered callback function, accessed via the REQ calls. \\
+            \hline
             128 & 255 & Node or Port Attributes, accessed via GET and PUT calls. \\
-            \bottomrule
-        \end{tabular}
+            \hline
+        \end{tabularx}
     \end{center}
     \caption{Item ranges}
 \end{table}

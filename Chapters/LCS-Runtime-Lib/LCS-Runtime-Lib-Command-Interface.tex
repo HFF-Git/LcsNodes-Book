@@ -23,16 +23,17 @@ The configuration mode commands will place a node into either operations or conf
 
 \begin{table}[ht!]
     \begin{center}
+        \renewcommand{\arraystretch}{1.2}
         \caption{Configuration mode commands}
-        \begin{tabular}{|l|l|p{0.42\textwidth}|}
-            \toprule
+        \begin{tabularx}{0.8\textwidth}{|l|l|X|}
+            \hline
             \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
-            \midrule
+            \hline
             c & - & switches node to configuration mode\\
-            \midrule
+            \hline
             o & - & switches node to operations mode\\
-            \bottomrule
-        \end{tabular}
+            \hline
+        \end{tabularx}
     \end{center}
 \end{table}
 \FloatBarrier
@@ -43,18 +44,19 @@ Event commands work with the event map. They add and remove an event, search the
 
 \begin{table}[ht!]
     \begin{center}
-        \caption{Event commands}
-        \begin{tabular}{|l|l|p{0.42\textwidth}|}
-            \toprule
+        \renewcommand{\arraystretch}{1.2}
+        \caption{Configuration mode commands}
+        \begin{tabularx}{0.9\textwidth}{|l|l|X|}
+            \hline
             \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
-            \midrule
+            \hline
             a & eventId portId & add an event to the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed.\\
-            \midrule
+            \hline
             r & eventId portId & remove an event the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed.\\
-            \midrule
-            e & mode nodeId eventId arg & simulate sending an event ( mode: 0 - ON, 1 - OFF, 2 - EVT ) \\
-            \bottomrule
-        \end{tabular}
+            \hline
+            e & mode nodeId eventId [ arg ] & simulate sending an event ( mode: 0 - ON, 1 - OFF, 2 - EVT ) \\
+            \hline
+        \end{tabularx}
     \end{center}
 \end{table}
 \FloatBarrier
@@ -65,14 +67,19 @@ The node map and attribute map will examine and modify these maps.
 
 \begin{table}[ht!]
     \begin{center}
-        \caption{ddd}
-        \begin{tabular}{|l|l|p{0.42\textwidth}|}
-            \toprule
+        \renewcommand{\arraystretch}{1.2}
+        \caption{Configuration mode commands}
+        \begin{tabularx}{0.9\textwidth}{|l|l|X|}
+            \hline
             \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
-            \midrule
-            a & b & \\
-            \bottomrule
-        \end{tabular}
+            \hline
+            - & - & - \\
+            \hline
+            - & - & - \\
+            \hline
+            - & - & - \\
+            \hline
+        \end{tabularx}
     \end{center}
 \end{table}
 \FloatBarrier
