@@ -7,7 +7,7 @@ Now that we know the overall concepts, let us first have a look at the message d
 \begin{center}
     \begin{tikzpicture} [scale=0.9, transform shape]
 
-        \draw[help lines, gray!50, dashed] (0,0) grid(16,6);
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,5);
 
          % Thick horizontal line (LCS bus) with text
          \draw[line width=1.5mm, <->, line cap=round, draw=gray, name path=lcsline] 
@@ -441,7 +441,7 @@ A configuration tool can also set the node Id to a new value. This can only be d
             \text{CFG ( nodeId )} & \texttt{->}  & node enters config mode \\
             & \texttt{<-} & ACK/ERR ( nodeId ) or timeout \\
             \midrule
-            \text{SET-NID ( nodeId, nodeUID )} \texttt{->}  & &  \\
+            \text{SET-NID ( nodeId, nodeUID )} & \texttt{->} &  \\
             & \texttt{<-} & ACK/ERR ( nodeId ) or timeout \\
             \midrule
             \text{OPS ( nodeId )} & \texttt{->}  & node enters operations mode \\
@@ -809,7 +809,24 @@ Again, as the DCC packets are sent out without further checking you better know 
             \toprule
             \textbf{sending node} & & \textbf{ target node} \\
             \midrule
-            ...( ... ) & \texttt{->} & ... \\
+            START-LOAD ( npId, cmd, size ) & \texttt{->} & prepare for receiving a firmware image. \\
+            & \texttt{<-} & ACK, if not successful ERR \\
+            \midrule
+            START-BLOCK ( npId, cmd, blockId ) & \texttt{->} & prepare for the next block of data. \\
+            & \texttt{<-} & ACK, if not successful ERR \\
+            \midrule
+            SEND-DATA ( npId, cmd, data ) & \texttt{->} & add the data chunk to the current block. \\
+            & \texttt{<-} & ACK, if not successful ERR \\
+            \midrule
+            more data chunks & \texttt{<->} & ACK or ERR \\
+            \midrule
+            END-BLOCK ( npId, cmd, blockId, chkSum ) & \texttt{->} & validate checksum \\
+            & \texttt{<-} & ACK, if not successful ERR \\
+            \midrule
+            more blocks & \texttt{<->} & ACK or ERR \\
+            \midrule
+            END-LOAD ( npId, cmd, chkSum ) & \texttt{->} & validate checksum, deploy new firmware image \\
+            & \texttt{<-} & ACK, if not successful ERR \\
             \bottomrule
         \end{tabular}
     \end{center}

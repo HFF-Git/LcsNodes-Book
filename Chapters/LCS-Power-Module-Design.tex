@@ -1,6 +1,6 @@
 \chapter{Power Module Design}
 
-LCS hardware modules generally consist of two parts. The first is the main controller portion where the processing and message interfacing is done. The second part typically implements special functions to complete the LCS node. One such function is the power module for the DCC subsystem. This chapter will present the basic components necessary for building the power generation part for a base station or booster and block controller module.
+LCS modules generally consist of two parts. The first is the main controller portion where the processing and message interfacing is done. The second part typically implements special functions to complete the LCS node. One such function is the power module for the DCC subsystem. This chapter will present the basic components necessary for building the power generation part for a base station or booster and block controller module.
 
 \section{DCC Track Power Modules}
 
@@ -31,7 +31,7 @@ While a power module can vary in capacity and technology components, our logical
     \endfoot
     \bottomrule
     \endlastfoot
-    1 & 0 & 0 & Cutout period. The track will be short circuited. Out1 and Ou2 are connected. \\
+    1 & 0 & 0 & Cutout period. The track will be short circuited. Out1 and Out2 are connected. \\
     \midrule
     1 & 1 & 1 & The track is polarized "+". Out1 is connected to VS, Out2 is is connected to GND. \\
     \midrule

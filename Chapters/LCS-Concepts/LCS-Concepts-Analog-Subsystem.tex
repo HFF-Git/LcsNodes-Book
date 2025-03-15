@@ -12,7 +12,21 @@ The first major difference to a DCC based system is that for a given track secti
     \begin{tikzpicture} [scale=0.9, transform shape]
 
         \draw[help lines, gray!50, dashed] (0,0) grid(16,4);
-        \node at ( 7,2) {PWM picture};
+
+         % Add axes for clarity
+         \draw[->, thick, gray] (0.5,1.5) -- (15,1.5) node[right] {Time};
+         \draw[<->, thick, gray] (0.5,0.5) node[below] {V-}  -- (0.5, 2.5) node[above] {V+} ;
+         
+          % Start point
+          \coordinate (current) at (2,1.5);
+
+         % draw a positive PWM SIGNAL
+         \draw[thick] (current) -- ++(0,1) -- ++(2,0) -- ++(0,-1) -- ++(1,0);
+         \coordinate (current) at ($(current) + ( 3, 0)$);
+         \draw[thick] (current) -- ++(0,1) -- ++(2,0) -- ++(0,-1) -- ++(1,0);
+
+         \draw [decorate,decoration={brace,amplitude=10pt,mirror}] (2,1) -- (5,1);
+        \node at (3.5, 0.25) {Period};
 
     \end{tikzpicture}
 \end{center}

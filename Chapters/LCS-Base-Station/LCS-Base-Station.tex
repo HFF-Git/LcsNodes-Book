@@ -211,11 +211,11 @@ In addition to the LCS core library serial commands available to any node, the b
 \begin{longtable}{@{}|l|p{0.2\linewidth}p{0.6\linewidth}@{}}
     \caption{Table Caption} \\
     \toprule
-    \textbf{Col1} & \textbf{Col2} & \textbf{Col3}\\
+    \textbf{Command} & \textbf{Reply} & \textbf{Operation}\\
     \midrule
     \endfirsthead
     \toprule
-    \textbf{Col1} & \textbf{Col2} & \textbf{Col3}\\
+    \textbf{Command} & \textbf{Reply} & \textbf{Operation}\\
     \midrule
     \endhead
     \midrule
@@ -229,32 +229,51 @@ In addition to the LCS core library serial commands available to any node, the b
     Row2 & \textbf{Row2} & Text2 \\
 \end{longtable}
 
-
-| Command | Arguments | Reply | Operation |
-|:--|:--|:--|:--|
 | O | cabId | | allocate a session for the cab|
+
 | K | sessionId | | release a session |
+
 | t | sessionId cabId speed direction>| | set cab speed / direction|
+
 | f | cabId funcId val | | set cab function value, function group DCC format |
+
 | v | sessionId funcId val| | set cab function value, individual |
+
 | R | cvId callbacknum callbacksub | | read CV byte on the programming track |
+
 | W | cvId val callbacknum callbacksub | | write CV byte on the programming track |
+
 | B | cvId bitPos bitVal callbacknum callbacksub | | write CV bit on the programming track |
+
 | b | cabId cvId bitPos bitVal | | write CV bit on the programming track |
+
 | w | cabId cvId val | | write CV byte on the operations track |
+
 | M | sessionId byte1 byte2 [ byte3 ... byte10 ] | | send DCC packet on operations track |
+
 | P | sessionId byte1 byte2 [ byte3 ... byte10 ] | | send DCC packet on programming track |
+
 | X | | | emergency stop all |
+
 | 0 | | | turn operations and programming track power off |
+
 | 1 | | | turn operations and programming track power on |
+
 | 2 | | | turn operations power on |
+
 | 3 | | | turn programming track power on |
+
 | a | [ opt ] | | list current consumption, where opt=0 -> MAIN (default ), opt=1 -> PROG, opt=2 -> both |
+
 | C | [ option ] | | set options for the track. 0 -> set service track in operations mode, 1 - > set service track in service mode, 2 -> enable RailCom, 3 -> disable RailCom |
 | s | [ level ] | | list status at detail level, default is summary. 0 -> summary, 1 -> configuration,  2 -> session map |
+
 | S | | | list base station configuration |
+
 | L | | | list base station session table |
+
 | D | | | enter diagnostics mode - need to restart later! |
+
 | ? | | | list this help |
 
 
@@ -295,14 +314,4 @@ Just like any other LCS node, the base station firmware offers through node and 
 The base station was also the first major LCS node with a considerable amount of hardware and software. Initial work started with the main controller and power module extension board based on the Atmega processor family. From there, a monolithic version using the Raspberry PI PICO was developed and that is the latest base station offering.
 
 What is next ?. Well, we have a base station and with the simple command interface it is possible to open a loco session and control that engine. But this command interface is rather for software development and debugging. What we really want is of course a handheld of some form with buttons and levers. So, before building boosters, block controller and extension boards and firmware, the next chapters will develop a handheld. 
-
-
-
-
-
-
-
-
-
-
 

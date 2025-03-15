@@ -236,6 +236,22 @@ SPI is another communication channel. Currently it is not used by the LCS runtim
 
 ... explain ...
 
+\subsection{CAN Bus}
+
+... can2040 library, saves us HW.
+
+\subsection{RailCom Datagram Receiver}
+
+... needed for quad block controller
+
+\subsection{DCC Signal Generation}
+
+... future, not done yet 
+
+\subsection{Other Uses} 
+
+... controlling H-Bridges
+
 \section{Extension Connector and Hardware Pins}
 
 The routines described have been implemented fairly flexible and their main purpose is to shield the upper library and firmware from the controller specific implementation methods as much as possible. The same routines are also used to control the pins of the extension connector. If you recall, there are two ADC channels, a digital channels and an I2C communication channel available. The first two digital pins can be overlaid with an UART interface, and the last two digital pins allow a PWM capability.
@@ -245,4 +261,6 @@ The configuration descriptor structure uses predefined names for the pins of the
 \section{Summary}
 
 The controller dependent code library is the lowest layer in the LCS node software stack. Its purpose is to shield the firmware programmer from the underlying pin assignments and some of the intricacies of the particular controller. At the same time, the layer needs to be rather thin so that it adds very little to the overall path length for performance critical signal management. For special cases, there is always the possibility to access the underlying hardware directly. However, this coding my not be that portable then.
+
+.. does not completely shield us, and it is not desired anyway...
 

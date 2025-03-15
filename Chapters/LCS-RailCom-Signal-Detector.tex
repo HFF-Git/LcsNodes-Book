@@ -1,4 +1,9 @@
-\chapter{Railcom Signal Detector}
+\chapter{DCC and Railcom Signal Detector}
+
+intro text ...
+
+
+\section{RailCom Signal Detector}
 
 Although a standalone component, the RailCom detector is typically a part of the power section. It sits between the power module and the track. DCC is a broadcasting protocol. To address programming engines on the MAIN track the problem of providing a back channel had to be solved. First, the DCC signal generator needs to be able to include a cutout period in the bitstream. As shown in the DCC subsystem chapter, the cutout period happens right after the last bit of a packet sent as part of the preamble section of the next packet. The power module short circuits the track during this period. The decoder uses the period to send a short bit stream which in turn is detected by the RailCom detector. This section will just discuss the hardware part for receiving the RailCom bitstream in the cutout period. There is of course a software part that receives and decodes the RailCom datagrams. The details of RailCom message processing are described in the base station chapter.
 
@@ -10,6 +15,15 @@ Although a standalone component, the RailCom detector is typically a part of the
 \end{tikzpicture}
 
 The above schematic shows a dual RailCom detector. As we will see in the block controller chapter, there is the requirement to have two or even four such detectors on one board. This allows for using chips that have four comparators, as shown here. If only one channel is required, a schematic with for example an LM393 would be the solution. The principle of operation is the same. All the examples will rest on the cutout capability of the power module and the detector circuitry shown here.
+
+\section{DCC Signal Detector}
+
+\begin{tikzpicture}[scale=0.9, transform shape]
+
+    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
+    \node at (8,4) {picture};
+
+\end{tikzpicture}
 
 \section{Summary}
 

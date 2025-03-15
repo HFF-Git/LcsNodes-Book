@@ -210,7 +210,7 @@ Refer to the appendix for a complete set of available LCS runtime functions.
 
 \subsection{Library initialization}
 
-The LCS runtime is initialized with the \textbf{init} routine. After successful runtime initialization, the firmware programmer can perform the registration of the callback functions needed, as well as doing other node specific initialization steps. This also includes the setup of the particular hardware. The subject of hardware setup will be discussed in a later chapter, "controller dependent code". 
+The LCS runtime is initialized with the \textbf{initRuntie} routine. After successful runtime initialization, the firmware programmer can perform the registration of the callback functions needed, as well as doing other node specific initialization steps. This also includes the setup of the particular hardware. The subject of hardware setup will be discussed in a later chapter, "controller dependent code". 
 
 While there are many library functions to call, the only way for the library to communicate back to the module firmware when a message is received are the callbacks registered for. Callbacks will be described in the next chapter. A key task therefore is to register call back functions for all events and messages the node is interested. The following code fragment illustrates the basic library initialization.
 
@@ -223,7 +223,7 @@ While there are many library functions to call, the only way for the library to 
 \FloatBarrier
 
 
-The final library call is a call to \textbf{run}. The run function processes the incoming LCS messages, manages the port event handling, reacts to console commands and finally invokes user defined callback functions. Being a loop, it will not return to the caller, but rather invoke the registered callback functions to interact with the node specific code. Before talking about the callback routines, let's have a look at the local functions available to the  programmer to call functions in the core library.
+The final library call is a call to \textbf{startRuntime}. The function processes the incoming LCS messages, manages the port event handling, reacts to console commands and finally invokes user defined callback functions. Being a loop, it will not return to the caller, but rather invoke the registered callback functions to interact with the node specific code. Before talking about the callback routines, let's have a look at the local functions available to the  programmer to call functions in the core library.
 
 \subsection{Accessing attributes}
 
@@ -298,9 +298,6 @@ The general callback routine invokes the registered handler with messages that c
 void busMgtMsgHandler( uint8_t *msgBuf ) {
 	//... handle the cases of busMgt messages
 }
-...
-// during module firmware initialization ...
-lcsLib -> registerMsgHandler( busMgtMsgHandler )
 \end{lstlisting}
 
 \subsection{Node and Port Initialization Callback}
@@ -312,8 +309,6 @@ Once the library is initialized the various handlers can be registered and all o
 // ... the node init msg handler routine
 void nodeInitHandler( uint16_t nodeId ) { ... }
 ...
-// during module firmware initialization ...
-lcsLib -> registerInitCallback( NIL_PORT_ID, nodeInitHandler )
 \end{lstlisting}
 
 Note that a portID or \texttt{NIL\_PORT\_ID} will refer to the node. Registering an initialization callback fro a port will just pass a non-nil portId instead. The port init callbacks are invoked in ascending portId order.

@@ -28,7 +28,9 @@ The first part of the schematics shows the PICO processor, LEDS, Button, CAN bus
 
 \section{Connectors and Level Shifters}
 
-The second part depicts the connectors and the level shifters. The ADC inputs also need a divider to map the incoming voltage range of 0 to 5V to 0 to 3V3. A simple resistor divider does the job.
+The second part depicts the connectors and the level shifters.
+
+The ADC inputs also need a divider to map the incoming voltage range of 0 to 5V to 0 to 3V3. A simple resistor divider does the job.
 
 
 ??? talk about the mapping of PICO pins to extension connector pins. Should allow that function blocks such as SPI, UART, I2C, etc can be accessed.
@@ -84,3 +86,5 @@ And here is the PCB for the PICO based main controller. It is a 10cmx 12cm board
 By now we have a core library which can handle the basics of just about any node and we have a main controller board that will form the heart of many projects to come for the layout control system. However, while LCS boards will all run the same core library, there are still differences how for example the controller pins are assigned on the boards. It is very likely that new software versions and perhaps different processors and boards layouts will require that the core library is adapted to each processor / board combination. This is especially true for monolithic board designs, where there is a great freedom which pins to use for what. At this point, many projects found on the web will now start a symphony of "ifdefs" in their coding. The conditional compiles often reach up to the highest layers of the firmware programming. 
 
 Perhaps there is a way to shield all these differences at a lower layer such that higher level libraries and firmware just refer to symbolic names for controller functions and pins. A mapping structure will translate between the symbolic names and the actual HW counterpart. This \textbf{controller dependent layer} will be the topic of the next chapter.
+
+Just before we move on, what can be done with this board ?. It seems to be just a fancy wrapping around the controller chip. Well, first of all, it is a fully function node, capable of receiving CAN bus messages. It also features the library runtime storage and exports a variety of pins to the extension connector. During the development of the concepts and the runtime library this board served as the development platform. When designing a new node type, it is a great starting point to take care of the main controller part, allowing to concentrate fully on the node additional capabilities. We will pick up on this in later chapters when extensions are presented.    
