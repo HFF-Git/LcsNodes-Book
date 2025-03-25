@@ -10,33 +10,194 @@ A cab handheld needs to be able to control the loco. This implies that there is 
 
 But how about a cab handheld that features instead of all the functions to control an entire layout just the features to control an engine. Our cab handheld will have dedicated buttons and levers for let's say a horn or whistle, a bell, and so on. There are also configuration buttons, dedicated buttons and switches, and a very small set of buttons to map to loco specific functions. Furthermore, there is of course the rotary knob for setting the locomotive speed. The following figure shows a rough sketch of the cab handheld elements.
 
-\begin{tikzpicture}[scale=0.9, transform shape]
+\begin{center}
+    \begin{tikzpicture}[scale=0.9, transform shape]
+        
+     	\draw[help lines, gray!50, dashed] (0,0) grid(9,14);
+     	
+     	\node[ tsRoundedRectangle, 
+                minimum width=9cm,
+                minimum height=14cm,
+                text width=3cm,
+                text centered,
+                fill=white!50] (display) at (4.5,7);
 
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-    \node at (8,4) {picture};
+       	\node[ tsRoundedRectangle, 
+                minimum width=3.5cm,
+                minimum height=3.5cm,
+                text width=3cm,
+                text centered,
+                fill=gray!30] (display) at (4.5,9.5) {Display};
+        
+        \node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (horn) at (6.5,12.5) {Horn};
+        
+        \node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=blue!20] (menu) at (1.5,10.5) {Men};
+                
+      	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=blue!20] (up) at (7.5,10.5) {Up};
 
-\end{tikzpicture}
+     	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=blue!20] (sel) at (1.5,8.5) {Sel};
+                
+    	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=blue!20] (down) at (7.5,8.5) {Dn};
+                
+     	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (f1) at (1.5,6) {F1};
+                
+      	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (f2) at (3.5,6) {F2};
+                
+      	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (rev) at (1.5,4) {Rev};
+                
+      	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (fwd) at (3.5,4) {Fwd};
+                
+      	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (f3) at (5.5,6) {F3};
+                
+     	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (f4) at (7.5,6) {F4};
+                
+       	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (Bell) at (1.5,1) {Bell};
+                
+      	\node[ tsCircle,
+         		minimum width=3cm,
+                minimum height=3cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (speed) at (6.5,2.5) {Speed};
+         
+    \end{tikzpicture}
+\end{center}
 
-Configuration and part of operation takes place with four buttons. The MENU button allows to toggle through the menus defined. To select a menu, the SELECT button is used. The menu toggle and select scheme can be nested. Within a menu screen, the MENU, UP and DOWN buttons are used screen specific and the SELECT button typically confirms the selected action. The direction switch ( REV-NEUTRAL-FWD ) and the SPEED knob set the speed and direction of the locomotive or consist. F1 to F4 are four general buttons that can be mapped to special functions of the particular locomotive. The Horn and Bell button are rounding up the initial design.
+Configuration and part of operation takes place with four buttons, which surround the screen display. The MENU button allows to toggle through the menus defined. To select a menu, the SELECT button is used. The menu toggle and select scheme can be nested. Within a menu screen, the MENU, UP and DOWN buttons are used screen specific and the SELECT button typically confirms the selected action. The direction buttons REV and FWD and the SPEED knob set the speed and direction of the locomotive or consist. F1 to F4 are four general buttons that can be mapped to special functions of the particular locomotive. The Horn and Bell button are rounding up the initial design.
+
+The screen itself has also a common structure for all data displayed. 
+
+\begin{center}
+    \begin{tikzpicture}[scale=0.9, transform shape]
+        
+     	\draw[	help lines, gray!50, dashed] (0,0) grid(8,4);
+     	
+    	       	\node[	tsRectangle, 
+     	 		minimum width=2cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                draw=gray,
+                fill=none] (men) at (1,3.5) {Men};
+                
+      	\node[	tsRectangle, 
+     	 		minimum width=2cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                draw=gray,
+                fill=none] (up) at (7,3.5) {Up};
+                
+       	\node[	tsRectangle, 
+     	 		minimum width=2cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                draw=gray,
+                fill=none] (sel) at (1,0.5) {Sel};
+                
+       	\node[	tsRectangle, 
+     	 		minimum width=2cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                draw=gray,
+                fill=none] (down) at (7,0.5) {Dn};
+                
+        \node[	tsRectangle, 
+     	 		minimum width=8cm,
+                minimum height=4cm,
+                text width=4cm,
+                text centered,
+                fill=none] (screen) at (4,2);
+               
+		\node at (4,3.5) {data field 1};
+		\node at (4,0.5) {data field 2};
+		\node at (4,2.5) {screen line 1};
+		\node at (4,1.5) {screen line 2};
+       
+    \end{tikzpicture}
+\end{center}
+
+The screen display has several fields. The corner field match the buttons MENU, SEL, UP and DONW. The field width is four characters. The text shown is screen dependent. Typically the action of the four buttons is shown. Between the two corner fields on the top and on the button, there is a data field with up to eight characters. Finally, there are two screen lines in the center of the screen. 
 
 \section{Cab Handheld Firmware Development Platform}
 
 A cab handheld as shown in the sketch above consists of the controller portion and a set of buttons and dials. Usually, for the very first steps in firmware design a breadboard implementation of the hardware is used. But why not just create a PCB with all the user elements on it? From experience with breadboards, this setup is by far more robust and you will not chase firmware bugs that turn out to be just a loose connection on a breadboard. This is by the way a lesson learned. With the very reasonable prices for a PCB board, it is almost easier to build a PCB rather early in the design phase and if it has an error, just correct it and order another set of PCBs. Although one could also build the module on a an experimental PCB board, having the schematics done, it is a small step to a dedicated PCB. Definitively worth the small extra effort of making a robust prototype PCB. The following schematic shows the extension board developed for the can handheld firmware development. First, here is the block diagram.
 
-\begin{figure}[htbp]
+\begin{figure}[ht]
     \centering
     \includegraphics[page=1, width=0.9\textwidth]{./Schematics/Schematic_LcsNodes-Cab-Dev.pdf}
     \caption{Block Diagram}
     %\label{fig:schematic}
 \end{figure}
-\FloatBarrier
 
 There is essentially a main controller part with the Raspberry Pi Pico, a CAN bus interface and the non-volatile memory. This part should be very familiar by now. Besides the two I2C connections and the CAN bus pins, almost all GPIO pins are dedicated to a button or encoder. Since the GPIOs can be configured with internal pull-up, no external resistors are necessary. The power supply will be fed from the LCS bus. The whole board can also be fed from the USB port of the PICO. Again, this is very handy for initial debugging the firmware. The LCS Bus connector will connect the cab handheld to the LCS layout. We use only the CAN Bus lines and optional the power line input.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[page=2, width=0.9\textwidth]{./Schematics/Schematic_LcsNodes-Cab-Dev.pdf}
-    \caption{Block Diagram}
+    \caption{Controller}
     %\label{fig:schematic}
 \end{figure}
 \FloatBarrier
@@ -46,11 +207,12 @@ Finally, there is the part with all the buttons, encoders and the OLED Display. 
 \begin{figure}[htbp]
     \centering
     \includegraphics[page=3, width=0.9\textwidth]{./Schematics/Schematic_LcsNodes-Cab-Dev.pdf}
+    \caption{UI Elements}
     %\label{fig:schematic}
 \end{figure}
 \FloatBarrier
 
-Granted, it is not really a cab handheld to hold in your hands. Although the final version will have pretty much the same hardware ingredients, the form factor needs to be different. But for development, the setup will be quite helpful and robust. You will avoid chasing software problems that turn out to be just a loose connection on a breadboard. The following figure shows the development cab handheld as a nice 3D picture to show the components.
+Granted, it is not really a cab handheld to hold in your hands. Although the final version will have pretty much the same hardware ingredients, the form factor needs to be different. But for development, the setup will be quite helpful and robust. You will avoid chasing software problems that turn out to be just a loose connection on a breadboard. 
 
 \section{A basic Cab Handheld}
 
@@ -70,7 +232,7 @@ As the name already suggests, the cab handheld is a handheld device with several
 
 \section{Cab Handheld Firmware}
 
-Now that the development platform is in place, lets have a look at the firmware design. As you perhaps have guessed it, the hardware was already developed with a certain mode in mind. First of all, a cab handheld is nothing else than just another node on the LCS bus. The firmware sits on top of the LCS core library. In addition, there is another key library we have not talked about yet. A cab handheld and also any other device that allows for users to interact, needs software to work with buttons, encoders, displays and so on. This the tasks of the \textbf{UI Elements } library. We will look at this library in a later chapter in great detail.
+Now that the development platform is in place, let's have a look at the firmware design. As you perhaps have guessed it, the hardware was already developed with a certain mode in mind. First of all, a cab handheld is nothing else than just another node on the LCS bus. The firmware sits on top of the LCS core library. In addition, there is another key library we have not talked about yet. A cab handheld and also any other device that allows for users to interact, needs software to work with buttons, encoders, displays and so on. This the tasks of the \textbf{UI Elements } library. We will look at this library in a later chapter in great detail.
 
 // ??? note perhaps a picture ?
 
@@ -181,30 +343,136 @@ The DCC standard defines a list of 69 functions, F0 to F68.
 
 \subsection{Summary}
 
-Phew. The cab handheld is another big step toward controlling a layout. After all, a layout control system without some form cab handhelds is not very useful. As said, there are many ways to build a cab.
-
-\begin{itemize}
-\item design of UI elements and firmware was greatly influenced by a handheld called \textbf{\textit{Protothrottle}}.
-\item The next section will present a diesel cab handheld that resembles a diesel cab stand from the 1950s.
-\end{itemize}
+Phew. The cab handheld is another big step toward in operating a layout. After all, a layout control system without some form cab handhelds is not very useful. As said, there are many ways to build a cab. The design of UI elements and firmware was greatly influenced by a handheld called \textbf{\textit{Protothrottle}}. The concept of the four screen menu control buttons found its way into the UI Elements library. In addition to the general cab handheld, a cab handheld tailored toward a specific class of engines would be a great addition to operating that engine. The next section will present a diesel cab handheld that resembles a diesel cab stand from the 1950s.
 
 \section{The Diesel Cab Handheld}
 
-The general handheld for controlling a locomotive is just one possible implementation. There is a company, Iowa Scale Engineering, that has built a handled called the \textbf{\textit{Protothrottle}}. This wireless handheld implements as the control elements the cab of a diesel engine. Wow. There is a lever for the diesel engine prime mover, a level for the direction and one for the brakes. You operate the engine with setting the prime mover notch, release the brakes and then the engine moves. When putting the prime mover to "idle", the engine just roll until you apply the brakes. In short, a much more realistic way to operate a diesel locomotive.
+The general handheld for controlling a locomotive is just one possible implementation. There is a company, Iowa Scale Engineering, that has built a handled called the \textbf{\textit{Protothrottle}}. This wireless handheld implements as the control elements the cab of a diesel engine. Wow. There is a lever for the diesel engine prime mover, a level for the direction and one for the brakes. You operate the engine with setting the prime mover notch, release the brakes and then the engine moves. When putting the prime mover to "idle", the engine just roll until you apply the brakes. In short, a much more realistic way to operate a diesel locomotive. 
 
-\begin{tikzpicture}[scale=0.9, transform shape]
+The diesel cab handheld will leverage many of the design elements of the general cab handheld. There is a display surrounded by the four buttons MENU, SEL, UP and DOWN. The software configuration menus follow the same principles. There are the four function buttons, the horn and the bell. Where the layout differs is that there is no knob for the speed. Instead throttle and brake levers are available. Also, the direction is modeled as a lever instead of two buttons. The following figure shows a rough sketch of the diesel cab handheld.
 
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-    \node at (8,4) {picture};
+\begin{center}
+    \begin{tikzpicture}[scale=0.9, transform shape]
+        
+     	\draw[help lines, gray!50, dashed] (0,0) grid(9,14);
+     	
+     	\node[ tsRoundedRectangle, 
+                minimum width=9cm,
+                minimum height=14cm,
+                text width=3cm,
+                text centered,
+                fill=white!50] (display) at (4.5,7);
 
-\end{tikzpicture}
+       	\node[ tsRoundedRectangle, 
+                minimum width=3.5cm,
+                minimum height=3.5cm,
+                text width=3cm,
+                text centered,
+                fill=gray!30] (display) at (4.5,9.5) {Display};
+        
+        \node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (horn) at (6.5,12.5) {Horn};
+        
+        \node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=blue!20] (menu) at (1.5,10.5) {Men};
+                
+      	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=blue!20] (up) at (7.5,10.5) {Up};
 
-Leveraging the cab handheld hardware from the previous chapter, the diesel cab handheld just differs in the lever for throttle and brake instead of the speed knob. All else is fairly the same. Let's get started.
+     	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=blue!20] (sel) at (1.5,8.5) {Sel};
+                
+    	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=blue!20] (down) at (7.5,8.5) {Dn};
+                
+     	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (f1) at (1.5,6) {F1};
+                
+      	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (f2) at (3.5,6) {F2};
+                
+      	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (f3) at (5.5,6) {F3};
+                
+     	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (f4) at (7.5,6) {F4};
+                
+      	\node[ tsRoundedRectangle, 
+                minimum width=6cm,
+                minimum height=0.75cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (throttle) at (5,4.5) {Throttle};
+                
+                
+       	\node[ tsRoundedRectangle, 
+                minimum width=2cm,
+                minimum height=0.75cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (dir) at (6,3) {Dir};
+                
+      	\node[ tsRoundedRectangle, 
+                minimum width=3cm,
+                minimum height=0.75cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (brake) at (2.5,2.5) {Brake};
+                
+                
+       	\node[ tsRoundedRectangle, 
+                minimum width=1cm,
+                minimum height=1cm,
+                text width=1cm,
+                text centered,
+                fill=red!50] (Bell) at (1.5,1) {Bell};
+                
+    \end{tikzpicture}
+\end{center}
+
+
+Leveraging the cab handheld hardware from the previous chapter, the diesel cab handheld just differs in the levers for throttle, direction and brake instead of the speed knob. All else is fairly the same. Let's get started.
 
 \subsection{Requirements}
 
 \begin{itemize}
-\item Very similar to the previous cab handheld ( see the red line ? :-) )
+\item Very similar to the previous cab handheld 
 \item instead of speed knob, it features throttle and brake.
 \item all else is about the same...
 \end{itemize}
