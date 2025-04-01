@@ -90,7 +90,7 @@ We would need the split rectangle for the runtime area maps....
             fill=yellow!50] (nvm) at (4,5) {};
 
     \draw[draw](1,2) -- (7,2);
-    \draw[draw](1,2) -- (7,2);
+    \draw[draw](1,3) -- (7,3);
     \draw[draw](1,2) -- (7,2);
     \draw[draw](1,2) -- (7,2);
    
@@ -100,6 +100,28 @@ We would need the split rectangle for the runtime area maps....
             fill=yellow!50] (mem) at (13,5) {};
 
 \end{tikzpicture}
+
+\section{Instruction Word Layout}
+
+We would need an instruction word layout...
+
+\begin{center}
+    \begin{tikzpicture}[scale=0.9, transform shape]
+    
+    	\draw[help lines, gray!50, dashed] (0,0) grid(16,1);
+    
+        % Box for the 64-bit instruction word
+        \draw (0,0) rectangle (16,1);
+
+	
+         % Bit separators (adjust positions as needed)
+        \foreach \x/\label in {0/0, 4/4, 8/8, 16/16, 32/32, 48/48, 63/63} {
+            \draw (\x/64*16, 0) -- (\x/64*16, 1); % Scale bit position to 16 cm width
+            \node[above] at (\x/64*16, 1) {\label}; % Bit position labels
+        }
+
+    \end{tikzpicture}
+\end{center}
 
 
 
