@@ -56,6 +56,34 @@ The appendix contains the detailed description of all library interfaces. If a p
 
 All data of a LCS node is kept in volatile \texttt{(MEM)} and non-volatile \texttt{(NVM)}. The data is structured into several data areas which we call \textbf{map}s. A map is a memory area which can be found in MEM and NVM or only in MEM. The key idea is that a map in MEM is initialized from its NVM counterpart at runtime start. Changes in a MEM map can be synced with its NVM map counterpart. There are also maps that do not have a NVM counterpart. These maps are initialized with default values at node startup. 
 
+work on the picture to show NVM - MEM relation at startup...
+
+\begin{tikzpicture}[scale=0.9, transform shape]
+
+    \draw[help lines, gray!50, dashed] (0,0) grid(16,12);
+
+    \node at (3, 3.0) {Hugo};
+    \node at (3, 1.5) {Berta};
+    \node at (3, 0.5) {Carla};
+
+    \node[  tsRectangle, 
+            minimum width=4cm,
+            minimum height=10cm,
+            fill=yellow!50] (nvm) at (4,5) {};
+
+    \draw[draw](2,2) -- (6,2);
+    \draw[draw](2,3) -- (6,3);
+     
+    \node[  tsRectangle, 
+            minimum width=4cm,
+            minimum height=10cm,
+            fill=yellow!50] (mem) at (13,5) {};
+
+\end{tikzpicture}
+
+- some more text how the setup will work with the storage.
+
+
 Maps do of course have a size. For example, a port map for example will have a number of entries, one for each port. The design choice was whether all map sizes are configurable or rather a fixed size. The current design features a fixed size scheme. There are a few key reasons for this decision. First, there is no configuration need when initializing a node. Second, the total size even when generously sizing the maps is rather small compared to what the hardware can do. A node with 128 node attributes, 15 ports each of which also have 128 port attributes, an event map of 1024 events to manage and space for some miscellaneous date items will be around 9 Kbytes of data. A node with a 32K NVM chip still has plenty of space for user data. A Raspberry Pi PICO based on the really Rp2040 chip has 264Kbytes of MEM, so also not an issue. Finally, with a fixed map layout, the NVM data can be copied in one swoop to a memory area on runtime start or reset. 
 
 \begin{tikzpicture}[scale=0.9, transform shape]
@@ -199,7 +227,6 @@ The pending request map, is a small map that keeps track of outstanding reply me
 \end{lstlisting}
 \FloatBarrier
 
-%-------------------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------------------
 \section{RtLib Call Interface}
 
@@ -427,13 +454,17 @@ The LCS core library attempts to handle as much as possible of message and event
 void aTask( ) { ... }
 ...
 // during module firmware initialization ...
-lcsLib -> registerPeriodicTask( aTask, 1000 );
+registerPeriodicTask( aTask, 1000 );
 \end{lstlisting}
 
 The runtime library ***run*** routine never returns. All interaction between the library is done through previously registered callbacks and calls to the library from within those callbacks. It is also important to realize that a callback runs to completion. In other words, the library inner working is put on hold when executing a callback. For example, no further LCS messages are processed during callback execution. The same is true for the periodic tasks. It also means that one cannot rely on exact timing. Specifying for example a 1000 milliseconds time interval, could mean that the task is invoked later because of other tasks running for a longer period. A periodic task would however not run earlier than the specific interval. In summary, callback routines should therefore be short, quick and mist of all non-blocking.
 
 Putting the library inner working on hold is however not true for functions that react on hardware interrupts. If there are interrupt routines for let's say a hardware timer, they will of course continue to take place. As we will see in the DCC track signal generation part of the base station, the interrupt driven signal generation is not impacted. Nevertheless, a firmware programmer needs to be aware that the order of callback invocation is fixed and that a callback runs to completion.
 
+\subsection{Runtime startup}
+
+
+ explain the general startup sequence...
 
 
 \section{Summary}
