@@ -60,7 +60,9 @@ The first schematic shows the main controller Raspberry PI Pico, the level shift
 
 \subsection{DCC Signal Input}
 
-The next schematic shows the DCC signal receiver for the DCC signal coming from the base station. The block controller will take the DCC signal and eventually feed it to the H-Bridge power module. The DCC signal itself is also the mechanism to synchronize other signals such as the PWM signal generated locally on the block controller board. Since the DCC signal lines are decoupled from the rest of the logic via an OptoCoupler, all that we receive via the incoming signals are a zero state, i.e both lines are short circuited already or simply not powered, or in "+" or "-" signal state. Note that we cannot distinguish between a cutout signal and no power on the signal lines. The enabling and disabling of the power module needs to come from dedicated LCS messages to the node and cannot be derived from the DCC signal lines.
+The next schematic shows the DCC signal receiver for the DCC signal coming from the base station. The block controller will take the DCC signal and eventually feed it to the H-Bridge power module. On the input side, there is an opto-coupler. To cover the wide range of input voltages, there is a jumper to select the LED current limit resistor needed. For input ranges up to 10 volts a single resistor of 47O Ohm will do. Higher voltages as we seen the for HP to G-Scale add an 820 Ohm resistor.  
+
+The DCC signal itself is also the mechanism to synchronize other signals such as the PWM signal generated locally on the block controller board. Since the DCC signal lines are decoupled from the rest of the logic via an OptoCoupler, all that we receive via the incoming signals are a zero state, i.e both lines are short circuited already or simply not powered, or in "+" or "-" signal state. Note that we cannot distinguish between a cutout signal and no power on the signal lines. The enabling and disabling of the power module needs to come from dedicated LCS messages to the node and cannot be derived from the DCC signal lines.
 
 \begin{figure}[htbp]
     \centering
@@ -69,7 +71,15 @@ The next schematic shows the DCC signal receiver for the DCC signal coming from 
 \end{figure}
 \FloatBarrier
 
-In addition to recognizing the DCC cutout situation, we need to worry about several block controllers receiving that signal. Not all will switch into cutout mode at exactly the same time. This could potentially become a short circuit problem if block N is still powered, and block N + 1 already in cutout mode. A locomotive crossing from a still powered track to an already short circuited track will short circuit the powered track. To address this issue, the signal detector will generate a short window of about four microseconds where the power module input signal is put in the "high impedance" state when detecting a change into the short circuit state. And likewise, at the end of the cutout, there is the same window before leaving the cutout state. For PWM signals, the active part of the duty cycle drives the H-bridge to either a positive or negative output, the passive part will put the bridge into high-impedance.
+In addition to recognizing the DCC cutout situation, we need to worry about several block controllers receiving that signal slightly out of sync. Not all will switch into cutout mode at exactly the same time. When the booster are slightly out of sync there could be
+
+\begin{itemize}
+	\item Signal Glitches: If one booster sends a DCC "1" while the other sends a "0," you could end up with a conflict on the rails, potentially confusing the decoder.
+	\item Shorts During Cutout: During the Railcom cutout phase, if one booster goes to short-circuit mode while the other stays active, you could cause unintended shorts or prevent proper feedback.
+	\item Voltage Spikes or Drops: Even small timing differences could cause voltage discontinuities, leading to decoder resets or erratic behavior.
+\end{itemize}
+
+To address these issues, the signal detector will generate a short window of a few microseconds where the power module input signal is put in the "high impedance" state at the start of the cutout phase. Since the signal detector has no knowledge whether the booster is running in DCC or PWM mode, the short window will also take place in PWM mode, although not needed. Currently the implementation uses a window of about 4 microseconds.
 
 \subsection{H-Bridge Decoding Logic}
 
@@ -219,7 +229,7 @@ The dual controller is implemented on a 10x12cm board layout. As you can see, it
 
 \end{tikzpicture}
 
-\subsection{Block Controller Firmeware}
+\subsection{Block Controller Firmware}
 
 
 ... wrap it up ...
@@ -229,13 +239,61 @@ The dual controller is implemented on a 10x12cm board layout. As you can see, it
 
 \section{H-Bridge control revised}
 
-When looking at the overall schematics, a lot of discrete logic is required to control the H-Bridges. This is largely to the fact that the analog and digital world are supported by the block controller. Furthermore, as far as the quad controller goes, we simply run out of pins of the main controller platform and need a little help through decoding control signals outside of the controller chip.
+When looking at the overall schematics, a lot of discrete logic is required to control the H-Bridges. This is largely to the fact that the analog and digital world are supported by the block controller and that we want a common control signal encoding from a software perspective. When we later change the particular H-Bridge chip, the decoding logic will mask it from the software. Furthermore, as far as the quad controller goes, we simply run out of pins of the main controller platform and need a little help through decoding control signals outside of the controller chip.
 
-What if we can use other features inside the controller chip for this decoding work ? When looking at the Raspberry Pi PICO controller the PIO state machine is a highly versatile output controller. Almost a processor in itself. As already mentioned, the the CAN bus interface is already implemented as a PIO program instead of the typical CAN bus controller peripheral. How about using the PIO state machines also for our H-Bridge control. 
+What if we can use other features inside the controller chip for this decoding work ? When looking at the Raspberry Pi PICO controller the PIO state machine is a highly versatile output controller. A specialized processor in itself. As already mentioned, the CAN bus interface is already implemented as a PIO program instead of the typical CAN bus controller peripheral. How about using the PIO state machines also for our H-Bridge control. 
 
-Consider that we can redefine the H-Bridge control signals slightly. The H-Bridge enable line is derived from the two  input control lines, using the unassigned state of 0b11 as putting the H-Bridge into disconnected mode. All it needs is a simple NAND gate. Control input 0b00 still puts the bridge into short circuit for the DCC cutout feature, 0b01 and 0b10 are still the PWM mode options. 
+Consider that we can redefine the H-Bridge control signals slightly. The H-Bridge enable line is derived from the two  input control lines, using the unassigned state of "11" as putting the H-Bridge into disconnected mode. All it needs is a simple NAND gate. Control input "00" still puts the bridge into short circuit mode for the DCC cutout feature, "01" and "10" are still the PWM mode options. 
 
-Instead of routing the DCC signals to the multiplexers, they are routed to two input pins on the PICO. The PIO program uses them as input to detect the cutout period and also to pass on the DCC signal. Since a PIO program is a program, we can also just implement the quiet period at the beginning of the cutout period. In other words, the entire logic of DCC signal input and H-Bridge control moves into the PICO. 
+Instead of routing the DCC signals to the multiplexers, they are routed to two input pins on the PICO. The PIO program uses them as input to detect the cutout period and also to pass on the DCC signal. Since a PIO program is a program, we can also just implement the quiet period at the beginning of the cutout period. In other words, the entire logic of DCC signal input and H-Bridge control moves into the PICO. This will reduce the component count of a block controller significantly.
+
+The following code snippet show how that PIO program could be implemented.
+
+\pagebreak[3] % Suggests to break page here if needed
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
+;-------------------------------------------------------------------------------------------------------------
+; DCC Signal Handler. The block controller uses a small PIO program to control the H-Bridge when DCC mode is
+; enabled. The basic work of the PIO state machine is to relay the inverted DCC input from the OptoCouplers
+; to the output pins which drive the select input of the H-Bridge chip. 
+; 
+; When the DCC input signal drops to 0b00, we either have no signal or the start of the Cutout period. We 
+; insert a 4 microsecond delay, which gives some leeway when two boosters are not entirely in sync, although
+; driven from the same DCC signal. After this blackout DCC input is relayed to the output. In addition, the
+; start and end of the cutout period is signaled with the PIO state machine interrupt flags.
+;
+;-------------------------------------------------------------------------------------------------------------
+.program h_bridge_signal_control
+
+main_loop:
+    mov x, pins            ; Copy input pins to X register
+    mov pins, x            ; Mirror input to output
+
+    ; Check for falling edge to 0b00 (start cutout)
+    jmp !x, blackout_start ; Jump if both pins are 0
+    jmp main_loop          ; Keep mirroring otherwise
+
+blackout_start:
+    set pins, 0b11         ; Emit 0b11 (Hi-Z) for blackout
+    set y, 31              ; Load loop counter for delay (31 * 5 cycles per loop)
+
+blackout_wait:
+    jmp y--, blackout_wait ; 31 iterations * ~5 cycles = ~4 µs delay at 125 MHz
+    irq set 4              ; Set IRQ flag on cutout start
+
+    ; Wait for rising edge (end of cutout)
+
+wait_rising:
+    mov x, pins            ; Read pins again
+    jmp !x, wait_rising    ; Loop while still 0b00
+
+    irq set 5              ; Set IRQ flag on cutout end
+    jmp main_loop          ; Return to main loop
+    
+\end{lstlisting}
+
+\FloatBarrier
+
 
 This is future work.... stay tuned.
 

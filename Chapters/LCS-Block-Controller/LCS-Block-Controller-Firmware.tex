@@ -12,7 +12,7 @@ A node can have up to 15 ports, portID zero refers to the node itself. For the b
 
 Next, there needs to be a port to provide information and control access to the individual H-Brides or the block controller board. Up to four H-Bridges must be managed. Examples for H-Bridge information are the actual current consumption and current limit setting. Examples for control data is the mode of the H-bridge, i.e. whether DCC or analog mode, output turned or off and so on. Up to four entries can be found on that \textbf{H-Bridge Port}.
 
-Blocks have sections. Each block consist of up to four sections. The \textbf{Section Port} contains information about the individual sections. Example are whether a section is occupied or not.
+Blocks have sections. Each block consist of up to four sections. The \textbf{Section Port} contains information about the individual sections. Examples are whether a section is occupied or not.
 
 Associated with a block are turnouts and signals. A block can have up to two turnouts, one on each entry. The \textbf{Turnout Port} contains an entry for each turnout defined in one of the blocks of the block controller node. Information about the turnout are for example the electrical type of turnout and the actual setting. Block can have several signals, typically one main signal at each end. The \textbf{Signal Port} will contain an entry for each signal with information about the  type of signal and the current setting.
 

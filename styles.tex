@@ -25,7 +25,7 @@
 \titlespacing*{\chapter}{0pt}{0.1in}{0.2in}
 
 %-------------------------------------------------------------------------------------------------------
-% TAble of Content settings 
+% Table of Content settings 
 %
 %-------------------------------------------------------------------------------------------------------
 \setlength{\cftsubsecindent}{1cm}
@@ -49,7 +49,7 @@
     texcl=false,
     alsoletter={\#},
     morekeywords={\#include, \#define, \#ifdef, \#endif, \#pragma},
-    linewidth=0.8\textwidth,   % Set width to 80% of text width
+    linewidth=0.9\textwidth,   % Set width to 80% of text width
     xleftmargin=0.1\textwidth  % Shift left margin to center the box
 } 
 
@@ -57,23 +57,25 @@
 % Listing style for showing code snippets. This style is used for showing short code sequences.
 %
 %-------------------------------------------------------------------------------------------------------
-\lstdefinestyle{codesnippetstyle}{ 
-    backgroundcolor=\color{gray!5}, 
-    basicstyle={\ttfamily\relsize{-1}}, 
+\lstdefinestyle{codesnippetstyle}{
+    backgroundcolor=\color{gray!5},
+    basicstyle={\ttfamily\tiny}, % Try \relsize{-2} if this is still too large
     keywordstyle=\color{magenta},
-    identifierstyle={\ttfamily\color{blue}}, 
-    numberstyle={\ttfamily\relsize{-1}\color{gray}}, 
-    commentstyle={\ttfamily\color{teal}}, 
+    identifierstyle={\ttfamily\color{blue}},
+    numberstyle={\ttfamily\footnotesize\color{gray}},
+    commentstyle={\ttfamily\color{teal}},
     showstringspaces=false,
     numbers=left,
     frame=single,
     texcl=false,
     alsoletter={\#},
     morekeywords={\#include, \#define, \#ifdef, \#endif, \#pragma},
-    linewidth=0.9\textwidth,   % Set width to 80% of text width
-    xleftmargin=0.1\textwidth  % Shift left margin to center the box
+    linewidth=0.9\textwidth,
+    xleftmargin=0.1\textwidth,
+    breaklines=true,
+    breakatwhitespace=false,
+    columns=fullflexible
 }
-
 
 %-------------------------------------------------------------------------------------------------------
 % Common TIKZ styles for my pictures.
