@@ -4,7 +4,20 @@
 
 A block controller is an LCS node that can manage one more blocks, each with one or more sections. This chapter will describe the firmware developed for the block controller. The block controller features several ports for the blocks and associated turnouts, signals and so on.
 
-First, each block must be uniquely defined in the layout. A block controller ID consists of the node ID and a portId resenting that block. A layout could have theoretically 4095 nodes with 4 blocks each. In reality, we need nodes also for other purposes, bit still this number is large enough even for really large layouts. Let'S first look a t what ports are needed.
+First, each block must be uniquely defined in the layout. A block controller ID consists of the node ID and a portId resenting that block. A layout could have theoretically 4095 nodes with 4 blocks each. In reality, we need nodes also for other purposes, but still this number is large enough even for really large layouts. Let'S first look a t what ports are needed.
+
+
+\section{Notes}
+
+There is a concept of actual versus target speed. A block always has a target speed and a maximum speed. The maximum speed is due to the landscape. The target speed is set based on the state of the next blocks in line. It specifies what the speed is when leaving this block. 
+
+The actual speed is the, well, actual speed of the train in the block. In automated mode, the block controller will manage the actual speed such that the target speed at the end of the block is achieved.
+
+Accelerating or decelerating also factors in the rough position of the train. The computation takes place at the entry of the train into the block. We also factor in a possible change of the block ahead, maybe even the next two blocks ahead.
+
+The block controller need to manage the sessionId and cabId of the engine it currently hosts. We need both when we want to survive a power down. Then the session is lost. When the engine is still in the block, the block controller will request a session. ( think about it.... )
+
+On emergency stop, the former target speed is saved. On restart, we can ramp up again to target speed.
 
 \section{Block Controller Ports Overview}
 
