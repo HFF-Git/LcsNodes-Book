@@ -5,6 +5,30 @@
 
 Enough software talk ? Well not quite. The previous chapter presented the main controller boards and the extension concept. A main controller board features the controller itself, the CAN bus interface, the non-volatile memory and the extension connector with several IO pins of the controller assigned to it. During board initialization the controller hardware needs to be mapped to the actual board. Two processor versions of the main controller board were presented. It can be easily seen that different controller and board versions would place a great configuration and perhaps conditional compile burden on the LCS core library. To address this problem, there is a hardware layer library at the very bottom of the architecture that isolates the controller dependencies.
 
+
+Concept: there are resource numbers which are the index into a descriptor array that describes a resource, such as a GPIO pin or UART.
+
+A program needs such a descriptor at startup. These descriptors can be constant structures, one for each board / version in production. 
+
+The runtime init library accepts this structures and executes the data. Ideally, nothing more needs tobe done for configuration. Still, the configure routines are also available to override this initial setting.
+
+It is essential that the init and configure routines cab be called many tines. One could init CDC and later call initRuntime which would also call CDC init. 
+
+We also keep some upper level data in the overall config structure. E.g. canID, nvmSize.
+
+Some resource numbers are fixed assignments, for a controller family. E.g. LED pin, etc.
+
+There is a START resource number from where on the firmware defines its numbers.
+NOTE: the resource numbers are indices. The order of descriptors in the descriptor array matters! 
+
+We are free to invent resources that map our requirements. E.g a encoder button resource and so on. Even logical resources, such as a DCC output resource to control the H-Bridge. To gather experience first.
+
+The mapping from resource number to instance needs to be really quick, low overhead. This is given by the simple indexing into an array.
+
+
+!!!!! the text needs to be worked quite a bit.
+
+
 \section{The big picture}
 
 The figure depicted below shows the refined overall structure of the node firmware. There is the core library discussed in a previous chapters and a new layer, which is the \textbf{controller dependent code layer}. The layer essentially encapsulates the required controller functions, such as a timer or a digital I/O pin, and offers a common interface to core library and firmware layer that directly uses the controller functions. The picture also shows a component labelled "extension driver". An extension driver is piece of software that knows how to handle an extension board. We get this part later when we talk about more about extensions.
