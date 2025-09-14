@@ -1,9 +1,10 @@
+\tracingpages=1
 %--------------------------------------------------------------------------------
 %
 %
 %
 %--------------------------------------------------------------------------------
-\documentclass[a4paper, 11pt]{book}  
+\documentclass[a4paper, 11p, oneside ]{book}
 
 %--------------------------------------------------------------------------------
 % Load packages and styles
@@ -24,24 +25,25 @@
     \newcommand{\srcinputpath}{../../LcsNodes-Pico/}
     \newtoggle{includeListings}
     \togglefalse{includeListings} 
-
+    
  	%----------------------------------------------------------------------------
     % Title page.
     %
     %----------------------------------------------------------------------------
-    \begin{center}
-        \includegraphics[width=0.7\textwidth]{./figures/Frontpage-Picture.png}
-        \vspace{ 2cm }
-       
-        {\Huge \textbf{A Layout Control System for \\ Model Railroads}} 
-        \vspace{ 2cm }
-       
-        {\Large Helmut Fieres}
-
-        {\large \today}
-    \end{center}
-    
-	%----------------------------------------------------------------------------
+   	\thispagestyle{empty}
+   	\pagenumbering{gobble}
+   	\vspace*{2cm}  
+	\begin{center}
+   		\includegraphics[width=0.7\textwidth]{./figures/Frontpage-Picture.png}\par
+  		\vspace{2cm}
+  		{\Huge \textbf{A Layout Control System for \\ Model Railroads}}\par
+  		\vspace{2cm}
+  		{\Large Helmut Fieres}\par
+  		{\large \today}
+	\end{center}
+	\vfill
+	
+    %----------------------------------------------------------------------------
 	% Page formatting options
 	%----------------------------------------------------------------------------
 	\setlength{\emergencystretch}{3em}  % Allow line breaks in long lines
