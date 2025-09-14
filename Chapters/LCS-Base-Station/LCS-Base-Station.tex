@@ -22,7 +22,7 @@ The base station is essentially based on a main controller board and a dual powe
     \centering
     \includegraphics[page=1, width=0.9\textwidth]{./Schematics/Schematic_LcsNodes-Base-Station-Board.pdf}
     \caption{Base Station Block Diagram}
-    \label{fig:Block Diagram}
+    %\label{fig:BlockDiagram}
 \end{figure}
 %\FloatBarrier
 
@@ -34,19 +34,19 @@ The Raspberry PI Pico has enough capacity to implement the CAN bus protocol dire
     \centering
     \includegraphics[page=2, width=0.9\textwidth]{./Schematics/Schematic_LcsNodes-Base-Station-Board.pdf}
     \caption{Base Station Main Controller}
-    %\label{fig:schematic}
+    %\label{fig:Schematic}
 \end{figure}
 % \FloatBarrier
 
 \subsection{Power Module}
 
-The next part shows the power module. The power module exports the DCC signals via the external track power connectors and also as part of the LCS message bus connector connector. The track power extension connector is used by extension boards that directly use the H-Bridge output. A good example is an occupancy detector board which takes the DCC outputs and routes them to different sections, each equipped with a detectors for power consumption on the track. The power module unit features two identical channels. They are labelled "MAIN" and "PROG". Although the "PROG" channel would not need to deliver a high amperage, the dual H-Bridge is there anyway. And as said before, it would be nice to dynamically treat the PROG track as a type MAIN track too. 
+The next part shows the power module. The power module exports the DCC signals via the external track power connectors and also as part of the LCS message bus connector. The track power extension connector is used by extension boards that directly use the H-Bridge output. A good example is an occupancy detector board which takes the DCC outputs and routes them to different sections, each equipped with a detectors for power consumption on the track. The power module unit features two identical channels. They are labelled "MAIN" and "PROG". Although the "PROG" channel would not need to deliver a high amperage, the dual H-Bridge is there anyway. And as said before, it would be nice to dynamically treat the PROG track as a type MAIN track too. 
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[page=3, width=0.8\textwidth]{./Schematics/Schematic_LcsNodes-Base-Station-Board.pdf}
     \caption{Power Module}
-    %\label{fig:schematic}
+    %\label{fig:Schematic}
 \end{figure}
 \FloatBarrier
 
@@ -58,7 +58,7 @@ Both channels also feature a RailCom detector. Refer to the base station firmwar
     \centering
     \includegraphics[page=4, width=0.8\textwidth]{./Schematics/Schematic_LcsNodes-Base-Station-Board.pdf}
     \caption{RailCom Detector}
-    %\label{fig:schematic}
+    %\label{fig:Schematic}
 \end{figure}
 \FloatBarrier
 

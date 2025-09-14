@@ -150,9 +150,7 @@ The term "item" came up numerous times by now. Nodes and ports features to acces
             \hline
             0 & & NIL Item \\
             \hline
-            1 & 63 & Reserved items for node and ports with defined names. \\
-            \hline
-            64 & 127 & User-defined items passed to the registered callback function, accessed via the REQ calls. \\
+            1 & 127 & Reserved items for node and ports with defined names. For the Get and SET access the item refers to an attribute variable. For the REQ access it refers to a user defined function to be invoked via a callback. \\
             \hline
             128 & 255 & Node or Port Attributes, accessed via GET and PUT calls. \\
             \hline
@@ -162,9 +160,11 @@ The term "item" came up numerous times by now. Nodes and ports features to acces
 \end{table}
 \FloatBarrier
 
-The first set of item numbers are reserved by the core library itself for node and port items that are standardized across all nodes. The range 128 to 255 describes the set of node or port attributes. A read or write from these attributes will always refer to the MEM storage. There is a synchronization control item to either load again from non-volatile memory or to write the memory value to non-volatile storage.
+The item range numbers  1 to 127 are reserved by the core library itself for node and port items that are standardized across all nodes. 
 
-Items 64 to 127 are completely user defined. Using these numbers will just result in a callback invocation. Note that a callback can do anything. For example, turning a signal on or off could be an item Id of let's say 72 and sending a node control message with the item 72 and the value of 1 in the first argument would result in invoking a callback which implements how to turn the signal on. In short, a node supports variable access, comparable to the CV concept in DCC, and also a function call concept which allows a great flexibility for the firmware programmer.
+The item range 128 to 255 describes the set of node or port attributes and user defined functions. A read or write from these attributes using the GET and SET calls will always refer to the MEM storage. There is a synchronization control item to either load again from non-volatile memory or to write the memory value to non-volatile storage. 
+
+The same item range is also used for the REQ call, which just result in a callback invocation. Note that a callback can do anything. For example, turning a signal on or off could be an item Id of let's say 72 and sending a node control message with the item 72 and the value of 1 in the first argument would result in invoking a callback which implements how to turn the signal on. In short, a node supports variable access, comparable to the CV concept in DCC, and also a function call concept which allows a great flexibility for the firmware programmer.
 
 \subsection{Event Map}
 
@@ -237,7 +237,7 @@ Refer to the appendix for a complete set of available LCS runtime functions.
 
 \subsection{Library initialization}
 
-The LCS runtime is initialized with the \textbf{initRuntie} routine. After successful runtime initialization, the firmware programmer can perform the registration of the callback functions needed, as well as doing other node specific initialization steps. This also includes the setup of the particular hardware. The subject of hardware setup will be discussed in a later chapter, "controller dependent code". 
+The LCS runtime is initialized with the \textbf{initRuntime} routine. After successful runtime initialization, the firmware programmer can perform the registration of the callback functions needed, as well as doing other node specific initialization steps. This also includes the setup of the particular hardware. The subject of hardware setup will be discussed in a later chapter, "controller dependent code". 
 
 While there are many library functions to call, the only way for the library to communicate back to the module firmware when a message is received are the callbacks registered for. Callbacks will be described in the next chapter. A key task therefore is to register call back functions for all events and messages the node is interested. The following code fragment illustrates the basic library initialization.
 
