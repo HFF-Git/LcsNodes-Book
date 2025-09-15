@@ -1,8 +1,9 @@
-\chapterr{\textit{UI Elements}}
+\chapter{UI Elements}
+\addcontentsline{toc}{chapter}{UI Elements}
 
 User interfaces such as Cab Handhelds or Switch Panels offer the user control and display elements for a layout. Typically there many buttons and LEDs but also rotary encoders and displays. You start an Arduino project and the first Led is blinking, a button is pushed. Before you know it, buttons need to be debounced, short and long pressed, active high or active low. You would like to toggle a Led and remember its state. There are displays with different interfaces and capabilities. On some displays you want to control the brightness and contrast. Finally, in some projects you run out of physical pins and want to connect an array of buttons or LEDs through a shift register. The list is long. In all Arduino projects you implement it somehow directly in project just to take part of the functions to the next project and so on. UI Elements is the library the implements the most common UI elements.
 
-\section{\textit{Concepts}}
+\section{Concepts}
 
 When building simple controller applications, a LED and a button are the most common things used in becoming familiar how to program for such a controller. Digital pins configured as an output and the LED will light up when driven by the output pin. Likewise, a HW pin configured as an input the state of a button can be read. But wait, while LEDs are electronic items, a button is something mechanical and pushing it typically will cause the value read to initially "bounce" between low and high. The first thing the UI Elements library will do is to shield the user from these mechanical issues.
 
@@ -12,29 +13,35 @@ Displays come in a large variety and capabilities. UI Elements will offer an abs
 
 Finally, buttons and LEDs can be combined to arrays. Consider a Cab Handheld with for example 10 buttons, a rotary encoder, several LEDs and a display. We will quickly run out of HW pins on the controller. An array of buttons features the same capabilities of a single button object, the values of the buttons are however read in through a shift register serial output or a PIO Extender chip, such as we used for actors and sensors before, are required.
 
-\section{\textit{Buttons}}
+\section{Buttons}
 
 A button is an object that has one input value and analyzes whether the button was clicked, double clicked or long pressed. All this is done with a state machine that manages the button state. For each action a callback function can be registered. There is also a callback function for getting the button data. Buttons are one  of the most used UI Elements. This set of methods implements the single button and an array of buttons. Each button is essentially a state machine with a set of defined callback functions. The time for debouncing, detecting a click or a long press can be set individually for each button. A switch is also just a button with a long press characteristic. For each button a button descriptor keeps the data about callback, HW pin and so on. The following brief example shows how to implement a single button and handle the click event. The following example shows a simple button clicked implementation.
 
+// ??? rather have an abstract picture, it is early in the book ...
 
-\texttt{}\texttt{cpp
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
 #include "UIElements.h"
 
 // create the button, pin 5 is the button input
 UIButton aButton( 5 );
 
 bool getButtonData( uint8_t pin ) {
+
 	return( digitalread( pin ));
 }
 
 void buttonHandler( uint8_t buttonId ) {
-	// the button was clicked. buttonId contains the pin number 5
+
+	// the button was clicked. 
+	// buttonId contains the pin number 5
 }
 
 void setup ( ) {
-	// the Arduino setup function, register the click callback
+
+	// the setup function, register the click callback
 	aButton.attachgetDataFunction( getButtonData );
-  aButton.attachButtonClicked( buttonHandler );
+	aButton.attachButtonClicked( buttonHandler );
 }
 
 void loop ( ) {
@@ -42,7 +49,9 @@ void loop ( ) {
     // in the main loop of the program the UIElements "tick" function.
 	UIElements::tick( );
 }
-}\texttt{}
+
+\end{lstlisting}
+\FloatBarrier
 
 Instead of implementing the button data retrieval directly in the button object, there is a callback that obtains the hardware value. This might look like an overkill in abstracting a button. But consider a button connected to a serial shift register or a button connected to an interface chip such as the MCP23017. Each of these hardware interfaces would require a special case in the button object. Abstracting the data retrieval, allows to implement very different hardware buttons. All this comfort comes with a price though. The button object has a size of roundabout 26 to 32 bytes. So, an array of 256 buttons would occupy quite some memory storage. For such applications, a dedicated special button array class would perhaps be the better choice. Note that the buttonId does not necessarily have to be a physical pin number. For example, a shift register with implementation with 64 buttons could simply assign logical numbers that the data retrieval function understands to get the correct bit from the shift register.
 
@@ -50,22 +59,31 @@ Instead of implementing the button data retrieval directly in the button object,
 
 A rotary encoder works similar to a button. It is a type of position sensor that generates an electrical signal according to the rotational movement. The most common one has two outputs that are turned on 90 degrees out of phase from each other. Just monitoring one of the inputs allows for detecting rotary movement. However, analyzing both inputs at the same time allows for detecting the rotational direction. If the pin A changes its signal level, examining the input B allows for determining the direction. If both inputs signals are equal the rotation is clockwise, else counter clock wise. The UIEncoder element manages all these details and offers a callback to be invoked when the position of the rotary encoder changes. Just like buttons, there is a data retrieval callback function. Here is a simple example.
 
-\texttt{}\texttt{cpp
+// ??? rather have an abstract picture, it is early in the book ...
+
+
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
 #include "UIElements.h"
 
-// create the rotary encoder, pin 5 and 6 are the inputs, MIN and MAX defines the encoder range.
+// create the rotary encoder, pin 5 and 6 are the inputs, 
+// MIN and MAX defines the encoder range.
 UIEncoder anEncoder( 5, 6, MIN, MAX );
 
 bool getEncoderData( uint8_t pin ) {
+
 	return( digitalRead( pin ));
 }
 
 void positionChangedHandler( uint8_t newPosition ) {
+
 	// the encoder was turned, the delta passed to the callback function.
 }
 
 void setup ( ) {
-	// the Arduino setup function, register the positionChanged callback
+	
+	// the setup function 
+	// register the positionChanged callback
 	anEncoder.attachGetDataFunction( getEncoderData );
     anEncoder.attachPositionChanged( positionChangedHandler );
 }
@@ -75,7 +93,8 @@ void loop ( ) {
     // in the main loop of the program the UIElements "tick" function.
 	UIElements::tick( );
 }
-}\texttt{}
+\end{lstlisting}
+\FloatBarrier
 
 \section{\textit{LEDs}}
 
@@ -87,7 +106,11 @@ In addition to a LED signaling light, there is the requirements to display human
 
 The display UI element provides as a common function set the methods to clear a display, set a cursor position and write a character to that position. In addition, each type of display has capabilities specific to this display. A LCD display has methods for turning on and off the backlight. There are also blinking cursors and so on. The OLED display allows for smaller or larger character fonts. While the display UI element object presents a common method set for all display types it will not shield these additional capabilities. The following shot example will show an OLED display connected via the default I2C lines.
 
-\texttt{}\texttt{cpp
+// ??? rather have an abstract picture, it is early in the book ...
+
+
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
 #include "UIElements.h"
 
 UIDisplay *oled;
@@ -110,7 +133,8 @@ void loop ( ) {
 	// necessary for the display function, but for the rest of UI elements.
 	UIElements::tick( );
 }
-}\texttt{}
+\end{lstlisting}
+\FloatBarrier
 
 \section{\textit{Screens}}
 
@@ -118,7 +142,11 @@ UI Elements such as Buttons, Knobs, LEDs and displays are the atoms of a user in
 
 The UIScreen object is the class for implementing a screen. Screens are a display of whatever you want to put on that display.There are virtual methods that will be called when a button event such a click is encountered. Two buttons needed for navigation. They are the MENU and SELECT button. With the exception of the root screen, a screen has a parent and a potential child list. The hierarchy is formed by appending a screen to another screen child list. The MENU button is typically used to scroll through the child list. A long press of the menu button always gets back to the root screen's first child, no matter where you are. Child lists are toggled through with the menu button in a circular fashion. From the last screen on the child list, the next toggle gets us to the first child. The SELCET button selects the current screen and triggers an action. When navigating to a screen, the exit callback is invoked for the screen to leave and the enter callback is invoked for the screen to enter. The exit callback would typically be used to clean up of store data away, the enter callback would be used to set up the data and display the initial screen content.
 
-\texttt{}\texttt{
+// ??? rather have an abstract picture, it is early in the book ...
+
+
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
 a conceptual picture of a screen hierarchy ?
 
 MENU -> MENU -> MENU -> MENU -> MENU -> back to first menu
@@ -134,13 +162,16 @@ SUB-MENU
   |
   v
   back to first sub menu
+\end{lstlisting}
+\FloatBarrier
 
-}\texttt{}
 To keep the screen hierarchy flexible, the meaning of the MENU and SELECT button within a given screen is not fixed. But as a convention, the MENU button should be used to toggle through screens, the SELECT button is used to enter a screen child list and also as a kind of commit button. All other buttons, if any are completely user defined.
 
 The connection from UIElement events to screens is handled by registering the static callback functions defined for the UI elements. All UI Elements for which the callback set will just pass the event to the current screen. For example, the UIScreen base class has the MENU and SELECT button event handler to navigate through the screens.
 
 A screen that inherits from the UIScreen could overwrite these handlers and assign a new meaning to the MENU and SELECT button. For the other elements, i.e. the other buttons but also encoders, there are dedicated handlers that are passed the resource ID of UIElement. A screen that for example that displays the value of an encoder UIElement will build a class that inherits form UIScreen and override the encoder callback. In a similar way the MENU and SELECT button can also be override, but then it is up to the implementer to handle the navigation. That's it.
+
+// ??? rather have an abstract picture, it is early in the book ...
 
 // ??? \textbf{note} have an example ...
 
