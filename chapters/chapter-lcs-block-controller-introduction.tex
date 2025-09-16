@@ -1,0 +1,7 @@
+\chapter{The Block Controller}
+
+// ??? introduction to the block controller topic...
+
+A block controller is an LCS node that can manage one more blocks, each with one or more sections. This chapter will describe the firmware developed for the block controller. The block controller features several ports for the blocks and associated turnouts, signals and so on.
+
+First, each block must be uniquely defined in the layout. A block controller ID consists of the node ID and a portId resenting that block. A layout could have theoretically 4095 nodes with 4 blocks each. In reality, we need nodes also for other purposes, but still this number is large enough even for really large layouts. Let'S first look a t what ports are needed.

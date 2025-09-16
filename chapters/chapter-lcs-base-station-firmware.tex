@@ -1,105 +1,5 @@
-\chapter{The Base Station}
-
-Take a deep breath. We are about to put together out first major LCS hardware module. The previous chapters introduced the message format and protocols and the core library for implementing the event system as well as the running equipment based on the DCC signal standards. Next, we took a closer look on the major hardware building blocks and power module designs. Just like the LCS core library allows to build a node specific firmware on top, the hardware building blocks are the foundation to build the required hardware modules. We also looked at how one would go after designing the node firmware in general. So here is the first and most important hardware module putting it all together. The base station. Every layout needs to have some kind of a base station that acts as the central place for layout control and signal generation.
-
-Looking at the market, there are plenty of so called base stations. They typically offer support for several standards and communication protocols, such as DCC, mfx, LocoNet, a Can Bus, a S88 sensor bus, and so on. Most base station also have the power module directly integrated. They support the configuration of locomotive and stationary decoders. In short, a one stop all round solution. Their price range is around few hundred Euros. With the advent of Arduino, Raspberry and other controllers there are numerous do it yourself solutions. Just to name one, the \texttt{DCC++} Arduino base station with a motor shield as a power unit, gets you a base station for well under hundred Euros. The excellent work of the JMRI community to provide a \texttt{DCC++} interface for configuration software and other utilities to use this inexpensive base station hardware. The DCC-EX group extended and stabilized the original \texttt{DCC++} work for a wider range of controllers but also with new capabilities. There are many such great projects. The appendix provides some links and pointers to this work.
-
-\section{Key Requirements}
-
-Our base station needs to deliver the following capabilities. At first it needs to be able to assemble the DCC packets and generate the respective DCC hardware signals. This work is split into the base station producing the signal content and the power section driving the hardware. Furthermore, the base station needs to provide a way to manage several locomotive sessions. For each active session the current state of the locomotive is maintained and the DCC packets are produced. When a new locomotive session is established, a dictionary of locomotives could be consulted about the particular locomotive to get the initial function settings, and so on.
-
-A base station implementing locomotive session and track management should also implement a serial command interface for managing a session or sending commands to a locomotive. Although not really necessary, it is very beneficial for testing and debugging. But also, programming DCC decoders will need some form of getting the configuration data to the decoder. There are great openSource tools out there which make use of an ASCII interface to send their commands. An example is DecoderPro from the JMRI teams. It features among other protocols the \texttt{DCC++} ASCII interface to send and receive commands. Our base station will therefore implement the relevant \texttt{DCC++} commands.
-
-All configuration settings, such as the number of concurrent sessions or the current consumption limit for a track, should be available as attributes on the node itself and ports. A track should be represented by a port, so there will be a port for controlling the MAIN track output, and a port for controlling the PROG tack output.
-
-Finally, the firmware for the base station could also host LCS management functions, such as a configuration database or display data about layout operations. This is not per se a function of the base station, but as each layout needs to have a base station and perhaps display high level status data, it is a convenient place to put central functionality there as well. This subject will be discussed in another chapter, this chapter will focus on the core base station features.
-
-\section{Base Station Hardware}
-
-The base station is essentially based on a main controller board and a dual power module unit shown in previous chapters. We will use the PICO controller version and the dual H-Bridge building block. Add the RailCom detectors and stir the whole soup for a while. The extension connector of the base station would still export the I2C interface and the DCC signal produced by the base station. So, adding an I2C based extension board for display, switches, etc. is of course still possible. Here is the schematic for the base station. The individual building blocks should be familiar by now. The first page shows the main controller parts. Note that it needs fewer level shifters, as most of the signals are consumed internal to the board.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[page=1, width=0.9\textwidth]{./Schematics/Schematic_LcsNodes-Base-Station-Board.pdf}
-    \caption{Base Station Block Diagram}
-    %\label{fig:BlockDiagram}
-\end{figure}
-%\FloatBarrier
-
-\subsection{Base Station Main Controller}
-
-The Raspberry PI Pico has enough capacity to implement the CAN bus protocol directly using one of the cores. As a result, only the line driver is necessary to implement the CAN bus interface. There are the level shifters for the I2C bus and a few other external signals. The Power supply needs to have a method to detect that there is an USB cable connected to the PICO and ensure that there is no conflict between the power sources. Like any LCS node, the controller needs a non-volatile memory. The base station hosts an I2C type NVM with up to 64Kbytes. The key reason for such a high capacity is that a base station might store a lot of data for each engine that it can manage.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[page=2, width=0.9\textwidth]{./Schematics/Schematic_LcsNodes-Base-Station-Board.pdf}
-    \caption{Base Station Main Controller}
-    %\label{fig:Schematic}
-\end{figure}
-% \FloatBarrier
-
-\subsection{Power Module}
-
-The next part shows the power module. The power module exports the DCC signals via the external track power connectors and also as part of the LCS message bus connector. The track power extension connector is used by extension boards that directly use the H-Bridge output. A good example is an occupancy detector board which takes the DCC outputs and routes them to different sections, each equipped with a detectors for power consumption on the track. The power module unit features two identical channels. They are labelled "MAIN" and "PROG". Although the "PROG" channel would not need to deliver a high amperage, the dual H-Bridge is there anyway. And as said before, it would be nice to dynamically treat the PROG track as a type MAIN track too. 
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[page=3, width=0.8\textwidth]{./Schematics/Schematic_LcsNodes-Base-Station-Board.pdf}
-    \caption{Power Module}
-    %\label{fig:Schematic}
-\end{figure}
-\FloatBarrier
-
-\subsection{RailCom Detector}
-
-Both channels also feature a RailCom detector. Refer to the base station firmware chapter on what we actually do with a RailCom detector. 
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[page=4, width=0.8\textwidth]{./Schematics/Schematic_LcsNodes-Base-Station-Board.pdf}
-    \caption{RailCom Detector}
-    %\label{fig:Schematic}
-\end{figure}
-\FloatBarrier
-
-\subsection{LocoNet Interface}
-
-The base station will also offer an optional LocoNet interface. One day. LocoNet is very popular communication network for model railroads and there are a lot of devices such as Cab Handhelds that connect to the LocNet bus. Wouldn't it be nice to just connect these handhelds and alike via the LocoNet bus such that they can be used as well ? I guess it would. Right now, this is work in progress, but let's already reserve the the space on the board. Here is a first sketch of the interface.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[page=5, width=0.8\textwidth]{./Schematics/Schematic_LcsNodes-Base-Station-Board.pdf}
-    \caption{LocoNet Interface}
-    %\label{fig:schematic}
-\end{figure}
-\FloatBarrier
-
-\subsection{ Connectors and Power}
-
-Finally, there are the connectors and the power supplies. While the LCS node runs with 5V as before, the LocoNet interface will offer 12V on its bus to connected devices. This part is also optional if LocNot is not implemented. In addition to the basic connectors that we have as part of the LCS node design, there are also two power connectors for the two tracks.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[page=6, width=0.8\textwidth]{./Schematics/Schematic_LcsNodes-Base-Station-Board.pdf}
-    \caption{Connectors and Power}
-    %\label{fig:schematic}
-\end{figure}
-\FloatBarrier
-
-\subsection{Base Station PCB}
-
-The following picture shows the PCB for the monolithic base station. It is a 12cm by 10cm board, with the standard connectors in the usual place. As said, the LocoNet Interface is optional. 
-
-\begin{tikzpicture}[scale=0.7, transform shape]
-
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-    \node at (8,4) {picture};
-
-\end{tikzpicture}
-
-Like the main controller, the monolithic base station board makes extensive use of SMD parts. While the previous boards have already been using passive SMD parts such as capacitors and resistors, this board also make use of SMD ICs. The exception is of course the Raspberry PI PICO board and the Dual H-Bridge IC L6205. The H-Bridge is a high power part and in case of a hardware problem it can easily be replaced as a DIP version.
-
-\section{Base Station Firmware}
+\chapter{Base Station Firmware}
+\addcontentsline{toc}{chapter}{Base Station Firmware}
 
 With the base station hardware in place, let's look at the firmware. First of all, the base station is just another LCS node and rests on the LCS runtime library. On top there is the locomotive session management, the DCC track power management, the DCC signal generation logic, and finally the RailCom communication interface. Being an LCS node, there are attributes and functions to control the base station through node and port items.
 
@@ -107,7 +7,8 @@ The base station is rather complex node. Especially the DCC signal generation re
 
 The base station module firmware is divided into a couple of key software modules. Let's start with locomotive session management.
 
-\subsection{Locomotive Session Management}
+\section*{Locomotive Session Management}
+\addcontentsline{toc}{section}{Locomotive Session Management}
 
 The base station maintains a list of all active locomotives. Before controlling a locomotive or a consist, a session needs go be established. Once the session is place, LCS DCC commands such as set speed, direction and functions, are translated to the respective DCC packets according to standard. In addition, the standards require a periodic refresh of this data. The base station session management code will just run through the active sessions and issue the necessary DCC commands. Another key part of the base station functionality is the ability to configure a DCC decoder. Typically, the locomotive is put alone on special section of track. The configuration command will set CV values in the decoder. To configure a locomotive on the programming track, no session is actually required. As programming an engine is in the end also just a matter of sending DCC packets, the functionality is part of the session management object.
 
@@ -121,7 +22,8 @@ In general, base stations are required to send a valid DCC packet every 30 milli
 
 Right now, the scheme is simple. A DCC management LCS message directly results in the DCC command sent to the track. The refresh function just advances through the session map and emits a DCC refresh packet for each active session. More experience with a really large layout is needed before changing this simple approach.
 
-\subsection{Base Station Global Functions}
+\section*{Base Station Global Functions}
+\addcontentsline{toc}{section}{Base Station Global Functions}
 
 In addition to locomotive session management and the DCC track management, a base station is also responsible for global data such as the system data and time. Each decoder can make use of this "layout" time. The base station is required to send out this information periodically. Furthermore, the base station needs to broadcast what global capabilities and configuration options are available. For example, the base station will communicate which standards are supported, whether it supports a 128-step speed setting or not, wether  programming on the main track is enabled and on on. The base station is required to send this kind of information every 5 seconds.
 
@@ -135,11 +37,14 @@ Locomotive session management presents itself through a set of node attributes a
 %|:--|:--|:--|
 %| ... | ... | ... |
 
-\subsection{DCC Track management}
+\section*{DCC Track management}
+\addcontentsline{toc}{section}{DCC Track Management}
 
 Here we are with a stream of DCC packets send by the locomotive session management. To get the DCC packet actually onto the track, DCC track management component has two key functions. There is the signal generation part and the track power management part.
 
-\subsection{DCC Track Signal Management}
+\section*{DCC Track Signal Management}
+\addcontentsline{toc}{section}{DCC Track Signal Management}
+
 
 The base station produces for the main track and programming track the DCC signal. To recap, the DCC ONE bit is a square wave signal with a period of 58 microseconds, the DCC ZERO bit a square wave signal with a period of 116 microseconds. A signal generation logic could thus think in "ticks" of 58 microseconds. However, when implementing RailCom support a cutout period needs to be added. This period starts with a 29us ONE followed by the cutout period itself, followed by 29us ZERO to complete the cutout. Luckily, 29 is two times 58. A DCC "ONE" is therefore two ticks of 29us "+" follow by two ticks of "-" on the signal generation lines.
 
@@ -153,13 +58,15 @@ In addition to getting the next bit or packet, there is the requirement to measu
 
 While this approach will work fairly reasonable, there is a hidden challenge though. The measurement will sample what the current consumption is. And this consumption depends on the actual power drawn by the decoder. Since decoders typically drive the engine motor with a PWM signal, it matters when the measurement is taken. With a decoder with a low PWM frequency there is a good chance to measure during the "off" period of the PWN signal. It will be therefore be important to measure very often and compute a mean value, for example a Root Mean Square" value, across a significant sample of measurements. However, we need to make sure that the controller is not overwhelmed with all the processing that needs to be done. Our approach is to measure quite often and store the digital values. Short circuit detection and also a simple high water mark computation can be be done with little overhead. Only when an RMS value is needed, the square root of the sum of squares of our samples is computed and converted to milliAmps. Note that that the RMS computation is done using 16-bit unsigned integers. This is little less precise compared to a floating point value computation, but the performance gain from using integer math justify this moderate imprecision.
 
-\subsection{Track Signal management using Raspberry Pi Picos features}
+\section*{Track Signal management using Raspberry Pi Picos features}
+\addcontentsline{toc}{section}{Track Signal management using Raspberry Pi Picos features}
 
 The Raspberry PI Pico has a very powerful feature, which are the PIO state machines. Rather than offering various IO interfaces and protocols in dedicated silicon blocks, the PIO state  machines are programmable IO controllers. One idea is to just implement the DCC output though a PIO program. A tempting project.
 
 However, right now the SW state machine described before will just work fine and do the job for both controller families. May some time later.
 
-\subsection{Track Power Management}
+\section*{Track Power Management}
+\addcontentsline{toc}{section}{Track Power Management}
 
 In addition to the signal generation state machine, there is a track power state machine. This state machine runs periodically and checks for power overload. When the power consumption exceeds the configured limit, the track is shut down. After a short period of time restart is attempted. If the restart leads again to a power overload and this happens for several attempts, the track is shut down permanently. Manual action is necessary.
 
@@ -167,7 +74,8 @@ For the programming track, the power consumption measurement plays another very 
 
 With RailCom implemented, a decoder can also be configured using the programming on the main (POM) DCC commands with status and data reply via RailCom datagrams. More on this in a later section.
 
-\subsection{Base Station Dictionary}
+\section*{Base Station Dictionary}
+\addcontentsline{toc}{section}{Base Station Dictionary}
 
 Another software component typically found in base stations is a dictionary. For each locomotive there is a dictionary entry that describes this locomotive. When a session for that locomotive is allocated, this entry is consulted and initial values for speed, direction and other functions are set.
 
@@ -185,11 +93,13 @@ Another software component typically found in base stations is a dictionary. For
 %|:--|:--|:--|
 %| ... | ... | ... |
 
-\subsection{RailCom Support}
+\section*{RailCom Support}
+\addcontentsline{toc}{section}{RailCom Support}
 
 For RailCom support the power module is directed to short circuit the track for a defined period before working on the next packet. The DCC decoder in the locomotive will detect this short circuit or cutout period and send a RailCom datagram. During this period the controller attempts to read in the datagram bytes from the serial I/O input line. Both analog measurement as well as serial I/O reading for RailCom are implemented as a setup the request routine followed by an interrupt routine that processes the results in as little as possible time. After all, our key priority is the correct DCC signal timing.
 
-\subsection{RailCom Support Attributes and Functions}
+\section*{RailCom Support Attributes and Functions}
+\addcontentsline{toc}{section}{RailCom Support Attributes and Functions}
 
 // \textbf{note} fill in what we can access through the node/port interfaces
 // \textbf{note} channel one will always fill a port variable with what ever the loco ID currently is. Can be read by all nodes...
@@ -200,22 +110,27 @@ For RailCom support the power module is directed to short circuit the track for 
 %|:--|:--|:--|
 %| ... | ... | ... |
 
-\subsection{LocoNet Support}
+\section*{LocoNet Support}
+\addcontentsline{toc}{section}{LocoNet Support}
 
 // ??? \textbf{note} under investigation. We would need a library to send and receive the locoNet messages. We also would need a higher level piece to "understand" these messages and translate them to LCS messages. From a HW perspective, perhaps one PIO block of the PICO is needed to implement a UART, as the two UARTS are used for RailCom already... in other words a bigger research project :-).
 
-\section{Base Station Serial Commands}
+
+\section*{Base Station Serial Commands}
+\addcontentsline{toc}{section}{Base Station Serial Commands}
+
+// ??? a separate chapter with the commands ?
 
 In addition to the LCS core library serial commands available to any node, the base station implements a serial command interface which accepts a subset of the \texttt{DCC++} / DCC-EX commands. As a short introduction, \texttt{DCC++} was an implementation of a DCC base station using an Arduino Uno and a motor shield. For a very small budget and with little effort, the world of DCC opened up to everyone. Part of the \texttt{DCC++} system is an ASCII interface to send commends to the base station. Not only is this command line feature useful for debugging the base station code, it is really valuable when interfacing to tools such as Decoder Pro provided by the JMRI organization, which implemented an ACCI interface to \texttt{DCC++}. The command listed in the table below are an accurate implementation of the original DCC++ commands. In addition some commands have been added.
 
-\begin{longtable}{@{}|l|p{0.2\linewidth}p{0.6\linewidth}@{}}
+\begin{longtable}{@{}|l|p{0.2\linewidth}p{0.5\linewidth}|@{}}
     \caption{Table Caption} \\
     \toprule
-    \textbf{Command} & \textbf{Reply} & \textbf{Operation}\\
+    \textbf{Command} & \textbf{Reply} & \textbf{Operation} \\
     \midrule
     \endfirsthead
     \toprule
-    \textbf{Command} & \textbf{Reply} & \textbf{Operation}\\
+    \textbf{Command} & \textbf{Reply} & \textbf{Operation} \\
     \midrule
     \endhead
     \midrule
@@ -224,58 +139,69 @@ In addition to the LCS core library serial commands available to any node, the b
     \endfoot
     \bottomrule
     \endlastfoot
-    Row1 & \textbf{Row1} & Text1 \\
+    \textbf{O} cabId & & allocate a session for the cab \\
+    \midrule
+    \textbf{K} sessionId & & release a session \\
+    \midrule
+    \midrule
+    \midrule
+    \midrule
+    \midrule
     \midrule
     Row2 & \textbf{Row2} & Text2 \\
+    
+       
+    
 \end{longtable}
 
-| O | cabId | | allocate a session for the cab|
 
-| K | sessionId | | release a session |
 
-| t | sessionId cabId speed direction>| | set cab speed / direction|
 
-| f | cabId funcId val | | set cab function value, function group DCC format |
 
-| v | sessionId funcId val| | set cab function value, individual |
 
-| R | cvId callbacknum callbacksub | | read CV byte on the programming track |
 
-| W | cvId val callbacknum callbacksub | | write CV byte on the programming track |
+\textbf{t} & sessionId cabId speed direction>| | set cab speed / direction|
 
-| B | cvId bitPos bitVal callbacknum callbacksub | | write CV bit on the programming track |
+\textbf{f} & cabId funcId val | | set cab function value, function group DCC format |
 
-| b | cabId cvId bitPos bitVal | | write CV bit on the programming track |
+\textbf{v} & sessionId funcId val| | set cab function value, individual |
 
-| w | cabId cvId val | | write CV byte on the operations track |
+|\textbf{R} & cvId callbacknum callbacksub | | read CV byte on the programming track |
 
-| M | sessionId byte1 byte2 [ byte3 ... byte10 ] | | send DCC packet on operations track |
+\textbf{W} & cvId val callbacknum callbacksub | | write CV byte on the programming track |
 
-| P | sessionId byte1 byte2 [ byte3 ... byte10 ] | | send DCC packet on programming track |
+\textbf{B} & cvId bitPos bitVal callbacknum callbacksub | | write CV bit on the programming track |
 
-| X | | | emergency stop all |
+\textbf{b} & cabId cvId bitPos bitVal | | write CV bit on the programming track |
 
-| 0 | | | turn operations and programming track power off |
+\textbf{w} & cabId cvId val | | write CV byte on the operations track |
 
-| 1 | | | turn operations and programming track power on |
+\textbf{M} & sessionId byte1 byte2 [ byte3 ... byte10 ] | | send DCC packet on operations track |
 
-| 2 | | | turn operations power on |
+\textbf{P} & sessionId byte1 byte2 [ byte3 ... byte10 ] | | send DCC packet on programming track |
 
-| 3 | | | turn programming track power on |
+\textbf{X} & | | emergency stop all |
 
-| a | [ opt ] | | list current consumption, where opt=0 -> MAIN (default ), opt=1 -> PROG, opt=2 -> both |
+\textbf{0} & | | turn operations and programming track power off |
 
-| C | [ option ] | | set options for the track. 0 -> set service track in operations mode, 1 - > set service track in service mode, 2 -> enable RailCom, 3 -> disable RailCom |
-| s | [ level ] | | list status at detail level, default is summary. 0 -> summary, 1 -> configuration,  2 -> session map |
+\textbf{1} & | | turn operations and programming track power on |
 
-| S | | | list base station configuration |
+\textbf{2} &| | turn operations power on |
 
-| L | | | list base station session table |
+\textbf{3} & | | turn programming track power on |
 
-| D | | | enter diagnostics mode - need to restart later! |
+\textbf{a} & [ opt ] | | list current consumption, where opt=0 -> MAIN (default ), opt=1 -> PROG, opt=2 -> both |
 
-| ? | | | list this help |
+\textbf{C} & [ option ] | | set options for the track. 0 -> set service track in operations mode, 1 - > set service track in service mode, 2 -> enable RailCom, 3 -> disable RailCom |
+\textbf{s | [ level ] | | list status at detail level, default is summary. 0 -> summary, 1 -> configuration,  2 -> session map |
 
+\textbf{S} & | | list base station configuration |
+
+\textbf{L} & | | list base station session table |
+
+\textbf{D} & | | enter diagnostics mode - need to restart later! |
+
+\textbf{?} & | | list this help |
 
 
 

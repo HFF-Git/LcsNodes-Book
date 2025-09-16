@@ -111,20 +111,28 @@ The "s" command will list a great detail on the node data. When debugging a node
 
 Just like the LCS core library accepts simple ASCII command strings, the LCS messages can also be transmitted as an ASCII text line. This is very useful for building communication gateways that transmit the message via another medium, such as an ethernet channel. There is a simple scheme for the ASCII representation of the message:
 
-%```
-%<$ data-byte-1 ... data-byte-n>
-%
+\lstset{style=codesnippetstyle}
+\begin{lstlisting}
+< data-byte-1 ... data-byte-n >
+\end{lstlisting}
 
-The message is enclosed in the "<" and ">" delimiters and the first character is the "xxx" sign. Up to 8 hexadecimal values written as "0xdd" follow, where "d" is a hexadecimal digit.
+
+The message is enclosed in the \texttt{<}  and \texttt{>} delimiters and the first character is the "xxx" sign. Up to 8 hexadecimal values written as "0xdd" follow, where "d" is a hexadecimal digit.
+
+\lstset{style=codesnippetstyle}
+\begin{lstlisting}
+int lcsMsgToStr( char *msgStr, uint8_t *dataBuf, uint8_t dataBufLen );
+
+int strToLcsMsg( uint8_t *dataBuf, uint8_t dataBufLen, char *msgStr );
+\end{lstlisting}
+
 
 %%```cpp
-%int lcsMsgToStr( char *msgStr, uint8_t *dataBuf, uint8_t dataBufLen );
 
-%int strToLcsMsg( uint8_t *dataBuf, uint8_t dataBufLen, char *msgStr );
 %```
 
 Note: to be implemented. Perhaps to simple library routines to create an ASCII version of a LCS message and convert an ASCII string to an LCS message.
 
 \section{Summary}
 
-The command line interface provides a way to interact with a node at the command line level. This is very useful for initial testing new hardware and software debugging. All that is needed is a USB interface and a computer. Besides that, this interface is normally not used during regular operations.
+The command line interface provides an easy way to interact with a node at the command line level. This is very useful for initial testing new hardware and software debugging. All that is needed is a USB interface and a computer. Besides that, this interface is normally not used during regular operations.

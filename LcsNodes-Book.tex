@@ -30,24 +30,8 @@
     % Title page.
     %
     %----------------------------------------------------------------------------
-   	\thispagestyle{empty}
-	\pagenumbering{gobble}
-
-	\begingroup
-		\enlargethispage{\textheight}
-		\begin{center}
-  		{\Huge \textbf{A Layout Control System for \\ Model Railroads}}\par
-  		\vspace{1cm}
-  		{\Large Helmut Fieres}\par
-  		{\large \today}\par
-  		\vspace{2cm}
-    	\includegraphics[width=0.8\textwidth]{figures/Frontpage-Picture.png}
-    	\end{center}
-	\endgroup
-	\clearpage
-	       
-	\cleardoublepage
-		
+    \input{titlepage/titlepage}
+   		
     %----------------------------------------------------------------------------
 	% Page formatting options
 	%----------------------------------------------------------------------------
@@ -86,14 +70,12 @@
 	 
 	%----------------------------------------------------------------------------
     \part{LCS Concepts}    
-    
+   
     \include{chapters/chapter-lcs-concepts-general}
     \include{chapters/chapter-lcs-concepts-message-format} 
     \include{chapters/chapter-lcs-concepts-message-protocols} 
     \include{chapters/chapter-lcs-concepts-dcc-subsystem}
     \include{chapters/chapter-lcs-concepts-analog-subsystem}
-    \include{chapters/chapter-lcs-concepts-signaling-block-control}
-    \include{chapters/chapter-lcs-concepts-firmware-design}
        
     %----------------------------------------------------------------------------
     \part{LCS Core Layer} 
@@ -103,24 +85,41 @@
     \include{chapters/chapter-lcs-runtime-lib-example}
     \include{chapters/chapter-lcs-controller-dependent-code} 
     \include{chapters/chapter-lcs-ui-elements}
+     \include{chapters/chapter-lcs-concepts-firmware-design}
     
     %----------------------------------------------------------------------------
     \part{LCS Hardware}
     
     \include{chapters/chapter-lcs-concepts-hardware-main-module-design}
     \include{chapters/chapter-lcs-concepts-hardware-extension-module-design}
-    \include{chapters/chapter-lcs-concepts-sensors-and-actors}
     \include{chapters/chapter-lcs-power-module-design}
     \include{chapters/chapter-lcs-railcom-signal-detector}
+    \include{chapters/chapter-lcs-main-controller-hardware-pico}
+    
+    %----------------------------------------------------------------------------
+	\part{LCS Modules}
 
- 	\include{chapters/chapter-lcs-main-controller-hardware-pico}
+	\include{chapters/chapter-lcs-base-station-introduction}
+ 	\include{chapters/chapter-lcs-base-station-hardware}
+ 	\include{chapters/chapter-lcs-base-station-firmware}
  	
- 	\include{chapters/chapter-lcs-base-station}
+ 	\include{chapters/chapter-lcs-cab-handheld-introduction}
+ 	\include{chapters/chapter-lcs-cab-handheld-hardware}
+ 	\include{chapters/chapter-lcs-cab-handheld-firmware}
 
+	\include{chapters/chapter-lcs-block-controller-introduction}
+	\include{chapters/chapter-lcs-concepts-signaling-block-control}
  	\include{chapters/chapter-lcs-block-controller-hardware}
+ 	\include{chapters/chapter-lcs-block-controller-firmware}
  	
- 	\include{chapters/chapter-lcs-cab-handheld}
+ 	\include{chapters/chapter-lcs-gateway-module}
  	
+ 
+  	%----------------------------------------------------------------------------
+ 	\part{LCS Extensions}
+ 	
+ 	\include{chapters/chapter-lcs-concepts-sensors-and-actors}
+
     \include{chapters/chapter-lcs-extensions-track-occupancy-detector}
     \include{chapters/chapter-lcs-extension-32-servo-16-dio}
     \include{chapters/chapter-lcs-extension-cab-control}
@@ -132,24 +131,20 @@
     % \include{chapters/LCS-Extensions/LCS-Extension-Relay}
     % \include{chapters/LCS-Extensions/LCS-Extension-Combo-Board}
     
-     \include{chapters/chapter-lcs-layout-connector-panel}
-     \include{chapters/chapter-lcs-utility-boards}
-
     %----------------------------------------------------------------------------
-    \part{LCS Firmware}
-    
-    \include{chapters/chapter-lcs-block-controller-firmware}
-
+ 	\part{LCS Utilities}
+ 	
+ 	\include{chapters/chapter-lcs-dcc-monitoring}
+    \include{chapters/chapter-lcs-layout-connector-panel}
+    \include{chapters/chapter-lcs-utility-boards}
+	\include{chapters/chapter-lcs-firmware-update}
     
     %----------------------------------------------------------------------------
-    \part{Chapter to sort}
+    \part{LCS Configuration}
     
-    \include{chapters/chapter-lcs-gateway-module}
-    \include{chapters/chapter-lcs-dcc-monitoring}
     \include{chapters/chapter-lcs-layout-system-configuration}
-    \include{chapters/chapter-lcs-firmware-update}
-    \include{chapters/chapter-lcs-guidance-computer}
-      
+    
+         
     \include{chapters/chapter-lcs-outlook}
     
     %----------------------------------------------------------------------------
@@ -162,10 +157,12 @@
     % \include{appendices/DCC-PP-Command-Reference}
     % \include{appendices/LCS-Runtime-Lib-Reference}
     % \include{appendices/LCS-CDC-Lib-Reference}
-    % \include{appendices/LCS-Nodes-And-EasyEDA}
+    \include{appendices/appendix-nodes-and-easyeda}
     % \include{appendices/Generic-Power-Supply}
+    % \include{appendices/appendix-lcs-guidance-computer}
+
     % \include{appendices/Inspiring-Work-And-Links} 
-    \include{appendices/About-This-Book}
+    \include{appendices/appendix-about-this-book}
     % \iftoggle{includeListings}{ \include{appendices/listings} }
     \include{appendices/tests}
     

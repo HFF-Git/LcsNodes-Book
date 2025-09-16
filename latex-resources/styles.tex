@@ -88,20 +88,22 @@
 %
 %--------------------------------------------------------------------------------
 \lstdefinestyle{codesnippetstyle}{
-    backgroundcolor=\color{gray!5}
-    basicstyle={\ttfamily\small}, % Try \relsize{-2} if this is still too large
+    backgroundcolor=\color{gray!5},
+    basicstyle={\ttfamily\small}, % code font size
     keywordstyle=\color{magenta},
     identifierstyle={\ttfamily\color{gray}},
-    numberstyle={\ttfamily\footnotesize\color{gray}},
     commentstyle={\ttfamily\color{teal}},
     showstringspaces=false,
     numbers=left,
+    numberstyle={\ttfamily\tiny\color{gray}}, % smaller numbers only
+    numbersep=8pt, % distance between numbers and code
     frame=single,
+    framexleftmargin=0pt,
+    xleftmargin=0pt,
     texcl=false,
     alsoletter={\#},
     morekeywords={\#include, \#define, \#ifdef, \#endif, \#pragma},
-    linewidth=0.9\textwidth,
-    xleftmargin=0.1\textwidth,
+    linewidth=\textwidth,
     breaklines=true,
     breakatwhitespace=false,
     columns=fullflexible

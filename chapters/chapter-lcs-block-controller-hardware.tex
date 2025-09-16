@@ -250,19 +250,22 @@ Instead of routing the DCC signals to the multiplexers, they are routed to two i
 The following code snippet show how that PIO program could be implemented.
 
 \pagebreak[3] % Suggests to break page here if needed
-\lstset{language=c++, style=codesnippetstyle}
+\lstset{style=codesnippetstyle}
 \begin{lstlisting}
-;-------------------------------------------------------------------------------------------------------------
-; DCC Signal Handler. The block controller uses a small PIO program to control the H-Bridge when DCC mode is
-; enabled. The basic work of the PIO state machine is to relay the inverted DCC input from the OptoCouplers
-; to the output pins which drive the select input of the H-Bridge chip. 
+;------------------------------------------------------------------------------------
+; DCC Signal Handler. The block controller uses a small PIO program to control
+; the H-Bridge when DCC mode is enabled. The basic work of the PIO state machine
+; is to relay the inverted DCC input from the OptoCouplers to the output pins
+; which drive the select input of the H-Bridge chip. 
 ; 
-; When the DCC input signal drops to 0b00, we either have no signal or the start of the Cutout period. We 
-; insert a 4 microsecond delay, which gives some leeway when two boosters are not entirely in sync, although
-; driven from the same DCC signal. After this blackout DCC input is relayed to the output. In addition, the
-; start and end of the cutout period is signaled with the PIO state machine interrupt flags.
+; When the DCC input signal drops to 0b00, we either have no signal or the start
+; of the Cutout period. We insert a 4 microsecond delay, which gives some leeway
+; when two boosters are not entirely in sync, although driven from the same DCC 
+; signal. After this blackout DCC input is relayed to the output. In addition, the
+; start and end of the cutout period is signaled with the PIO state machine 
+; interrupt flags.
 ;
-;-------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------------
 .program h_bridge_signal_control
 
 main_loop:
