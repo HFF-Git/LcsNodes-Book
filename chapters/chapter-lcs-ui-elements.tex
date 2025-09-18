@@ -55,7 +55,7 @@ void loop ( ) {
 
 Instead of implementing the button data retrieval directly in the button object, there is a callback that obtains the hardware value. This might look like an overkill in abstracting a button. But consider a button connected to a serial shift register or a button connected to an interface chip such as the MCP23017. Each of these hardware interfaces would require a special case in the button object. Abstracting the data retrieval, allows to implement very different hardware buttons. All this comfort comes with a price though. The button object has a size of roundabout 26 to 32 bytes. So, an array of 256 buttons would occupy quite some memory storage. For such applications, a dedicated special button array class would perhaps be the better choice. Note that the buttonId does not necessarily have to be a physical pin number. For example, a shift register with implementation with 64 buttons could simply assign logical numbers that the data retrieval function understands to get the correct bit from the shift register.
 
-\section{\textit{Rotary Encoders}}
+\section{Rotary Encoders}
 
 A rotary encoder works similar to a button. It is a type of position sensor that generates an electrical signal according to the rotational movement. The most common one has two outputs that are turned on 90 degrees out of phase from each other. Just monitoring one of the inputs allows for detecting rotary movement. However, analyzing both inputs at the same time allows for detecting the rotational direction. If the pin A changes its signal level, examining the input B allows for determining the direction. If both inputs signals are equal the rotation is clockwise, else counter clock wise. The UIEncoder element manages all these details and offers a callback to be invoked when the position of the rotary encoder changes. Just like buttons, there is a data retrieval callback function. Here is a simple example.
 
@@ -96,11 +96,11 @@ void loop ( ) {
 \end{lstlisting}
 \FloatBarrier
 
-\section{\textit{LEDs}}
+\section{LEDs}
 
 When talking about buttons and switches, the LEDs built the counterpart and signal a state. A LED is an object that can be turn on and off and blink. Just like buttons a state machine manages the LED state and there is a callback for setting the data according to the hardware implementation.
 
-\section{\textit{Displays}}
+\section{Displays}
 
 In addition to a LED signaling light, there is the requirements to display human readable text. The UI element display is an object that represents a matrix of ASCII characters. A display has n lines with m characters. There are methods to set a cursor to a line / column position and a method to print a character. There is a variety of display hardware available. The common ones are a LCD display with 4 x 20 or 2 x 16 characters. There are also OLED displays which are graphical displays with for example 128 x 64 pixels. These display can print characters using different fonts.
 
@@ -136,7 +136,7 @@ void loop ( ) {
 \end{lstlisting}
 \FloatBarrier
 
-\section{\textit{Screens}}
+\section{Screens}
 
 UI Elements such as Buttons, Knobs, LEDs and displays are the atoms of a user interface. The next level is to organize these atoms into screens. A screen is first of all a display UI element that is manipulated with the help of UI input elements such as buttons. The UI Screen is a very simple element to organize and manipulate these screens.
 
@@ -175,6 +175,6 @@ A screen that inherits from the UIScreen could overwrite these handlers and assi
 
 // ??? \textbf{note} have an example ...
 
-\section{\textit{Summary}}
+\section{Summary}
 
 This chapter presented the UI element library, which is the common UI layer for handhelds, control panels and monitor displays.

@@ -12,6 +12,8 @@
 \input{latex-resources/packages}
 \input{latex-resources/styles}
 
+\makeindex
+
 %--------------------------------------------------------------------------------
 % Document start.
 %
@@ -76,7 +78,10 @@
     \include{chapters/chapter-lcs-concepts-message-protocols} 
     \include{chapters/chapter-lcs-concepts-dcc-subsystem}
     \include{chapters/chapter-lcs-concepts-analog-subsystem}
-       
+    \include{chapters/chapter-lcs-concepts-hardware-modules}
+    \include{chapters/chapter-lcs-concepts-sensors-and-actors}
+    \include{chapters/chapter-lcs-concepts-summary}
+
     %----------------------------------------------------------------------------
     \part{LCS Core Layer} 
     
@@ -85,17 +90,17 @@
     \include{chapters/chapter-lcs-runtime-lib-example}
     \include{chapters/chapter-lcs-controller-dependent-code} 
     \include{chapters/chapter-lcs-ui-elements}
-     \include{chapters/chapter-lcs-concepts-firmware-design}
+    \include{chapters/chapter-lcs-concepts-firmware-design}
     
     %----------------------------------------------------------------------------
     \part{LCS Hardware}
     
     \include{chapters/chapter-lcs-concepts-hardware-main-module-design}
-    \include{chapters/chapter-lcs-concepts-hardware-extension-module-design}
-    \include{chapters/chapter-lcs-power-module-design}
-    \include{chapters/chapter-lcs-railcom-signal-detector}
     \include{chapters/chapter-lcs-main-controller-hardware-pico}
-    
+	\include{chapters/chapter-lcs-power-module-design}
+    \include{chapters/chapter-lcs-railcom-signal-detector}
+    \include{chapters/chapter-lcs-hardware-part-summary}
+   
     %----------------------------------------------------------------------------
 	\part{LCS Modules}
 
@@ -118,10 +123,9 @@
   	%----------------------------------------------------------------------------
  	\part{LCS Extensions}
  	
- 	\include{chapters/chapter-lcs-concepts-sensors-and-actors}
-
+ 	\include{chapters/chapter-lcs-concepts-hardware-extension-module-design}
     \include{chapters/chapter-lcs-extensions-track-occupancy-detector}
-    \include{chapters/chapter-lcs-extension-32-servo-16-dio}
+   	\include{chapters/chapter-lcs-extension-32-servo-16-dio}
     \include{chapters/chapter-lcs-extension-cab-control}
     
     % \include{chapters/LCS-Extensions/LCS-Extension-Servo}
@@ -135,7 +139,7 @@
  	\part{LCS Utilities}
  	
  	\include{chapters/chapter-lcs-dcc-monitoring}
-    \include{chapters/chapter-lcs-layout-connector-panel}
+   	\include{chapters/chapter-lcs-layout-connector-panel}
     \include{chapters/chapter-lcs-utility-boards}
 	\include{chapters/chapter-lcs-firmware-update}
     
@@ -144,28 +148,30 @@
     
     \include{chapters/chapter-lcs-layout-system-configuration}
     
-         
-    \include{chapters/chapter-lcs-outlook}
     
     %----------------------------------------------------------------------------
     \part{Appendix}   
     
     \appendix 
 
+   	\include{appendices/appendix-lcs-resources}
+    \include{appendices/appendix-nodes-and-easyeda}
+    \include{appendices/appendix-inspiring-work-and-links} 
+    \include{appendices/tests}
+
+    
     % \include{appendices/LCS-Item-Reference}
     % \include{appendices/LCS-Command-Reference}
     % \include{appendices/DCC-PP-Command-Reference}
     % \include{appendices/LCS-Runtime-Lib-Reference}
     % \include{appendices/LCS-CDC-Lib-Reference}
-    \include{appendices/appendix-nodes-and-easyeda}
     % \include{appendices/Generic-Power-Supply}
     % \include{appendices/appendix-lcs-guidance-computer}
-
-    % \include{appendices/Inspiring-Work-And-Links} 
-    \include{appendices/appendix-about-this-book}
-    % \iftoggle{includeListings}{ \include{appendices/listings} }
-    \include{appendices/tests}
     
-    \backmatter             
+    % \iftoggle{includeListings}{ \include{appendices/listings} }
+        
+    \backmatter    
+    
+    \printindex         
 
 \end{document}

@@ -82,7 +82,11 @@ An extension board design assumes that the key ICs on the board are I2C addressa
     \midrule
     \textbf{PCA9685} & 1 & 1 & 1 & 1 & B1 & B0 & x & 16 port servo driver \\
     \midrule
+    \textbf{24AA128} & 1 & 0 & 1 & 0 & B1 & B0 & x & Non volatile memory \\
+    \midrule
     \textbf{24AA256} & 1 & 0 & 1 & 0 & B1 & B0 & x & Non volatile memory \\
+    \midrule
+    \textbf{24AA512} & 1 & 0 & 1 & 0 & B1 & B0 & x & Non volatile memory \\
 \end{longtable}%
 
 The PCA 9955 and 9685 have a high number of address selection inputs. This allows to connect more than typically 8 chips on one I2C bus. We will not make use of this capability for now and assign a fixed 4-bit chip I2C address portion.
@@ -130,6 +134,8 @@ The entry point table is just a simple array with an entry for each in or out ch
 
 \section{Extension Board Driver}
 
+// ??? just a REQ on the Port assigned...
+
 Now, we not only know what boards are actually connected but also what software would be required to access the board. We will call this piece of software, essentially a library for each board type, \textbf{extension driver}. The following code fragment will show the common driver class that all actual drivers inherit from. We will see more of actual drivers when discussing a particular extension board implementation.
 
 // ??? code snippet, changed concepts !!
@@ -137,6 +143,8 @@ Now, we not only know what boards are actually connected but also what software 
 // ??? \textbf{note} what could we do about "real" interrupts from an extension board ?
 
 \section{Utility for writing the NVM}
+
+// ??? simplify to just have a REQ item ?
 
 The structure on each extension board is from the extension library perspective a read-only structure. But of course initially it needs to be filled with valid data. The hardware offers a jumper on the board to enable writing to the NVM chip. Any main controller board could be used to just write to the extension board. This is accomplished with a little utility program or a set of commands implemented in the command line interface of the core library.
 

@@ -241,6 +241,8 @@ When using all four bridge signal output pairs, each each output pair is rated u
 
 \section{Controller and Extension Board}
 
+// ??? what to keep here vs. extension patt ?
+
 Controller and Extension boards make up a node. The main controller board will connect via two main bus connectors to an extension board. The pins of the connectors were shown in the previous sections. The following figure depicts how the two boards are connected. There are two basic cases. The first case, shown here, is an extension board that simply is plugged into the connector of the main controller or another extension board.
 
 \begin{figure}[htbp]
@@ -271,6 +273,8 @@ Since there are only up to four extension boards supported on one controller, th
 \section{Summary}
 
 This chapter introduced the basic ideas behind a hardware module, it connectors and board layout. A key concept is the idea of a common component, the main controller, and extensions that can be connected. Nevertheless, there are good cases for combining a main controller and the extension hardware into one monolithic board. But in any case, the connectors and their purposes stay the same from board to board. While the main controller boards always have the LCS bus and power input on the left side, the extension connector and track line connector on the right, extension boards come in two flavors. 
+
+// ??? add to extension part ...
 
 The first extension board type has male connectors for track line and extension lines on the left side of the board while the second type has not. Both types have female track line and extension line connectors on their right. The first type can just be plugged into the main controller type boards, additional extension boards are simply plugged into the previous extension board. The second extension type is intended for a backplane type design where main controller boards as well as up to four extension board types are plugged into a backplane board. Throughout the chapter to come, you will see how easy boards can be combined using the two connectors lanes and standards behind them. 
 

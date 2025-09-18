@@ -123,7 +123,7 @@ For RailCom support the power module is directed to short circuit the track for 
 
 In addition to the LCS core library serial commands available to any node, the base station implements a serial command interface which accepts a subset of the \texttt{DCC++} / DCC-EX commands. As a short introduction, \texttt{DCC++} was an implementation of a DCC base station using an Arduino Uno and a motor shield. For a very small budget and with little effort, the world of DCC opened up to everyone. Part of the \texttt{DCC++} system is an ASCII interface to send commends to the base station. Not only is this command line feature useful for debugging the base station code, it is really valuable when interfacing to tools such as Decoder Pro provided by the JMRI organization, which implemented an ACCI interface to \texttt{DCC++}. The command listed in the table below are an accurate implementation of the original DCC++ commands. In addition some commands have been added.
 
-\begin{longtable}{@{}|l|p{0.2\linewidth}p{0.5\linewidth}|@{}}
+\begin{longtable}{@{}|p{0.2\linewidth}|p{0.2\linewidth}|p{0.4\linewidth}|@{}}
     \caption{Table Caption} \\
     \toprule
     \textbf{Command} & \textbf{Reply} & \textbf{Operation} \\
@@ -134,7 +134,7 @@ In addition to the LCS core library serial commands available to any node, the b
     \midrule
     \endhead
     \midrule
-    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \multicolumn{3}{r}{\textit{Continued on next page}} \\
     \midrule
     \endfoot
     \bottomrule
@@ -143,88 +143,50 @@ In addition to the LCS core library serial commands available to any node, the b
     \midrule
     \textbf{K} sessionId & & release a session \\
     \midrule
+    \textbf{t} sessionId cabId speed direction & & set cab speed / direction \\
     \midrule
+    \textbf{f} cabId funcId val & & set cab function value, function group DCC format \\
     \midrule
+    \textbf{v} sessionId funcId val & & set cab function value, individual \\
     \midrule
+    \textbf{R} cvId callbacknum callbacksub & & read CV byte on the programming track \\
     \midrule
+    \textbf{W} cvId val callbacknum callbacksub & & write CV byte on the programming track \\
     \midrule
-    Row2 & \textbf{Row2} & Text2 \\
-    
-       
-    
+    \textbf{B} cvId bitPos bitVal callbacknum callbacksub & & write CV bit on the programming track \\
+    \midrule
+    \textbf{b} cabId cvId bitPos bitVal & & write CV bit on the programming track \\
+    \midrule
+    \textbf{w} cabId cvId val & & write CV byte on the operations track \\
+    \midrule
+    \textbf{M} sessionId byte1 byte2 [byte3 ... byte10] & & send DCC packet on operations track \\
+    \midrule
+    \textbf{P} sessionId byte1 byte2 [byte3 ... byte10] & & send DCC packet on programming track \\
+    \midrule
+    \textbf{X} & & emergency stop all \\
+    \midrule
+    \textbf{0} & & turn operations and programming track power off \\
+    \midrule
+    \textbf{1} & & turn operations and programming track power on \\
+    \midrule
+    \textbf{2} & & turn operations power on \\
+    \midrule
+    \textbf{3} & & turn programming track power on \\
+    \midrule
+    \textbf{a} [opt] & & list current consumption (0 → MAIN [default], 1 → PROG, 2 → both) \\
+    \midrule
+    \textbf{C} [option] & & set options: 0 → service track in operations mode, 1 → service track in service mode, 2 → enable RailCom, 3 → disable RailCom \\
+    \midrule
+    \textbf{s} [level] & & list status (0 → summary [default], 1 → configuration, 2 → session map) \\
+    \midrule
+    \textbf{S} & & list base station configuration \\
+    \midrule
+    \textbf{L} & & list base station session table \\
+    \midrule
+    \textbf{D} & & enter diagnostics mode (need restart later) \\
+    \midrule
+    \textbf{?} & & list this help \\
 \end{longtable}
-
-
-
-
-
-
-
-\textbf{t} & sessionId cabId speed direction>| | set cab speed / direction|
-
-\textbf{f} & cabId funcId val | | set cab function value, function group DCC format |
-
-\textbf{v} & sessionId funcId val| | set cab function value, individual |
-
-|\textbf{R} & cvId callbacknum callbacksub | | read CV byte on the programming track |
-
-\textbf{W} & cvId val callbacknum callbacksub | | write CV byte on the programming track |
-
-\textbf{B} & cvId bitPos bitVal callbacknum callbacksub | | write CV bit on the programming track |
-
-\textbf{b} & cabId cvId bitPos bitVal | | write CV bit on the programming track |
-
-\textbf{w} & cabId cvId val | | write CV byte on the operations track |
-
-\textbf{M} & sessionId byte1 byte2 [ byte3 ... byte10 ] | | send DCC packet on operations track |
-
-\textbf{P} & sessionId byte1 byte2 [ byte3 ... byte10 ] | | send DCC packet on programming track |
-
-\textbf{X} & | | emergency stop all |
-
-\textbf{0} & | | turn operations and programming track power off |
-
-\textbf{1} & | | turn operations and programming track power on |
-
-\textbf{2} &| | turn operations power on |
-
-\textbf{3} & | | turn programming track power on |
-
-\textbf{a} & [ opt ] | | list current consumption, where opt=0 -> MAIN (default ), opt=1 -> PROG, opt=2 -> both |
-
-\textbf{C} & [ option ] | | set options for the track. 0 -> set service track in operations mode, 1 - > set service track in service mode, 2 -> enable RailCom, 3 -> disable RailCom |
-\textbf{s | [ level ] | | list status at detail level, default is summary. 0 -> summary, 1 -> configuration,  2 -> session map |
-
-\textbf{S} & | | list base station configuration |
-
-\textbf{L} & | | list base station session table |
-
-\textbf{D} & | | enter diagnostics mode - need to restart later! |
-
-\textbf{?} & | | list this help |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 \section{Summary}
 
@@ -233,7 +195,7 @@ The base station, no matter how it is implemented, is a key component in any dig
 The base station was also the first major LCS node with a considerable amount of hardware and software and thus went to several iterations and a considerable amount of learning curves. The very first version started with an Arduino Mega and Motor driver breakout board. The software was the original DCC++ software. The next versions actually were just a refactoring effort and work on the software. I learned a great deal on how all this works. The next base station version was a single board with all possible interfaces on an experimental PCB. It already featured CAN BUS, dual H-Bridges, and a controller, the Atmega 1284. This board served a long time for software development and further experiments. The next version of the base station was built with a main controller PCB described in the earlier chapters and a dual power unit, that also featured the RailCom detector. And again further software refactoring, refinement and learning. Finally, after a switch to the Raspberry Pi Pico controller, first on breadboard  then on PCBs, the base station shown in this chapter is the current version. The lessons learned proved to be very valuable for the overall concept development and hardware design. And in addition, there was a great deal of reading on chip specifications and, very importantly, the DCC standards. The appendix contains a list of material and web links. I highly recommend to read the electrical and DCC related standards published by the RailCommunity organization.
 
 
-// ??? \textbf{note} wrap it up ..
+// ??? wrap it up ..
 
 Just like any other LCS node, the base station firmware offers through node and port attributes status and control functions. However, there is only one on the layout.
 

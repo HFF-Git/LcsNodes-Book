@@ -3,7 +3,7 @@
 
 ??? rework the text ... extend it...
 
-Enough software talk ? Well not quite. The previous chapter presented the main controller boards and the extension concept. A main controller board features the controller itself, the CAN bus interface, the non-volatile memory and the extension connector with several IO pins of the controller assigned to it. During board initialization the controller hardware needs to be mapped to the actual board. Two processor versions of the main controller board were presented. It can be easily seen that different controller and board versions would place a great configuration and perhaps conditional compile burden on the LCS core library. To address this problem, there is a hardware layer library at the very bottom of the architecture that isolates the controller dependencies.
+Enough software talk ? Well not quite. A main controller board features the controller itself, the CAN bus interface, the non-volatile memory and the extension connector with several IO pins of the controller assigned to it. During board initialization the controller hardware needs to be mapped to the actual board. Two processor versions of the main controller board were presented. It can be easily seen that different controller and board versions would place a great configuration and perhaps conditional compile burden on the LCS core library. To address this problem, there is a hardware layer library at the very bottom of the architecture that isolates the controller dependencies.
 
 
 Concept: there are resource numbers which are the index into a descriptor array that describes a resource, such as a GPIO pin or UART.
@@ -235,18 +235,6 @@ The Raspberry PI Pico offers to implement the UART channel on one of the PIO sta
 \section{I2C}
 
 Controller offers a serial wire IO block. The I2C will need two pins for clock and data. There is one I2C port on the Atmega1284, and two hardware blocks on the Raspberry Pi Pico. The CDC layer offers an interface to read and write a byte.
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-   
-    Declaration part...
-    
-\end{lstlisting}
-\FloatBarrier
-
-\section{SPI}
-
-SPI is another communication channel. Currently it is not used by the LCS runtime, however it is still implemented and available to the firmware programmer is required. The CDC library will validate that the configured pins are actually available for the SPI IO block in the respective controller. By nature, the SPI communication exchanges a data item with between two entities. A master sends a byte and in return receives a byte from the slave. To avoid surprises such as filling a buffer sent with whatever is returned from the slave, the transfer routines available will NOT overwrite a buffer sent with whatever data returned. A future version may change this behavior and offer dedicated routines to do a write or read with the transfer semantics.
 
 \lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}

@@ -1,7 +1,6 @@
 %-------------------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------------------
 \chapter{Message Formats}
-\addcontentsline{toc}{chapter}{Message Formats}
 
 Now that we know the overall concepts, let us first have a look at the message data formats and protocols. This chapter presents an overview on the available messages formats and give a short introduction to what they do. 
 
@@ -168,7 +167,7 @@ The event management group contains the messages to configure the node event map
 
 \section{DCC Track Management}
 
-Model railroads run on tracks. Imagine that. While on a smaller layout, there is just the track, the track on a larger layout is typically divided into several sections, each controlled by a track node \textnormal{(centralized node or decentralized port)}. The system allows to report back the track sections status \textnormal{(in terms of occupied, free, and detecting the number of engines currently present)}. These messages allow the control of turnouts and monitoring of sections' status.
+Model railroads run on tracks. Imagine that. While on a smaller layout, there is just the track, the track on a larger layout is typically divided into several sections, each controlled by a track node \textnormal{(centralized node or decentralized port)}. The system allows to report back the track sections status \textnormal{(in terms of occupied, free, and detecting the number of engines currently present)}. This function is implemented via the get and set attribute messages. In addition, there are messages to turn on and off the entire tracks.
 
 \begin{table}[ht!]
     \centering 
@@ -330,7 +329,7 @@ The above messages can send a packet with up to six bytes. With the evolving DCC
             \hline
         \end{tabular}
     }
-    \caption{Raw DCC Packet Management}
+    \caption{Raw Extended DCC Packet Management}
 \end{table}
 
 \section{DCC errors and status}
@@ -383,4 +382,4 @@ A firmware update starts with the \texttt{(START-LOAD)} message. The transfer us
 
 \section{Summary}
 
-This chapter introduced the general message flow for the layout control bus functions and how they are used in the LCS protocols. The message format is built upon an 8-byte message format that is suitable for the industry standard CAN bus. Although there are many other standards and communication protocols, the CAN bus is a widely used and robust bus. Since all data is encoded in the message, there is no reason to select other communication media. But right now, it is CAN. The next chapter will now concentrate on the message protocols.
+This chapter introduced the general message formats for the layout control bus functions and how they are used in the LCS protocols. The message format is built upon an 8-byte message format that is suitable for the industry standard CAN bus. Although there are many other standards and communication protocols, the CAN bus is a widely used and robust bus. Since all data is encoded in the message, there is no reason to select another communication media. But right now, it is CAN. The next chapter will now concentrate on the message protocols.
