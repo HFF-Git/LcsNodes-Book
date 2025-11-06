@@ -77,7 +77,6 @@ The general management message group contains commands for dealing with the layo
             SYS-TIME & arg1 & arg2 & arg3 & arg4 & & & \\
             LCS-INFO & arg1 & arg2 & arg3 & arg4 & & & \\
             PING & npId-H & npId-L & & & & & \\
-            SYNC & npId-H & npId-L & arg & & & & \\
             ACK & npId-H & npId-L & & & & & \\
             ERR & npId-H & npId-L & code & arg1 & arg2 & & \\
             \hline
@@ -86,7 +85,7 @@ The general management message group contains commands for dealing with the layo
     \caption{General Management}
 \end{table}
 
-\section{Node and Port Management}
+\section{Node Id Setup}
 
 When a hardware module is powered on, the first task is to establish the node Id in order to broadcast and receive messages. The \texttt{(REQ-NID)} and \texttt{(REP-ID)} messages are the messages used to implement the protocol for establishing the nodeId. More on this in the chapter on message protocols. A virgin node has the hardware module-specific node type and a node Id of \texttt{NIL} also be set directly through the \texttt{(SET-NID)} command. This is typically done by a configuration tool.
 
@@ -109,6 +108,8 @@ When a hardware module is powered on, the first task is to establish the node Id
 
 All nodes monitor the message flow to detect a potential node collision. This could be for example the case when a node from one layout is installed in another layout. When a node detects a collision, it will broadcast the \texttt{(NCOL)} message and enter a halt state. Manual interaction is required. A node can be restarted with the \texttt{(RES-NODE)} command, given that it still reacts to messages on the bus. All ports on the node will also be initialized. In addition a specific port on a node can be initialized. The hardware module replies with an \texttt{(ACK)} message for a successful node Id and completes the node Id allocation process. As the messages hows, node and port ID are combined. LCS can accommodate up to 4095 nodes, each of which can host up to 15 ports. A Node ID 0 is the NIL node. Depending on the context, a port Id of zero refers all ports on the node or just the node itself.
 
+\section{Node and Port Attributes}
+
 The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} are available to obtain attribute data from the node or port. The \texttt{(NODE-SET)} allows to set attributes for a node or port for the targeted node. Items are numbers assigned to a data location or an activity. There are reserved items such as getting the number of ports, or setting an LED. In addition, the firmware programmer can also define items with node specific meaning. The firmware programmer defined items are accessible via the \texttt{(NODE-REQ)} and \texttt{(NODE-REP)} messages.
 
 \begin{table}[ht!]
@@ -128,7 +129,7 @@ The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} a
     \caption{Node and Port Management}
 \end{table}
 
-Nodes do not react to attribute and user defined request messages when in operations mode. To configure a node, the node needs to be put into configuration mode. The \texttt{(OPS)} and \texttt{(CFG)} commands are used to put a node into configuration mode or operation mode. Not all messages are supported in operations mode and vice versa. For example, to set a new nodeId, the node first needs to be put in configuration mode. During configuration mode, no operational messages are processed.
+Nodes do not react to configuration type messages when in operations mode. To configure a node, the node needs to be put into configuration mode. The \texttt{(OPS)} and \texttt{(CFG)} commands are used to put a node into configuration mode or operation mode. Not all messages are supported in operations mode and vice versa. For example, to set a new nodeId, the node first needs to be put in configuration mode. During configuration mode, no operational messages are processed.
 
 \begin{table}[ht!]
     \centering 
