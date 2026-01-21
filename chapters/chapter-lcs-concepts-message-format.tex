@@ -57,7 +57,7 @@ A message is a data packet of up to 8 bytes. The first byte represents the opera
 
 The message format is independent of the underlying transport method. If the bus technology were replaced, the payload would still be the same. For example, an Ethernet gateway could send those messages via the UDP protocol. The messages often contain 16-bit values. They are stored in two bytes, the most significant byte first and labeled ``xxx-H'' in the message descriptions to come. The message format shown in the tables of this chapter just presents the opCode mnemonic. The actual value can be found in the core library include file.
 
-The byte fields names in an LCS message are explained in greater detail when we discuss the runtime library. For this chapter, the term \texttt{npId-x} will refer to node/port identifier. A node/port identifier is a 16-bit word which consists of the 12-bit nodeId and the 4-bit portId. The node/portId with a portId of zero will refer to the node itself. The term \texttt{sId} refers to a locomotive session. The remaining message field names, such as \texttt{UID} or \texttt{spDir} or \texttt{argN}are fairly self-explaining.
+The byte fields names in an LCS message are explained in greater detail when we discuss the runtime library. For this chapter, the term \texttt{npId-x} will refer to node/port/channel identifier. A node/port/channel identifier is a 16-bit word which consists of the 8-bit nodeId, the 4-bit portId and the 4-bit channel Id. The npId with a portId and channelId of zero will refer to the node itself. The term \texttt{sId} refers to a locomotive session. The remaining message field names, such as \texttt{UID} or \texttt{spDir} or \texttt{argN}are fairly self-explaining.
 
 \section{General Management}
 
@@ -120,7 +120,7 @@ The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} a
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
             NODE-GET & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
-            NODE-PUT & npId-H & npId-L & item & val1-H & val1-L & val2-H & val2-L \\
+            NODE-SET & npId-H & npId-L & item & val1-H & val1-L & val2-H & val2-L \\
             NODE-REQ & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
             NODE-REP & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
             \hline
