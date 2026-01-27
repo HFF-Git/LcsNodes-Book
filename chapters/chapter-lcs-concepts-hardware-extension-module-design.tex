@@ -23,8 +23,8 @@ As with any LCS library part presented, the key goal is to unify and simplify ac
         \node at (3.5, 4.3) {Track Bus};
         \node at (3.5, 1.7) {Extension Bus};
 
-        \draw[line width=1mm, gray!40, ->] (5, 4.3) -- (11,4.3);
-        \draw[line width=1mm, gray!40, ->] (5,1.7) -- (11,1.7);
+        \draw[line width=1mm, gray!40, ->] (5, 3.3) -- (11, 3.3);
+        \draw[line width=1mm, gray!40, ->] (5, 1.7) -- (11, 1.7);
     
     \end{tikzpicture}
     \caption{Connecting boards}
@@ -57,7 +57,6 @@ For a new board design, the development process is therefore to define the NVM d
 
 An extension board design assumes that the key ICs on the board are I2C addressable chips. As already mentioned, I2C ICs have a fixed I2C address part and a some address bits that can be set by hardware. Most of the I2C chips used in our designs have a four bit fixed address portion and a configurable portion to be supplied via address pins of the chip. We will use the configurable portion to identify the board, from A2 to A1 and reserve the last bit A0 for selecting two chips of the same kind on an extension board.
 
-
 \begin{longtable}{@{}|l|l|l|l|l|l|l|l|p{0.3\linewidth}|@{}}
     \caption{I2C Chip} \\
     \toprule
@@ -87,7 +86,7 @@ An extension board design assumes that the key ICs on the board are I2C addressa
     \textbf{24AA256} & 1 & 0 & 1 & 0 & B1 & B0 & x & Non volatile memory \\
     \midrule
     \textbf{24AA512} & 1 & 0 & 1 & 0 & B1 & B0 & x & Non volatile memory \\
-\end{longtable}%
+\end{longtable}
 
 The PCA 9955 and 9685 have a high number of address selection inputs. This allows to connect more than typically 8 chips on one I2C bus. We will not make use of this capability for now and assign a fixed 4-bit chip I2C address portion.
 
@@ -153,4 +152,27 @@ The structure on each extension board is from the extension library perspective 
 \section{Summary}
 
 LCS nodes consist of a main controller board and extension boards. That concept can be found throughout all what is presented in this book. This chapter gave an insight how many different extension boards are connected and managed. We are now read to look at actual extension board implementations in the chapters to come.
+
+
+\chapter{Smart Extension}
+
+??? describe a way to build extensions using a little micro controller. The Attiny family. 
+
+??? it fits nicely into the concept but is much more powerful...
+
+\section{Concepts}
+
+\section{The Attiny Microcontroller}
+
+??? what is the Attiny, what will it do for us ?
+
+\section{Extension Memory layout}
+
+??? what is the common register map seen by I2C reads and writes ?
+
+
+\section{Summary}
+
+??? a newer concept, started with "basic" extension, but this is more powerful.
+
 

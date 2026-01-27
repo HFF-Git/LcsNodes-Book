@@ -6,11 +6,67 @@ The schematics and boards shown were all developed using the EasyED software. Ea
 
 EasyEDA allows you to create symbols that represent components and can be placed in a schematic. To each symbol there should be a footprint that is used to put the component on to the PCB. The connection between the two is a list of assignments that associate a \textbf{pin} on the symbol with a \textbf{pad} on the footprint. For LcsNodes there is a list of symbols and footprints to ensure that the PCBs do have all their connectors at the exact place, so that they fit together.
 
-\subsection{Symbols}
+\section{Symbols}
 
 To ease the development of LCS boards, the entire board and its connectors are available as a symbol. Depending on the category, the symbol features the connection end points for the connectors found on the board. This symbol is associated with the corresponding footprint described in the next section. Note that the footprint needs to match the symbol. That is the number, position and meaning of the connectors found on the board map, only length of the PCB board varies.
 
-\subsection{Main Controller Board Footprints}
+\begin{longtable}{@{}|l|l|p{0.6\linewidth}|@{}}
+    %\caption{Symbols}
+    \toprule
+    \textbf{Name} & \textbf{Purpose} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Name} & \textbf{Purpose} \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    LCS-SYM-MAIN-B.02.10 & Main controller board connector symbol. \\
+    \midrule
+    LCS-SYM-EXT-B.02.10 & Extension board connector symbol. \\
+    \midrule
+\end{longtable}
+
+
+\section{Main Controller Board Footprints}
+
+?? explain the naming logic...
+
+\begin{longtable}{@{}|l|l|p{0.6\linewidth}|@{}}
+    %\caption{Symbols}
+    \toprule
+    \textbf{Name} & \textbf{Purpose} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Name} & \textbf{Purpose} \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    LCS-FP-MAIN-10x12-B.02.10 & Main controller board footprint, 10x12cm. \\
+    \midrule
+    LCS-FP-MAIN-10x16-B.02.10 & Main controller board footprint, 10x16cm. \\
+    \midrule
+    \midrule
+    LCS-FP-MAIN-10x4-B.02.10 & Extension board footprint, 10x4cm. \\
+    \midrule
+    LCS-FP-MAIN-10x12-B.02.10 & Extension board footprint, 10x12cm. \\
+    \midrule
+    LCS-FP-MAIN-10x16-B.02.10 & Extension board footprint, 10x16cm. \\
+    \midrule
+\end{longtable}
+
+
 
 This section contains all the footprints available so far. There are three main categories. The first is anything that represents an LCS Controller portion. There are the connections to the LCS bus and the power input connector. On the left side are two connectors. The upper connector is reserved for up to four tack pow lines. Below is the LCS extension board connector. The basic LCS Main Controller Board for example is the 16cm x 10cm board shown below.
 

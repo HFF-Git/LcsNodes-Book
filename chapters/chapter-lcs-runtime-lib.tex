@@ -150,7 +150,9 @@ The term "item" came up numerous times by now. Nodes and ports features to acces
             \hline
             0 & & NIL Item \\
             \hline
-            1 & 127 & Reserved items for node and ports with defined names. For the Get and SET access the item refers to an attribute variable. For the REQ access it refers to a user defined function to be invoked via a callback. \\
+            1 & 63 & Reserved items for node and ports with defined names. For the Get and SET access the item refers to an attribute variable. For the REQ access it refers to a user defined function to be invoked via a callback. \\
+            \hline
+            64 & 127 & Reserved items for node and ports functions.The REQ access refers to a user defined function to be invoked via a callback. \\
             \hline
             128 & 255 & Node or Port Attributes, accessed via GET and PUT calls. \\
             \hline
@@ -160,7 +162,9 @@ The term "item" came up numerous times by now. Nodes and ports features to acces
 \end{table}
 \FloatBarrier
 
-The item range numbers  1 to 127 are reserved by the core library itself for node and port items that are standardized across all nodes. 
+The item range numbers  1 to 63 are reserved by the core library itself for node and port items that are standardized across all nodes. There are attributes, typically taken from the node and port map data structures as well as functions that invoke a LCS library function.
+
+The item 64 to 127 represent the user defined functions. Only a REQ call uses these items. A callback function is invoked.
 
 The item range 128 to 255 describes the set of node or port attributes and user defined functions. A read or write from these attributes using the GET and SET calls will always refer to the MEM storage. There is a synchronization control item to either load again from non-volatile memory or to write the memory value to non-volatile storage. 
 

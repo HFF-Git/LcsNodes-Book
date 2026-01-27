@@ -74,6 +74,10 @@ A general word to the building blocks. They serve as examples of how the individ
 
 Each node in the layout control system is a node and hence there is a controller for running the node firmware. Without a question, there will be many different nodes and as time goes by perhaps even new controller families. However, each node would need at least some form of power supply, the CAN bus interface and depending on the storage demands and controller family, an external NVM. On top there is the node specific hardware. One approach is to design a board for each dedicated purpose. This board would include all the common portion for a LCS node and the hardware module specific portion. Another approach is to design a node controller board with extension boards that can be connected to it. In the remainder of this chapter, we will describe the main controller and extension concept. However, it is also perfectly all-right to design a hardware component with all the components integrated on one board. For a complex node such as the base station, this is a very reasonable solution. The building blocks shown in this chapter thus also form the basis for a more monolithic hardware module design. But first, let's look at the physical dimension of our boards.
 
+
+??? new picture...
+
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[page=1, scale=0.7]{./Figures/LCS-FP-MAIN-CTRL-10X16.pdf}
@@ -88,7 +92,7 @@ All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. The fi
 Every hardware module needs the LCS bus interface to connect to the bus. Some modules may also draw power from this bus. The modules use an RJ45 connector for connecting to the bus. The bus signals can be grouped in several categories. The CAN bus differential lines represent the CAN bus. The VS line is intended for hardware modules with very little power consumptions so that they can directly be powered by the bus. The DCC signal lines are an exact copy of the DCC signal that would go to a track sent out by the DCC signal generating base station. The signal is intended to be routed from the base station to booster nodes, but also to hardware modules that analyze the DCC signal for some action. Finally there is the STOP signal line. This is a wired OR line that allows a simple button along the layout with access to this line to issue a STOP signal. The base station or any nodes interested in the signal can monitor this line. There are the following signal lines.
 
 \begin{longtable}{@{}|l|l|p{0.6\linewidth}|@{}}
-    %\caption{Bus Connector Pins}
+    %\caption{LCS Bus Connector Pins}
     \toprule
     \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
     \midrule
@@ -119,6 +123,42 @@ Every hardware module needs the LCS bus interface to connect to the bus. Some mo
     \midrule
     8 & CAN-H &  Line H of the differential CAN bus signal. \\
 \end{longtable}
+
+\section{I2C Bus connector}
+
+The external I2C line, called the I2C bus, is exposed to the extension boards as well as a connector next to the LCS bus. 
+
+\begin{longtable}{@{}|l|l|p{0.6\linewidth}|@{}}
+    %\caption{I2C Bus Connector Pins}
+    \toprule
+    \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Pin} & \textbf{Name} & \textbf{Purpose} \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    1 & GND & common ground. \\
+    \midrule
+    2 & SCL & The I2C SCL line. \\
+    \midrule
+    3 & GND & common ground. \\
+    \midrule
+    4 & SDA & The I2C SDA line. \\
+    \midrule
+    5 & VCC & The power line. 5V. \\
+    \midrule
+    6 & VCC & The power line. 5V. \\
+\end{longtable}
+
+Lines are carefully chosen top allow a 4-wire and a 6-wire cable.
+
 
 \section{LCS Nodes Extension Board Connector}
 
