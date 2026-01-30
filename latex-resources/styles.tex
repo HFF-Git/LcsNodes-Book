@@ -1,14 +1,20 @@
 %--------------------------------------------------------------------------------
-%
-%
+% To make our life easier, here are styles defined for the book.
 %
 %--------------------------------------------------------------------------------
 
 %--------------------------------------------------------------------------------
-% Page layout settings
+% General Page layout settings.
 %
 %--------------------------------------------------------------------------------
-\geometry{a4paper, margin=1in, top=1in, bottom=1in, left=1in, right=1in, headheight=1in}
+\geometry{	a4paper, 
+			margin=1in, 
+			top=1in, 
+			bottom=1in, 
+			left=1in, 
+			right=1in, 
+			headheight=1in }
+			
 \addtolength{\parskip}{1.0ex}
 
 \pagestyle{fancy}         
@@ -59,7 +65,7 @@
 \setlength{\cftsecindent}{0em} 
 
 %--------------------------------------------------------------------------------
-% Templates for Notes.
+% Notes format.
 %
 %--------------------------------------------------------------------------------
 \newtcolorbox{fancyNote}{
@@ -74,13 +80,21 @@
   title=\textbf{Note}
 }
 
-\newcommand{\simpleNote}[1]{%
+\newcommand{\simpleNote}[1]{
 %  \noindent
-  \textbf{Note:}\hspace{0.5em}%
+  \textbf{Note:}\hspace{0.5em}
   \hangindent=3em
   \hangafter=0
   #1\par
 }
+
+%--------------------------------------------------------------------------------
+%
+%
+%--------------------------------------------------------------------------------
+\newenvironment{smallGapItemize}{
+  \begin{itemize}[itemsep=4pt, parsep=0pt, topsep=2pt, partopsep=0pt]
+}{\end{itemize}}
 
 %--------------------------------------------------------------------------------
 % Listing style for showing code snippets. This style is used for showing 
@@ -89,24 +103,32 @@
 %--------------------------------------------------------------------------------
 \lstdefinestyle{codesnippetstyle}{
     backgroundcolor=\color{gray!5},
-    basicstyle={\ttfamily\small}, % code font size
+    basicstyle={\ttfamily\small}, % Try \relsize{-2} if this is still too large
     keywordstyle=\color{magenta},
     identifierstyle={\ttfamily\color{gray}},
+    numberstyle={\ttfamily\footnotesize\color{gray}},
     commentstyle={\ttfamily\color{teal}},
     showstringspaces=false,
     numbers=left,
-    numberstyle={\ttfamily\tiny\color{gray}}, % smaller numbers only
-    numbersep=8pt, % distance between numbers and code
     frame=single,
-    framexleftmargin=0pt,
-    xleftmargin=0pt,
     texcl=false,
     alsoletter={\#},
     morekeywords={\#include, \#define, \#ifdef, \#endif, \#pragma},
-    linewidth=\textwidth,
+    linewidth=0.9\textwidth,
+    xleftmargin=0.1\textwidth,
     breaklines=true,
     breakatwhitespace=false,
-    columns=fullflexible
+    columns=fullflexible,
+    keepspaces=true,
+    tabsize=4
+}
+
+\lstdefinestyle{codesnippet-nobox}{
+    style=codesnippetstyle,   % inherit all other settings
+    frame=none,               % remove the frame
+    backgroundcolor=,         % remove background
+    xleftmargin=0pt,          % optional: remove left margin offset
+    linewidth=\textwidth      % optional: use full width
 }
 
 %--------------------------------------------------------------------------------
@@ -148,3 +170,160 @@
     draw=black,
     line width=1mm
 ]
+
+%--------------------------------------------------------------------------------
+% Instruction format.
+%
+% We have a rectangle field of 16cm width. Positions start left with 0 and end
+% at 16 on the right. The first parameter to the macro is the position of the 
+% separators. The second parameter is a list of labels to put into the fields 
+% created by the separators. A bit position is 0.5 units.
+%
+%--------------------------------------------------------------------------------
+\newcommand{\drawInstrFormat}[2]{%
+  	
+  	\begin{tikzpicture}[scale=0.7, transform shape]
+    	% Outer box
+    	\node[	tsRectangle, 
+    			minimum width=16cm, 
+    			minimum height=1cm, 
+    			fill=white!50] at (8,1) {};
+
+    	% Initialize
+    	\pgfmathsetmacro{\last}{0}
+
+   	 	% First split labels into individual macros
+    	\foreach [count=\i] \l in {#2} {%
+      		\expandafter\xdef\csname label@\i\endcsname{\l}%
+    	}
+
+    	% Iterate over positions
+    	\foreach \p [count=\i] in {#1} {%
+      		
+      		\ifnum\i>1
+        
+        		% Width of field
+        		\pgfmathsetmacro{\width}{\p-\last}
+        
+        		% Center of field
+        		\pgfmathsetmacro{\center}{(\p+\last)/2}
+        
+        		% Convert width to integer bit size (0.5 cm = 1 bit)
+        		\pgfmathtruncatemacro{\bits}{round(\width*2)}
+
+        		% Vertical separator line
+        		\draw[-] (\p,0.5) -- (\p,1.5);
+
+        		% Place width number
+        		\node at (\center,0.25) {\bits};
+
+        		% Place corresponding label
+        		\node at (\center,1) {\csname label@\the\numexpr\i-1\relax\endcsname};
+      
+      		\fi
+      	\xdef\last{\p}
+    }%
+    
+  	\end{tikzpicture}%
+}
+
+%--------------------------------------------------------------------------------
+% Instruction format for a 64-bit word. It still has 16 unit width and the same 
+% display logic as the 32-bit counterpart. A bit position is 0.25 units.
+%
+%--------------------------------------------------------------------------------
+\newcommand{\drawInstrFormatSixtyFour}[2]{%
+  	\begin{tikzpicture}[scale=0.7, transform shape]
+    	% Outer box
+    	\node[tsRectangle, 
+    		minimum width=16cm, 
+    		minimum height=1cm, 
+    		fill=white!50] at (8,1) {};
+
+    	% Initialize
+    	\pgfmathsetmacro{\last}{0}
+
+    	% Fully expand label list before the foreach
+		\edef\expandedLabels{#2}%
+		\foreach [count=\i] \l in \expandedLabels {%
+  			\expandafter\xdef\csname label@\i\endcsname{\l}%
+		}
+
+    	% Iterate over positions
+    	\foreach \p [count=\i] in {#1} {%
+      		\ifnum\i>1
+        		\pgfmathsetmacro{\width}{\p-\last}
+        		\pgfmathsetmacro{\center}{(\p+\last)/2}
+
+        		% Adjust bit calculation for 64-bit word (1 unit = 4 bits)
+        		\pgfmathtruncatemacro{\bits}{round(\width*4)}
+
+        		% Draw vertical separator
+        		\draw[-] (\p,0.5) -- (\p,1.5);
+
+        		% Place width number and label
+        		\node at (\center,0.25) {\bits};
+        		\node at (\center,1) {\csname label@\the\numexpr\i-1\relax\endcsname};
+      		\fi
+      		\xdef\last{\p}
+    	}%
+  	\end{tikzpicture}%
+}
+
+%--------------------------------------------------------------------------------
+% Page description for instructions and command layout style.
+%
+%--------------------------------------------------------------------------------
+\newenvironment{iPageDescEntry}[1]{%
+  \par\vspace{0pt}% <--- forces vertical mode
+  \noindent
+  \begin{minipage}[t]{0.22\textwidth}
+    \textbf{\large\textcolor{gray}{#1}}%
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.74\textwidth}
+    \setlength{\parskip}{1em}  
+    \setlength{\parindent}{0pt} 
+}{\end{minipage}\par\vspace{0.75em}}
+
+
+%--------------------------------------------------------------------------------
+% Page description layout style for instruction operation description.
+%
+%--------------------------------------------------------------------------------
+\newenvironment{iPageDescOpEntry}[1]{%
+ \par\vspace{0pt}% <--- forces vertical mode
+	\noindent
+  	\begin{minipage}[t]{0.22\textwidth}
+    	\textbf{\large\textcolor{gray}{#1}}%
+  	\end{minipage}%
+  	\hfill
+  	\begin{minipage}[t]{0.74\textwidth}
+    	\setlength{\parskip}{1em}  
+    	\setlength{\parindent}{3pt} 
+    	\footnotesize
+    	\begin{minipage}[t]{0.97\textwidth}%
+	}{%
+	
+	\end{minipage}%
+ 	\end{minipage}\par\vspace{0.75em}%
+}
+
+%--------------------------------------------------------------------------------
+% Instruction description pages use these layout definitions.
+%
+%--------------------------------------------------------------------------------
+\lstdefinestyle{iPageOpStyle}{
+    basicstyle=\ttfamily\footnotesize,
+    showstringspaces=false,
+    keepspaces=true,
+    breaklines=true,
+    columns=fullflexible,
+    frame=none,
+    aboveskip=0.6\baselineskip, 
+    belowskip=0.6\baselineskip,
+    xleftmargin=0.025pt,
+    xrightmargin=0pt,
+    linewidth=\dimexpr0.95\textwidth\relax,
+    floatplacement=H,                      
+}
