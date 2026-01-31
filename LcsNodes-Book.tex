@@ -1,10 +1,21 @@
+%!TEX program = lualatex
 \tracingpages=1
 %--------------------------------------------------------------------------------
 %
-%
-%
+% Central layout switch: control chapter start behavior
 %--------------------------------------------------------------------------------
-\documentclass[a4paper, 11pt]{book}
+\newif\ifOpenRight
+%\OpenRighttrue   % Chapters start on right-hand pages (default book behavior)
+\OpenRightfalse % Uncomment to allow chapters to start on any page (no empty pages)
+
+%--------------------------------------------------------------------------------
+% Load document class based on the switch
+%--------------------------------------------------------------------------------
+\ifOpenRight
+  \documentclass[a4paper, 12pt, openright]{book} 
+\else
+  \documentclass[a4paper, 12pt, openany]{book} 
+\fi 
 
 %--------------------------------------------------------------------------------
 % Load packages and styles
@@ -39,6 +50,7 @@
 	%----------------------------------------------------------------------------
 	\setlength{\emergencystretch}{3em}  % Allow line breaks in long lines
 	\raggedbottom
+	\linespread{1.1}
 
 	%----------------------------------------------------------------------------
 	% Front matter (table of contents, etc.)
