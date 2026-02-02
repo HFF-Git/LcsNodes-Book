@@ -22,7 +22,7 @@ But how about a cab handheld that features instead of all the functions to contr
                 minimum height=14cm,
                 text width=3cm,
                 text centered,
-                fill=white!50] (display) at (4.5,7);
+                fill=white!50] (display) at (4.5,7) { };
 
        	\node[ tsRoundedRectangle, 
                 minimum width=3.5cm,
@@ -171,12 +171,12 @@ The screen itself has also a common structure for all data displayed.
                 minimum height=4cm,
                 text width=4cm,
                 text centered,
-                fill=none] (screen) at (4,2);
+                fill=none] (screen) at (4,2) { };
                
-		\node at (4,3.5) {data field 1};
-		\node at (4,0.5) {data field 2};
-		\node at (4,2.5) {screen line 1};
-		\node at (4,1.5) {screen line 2};
+		\node at (4,3.5) {data field 1} { };
+		\node at (4,0.5) {data field 2} { };
+		\node at (4,2.5) {screen line 1} { };
+		\node at (4,1.5) {screen line 2} { };
        
     \end{tikzpicture}
 \end{center}

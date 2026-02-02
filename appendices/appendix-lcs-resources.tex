@@ -36,6 +36,52 @@ Schematics and Boards so far
 
 ... to fill in ...
 
+\section{Sizes and Scales}
+
+??? put here until I know what to do with it ...
+
+\newcommand{\scale}{22.5}
+
+\sisetup{
+  round-mode = places,
+  round-precision = 2,
+  output-decimal-marker = {,},
+}
+
+\begin{longtable}{@{} l l S @{}} 
+\caption{Conversion to millimeter (Scale 1:\scale)} \\
+\toprule
+\textbf{Value} & \textbf{Unit} & {\textbf{Model [mm]}} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Value} & \textbf{Unit} & {\textbf{Model [mm]}} \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{3}{r}{\textit{Continued on next page}} \\
+\midrule
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+4  & inches & \num{\fpeval{4*25.4/\scale}} \\
+6  & inches & \num{\fpeval{6*25.4/\scale}} \\
+8  & inches & \num{\fpeval{8*25.4/\scale}} \\
+12 & inches & \num{\fpeval{12*25.4/\scale}} \\
+\midrule
+4  & feet & \num{\fpeval{4*12*25.4/\scale}} \\
+6  & feet & \num{\fpeval{6*12*25.4/\scale}} \\
+8  & feet & \num{\fpeval{8*12*25.4/\scale}} \\
+10 & feet & \num{\fpeval{10*12*25.4/\scale}} \\
+12 & feet & \num{\fpeval{12*12*25.4/\scale}} \\
+
+\end{longtable}
+
+
 \section{About this Book}
 
 how to make it 
