@@ -18,6 +18,11 @@ The following schematic depicts the block diagram of our main controller. All of
 
 The first part of the schematics shows the PICO processor, LEDS, Button, CAN bus driver and NVM storage as well as the power supply with the optional power fail capability.
 
+??? mention also the relation to brown out ...
+
+Power-fail detection and brown-out detection serve complementary roles.
+The power-fail detector triggers early, while the supply voltage is still within specification, allowing firmware to run at full speed and perform an orderly shutdown or state backup using stored energy from a hold-up capacitor. Brown-out detection acts as a safety backstop: if the voltage continues to fall, it forces the CPU into reset to prevent undefined execution and to protect non-volatile memory, ensuring that EEPROM or flash accesses are not performed below their safe operating voltage. Together, they enable controlled shutdown while guaranteeing fail-safe behavior during power loss.
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[page=2, width=0.8\textwidth]{./Schematics/Schematic_LcsNodes-Main-Controller-Board.pdf}
