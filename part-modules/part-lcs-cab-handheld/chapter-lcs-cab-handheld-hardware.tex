@@ -189,39 +189,39 @@ Leveraging the cab handheld hardware from the previous chapter, the diesel cab h
 
 \subsection{Requirements}
 
-\begin{itemize}
+\begin{smallGapItemize}
 \item Very similar to the previous cab handheld 
 \item instead of speed knob, it features throttle and brake.
 \item all else is about the same...
-\end{itemize}
+\end{smallGapItemize}
 
 \subsection{Module hardware}
 
-\begin{itemize}
+\begin{smallGapItemize}
 \item Leverage the generic cab handheld
 \item Controller with CanBus interface
 \item power supply from the LCS bus lines
 \item small display
 \item rotary encoder, buttons, etc.
-\end{itemize}
+\end{smallGapItemize}
 
 \subsection{Module firmware}
 
-\begin{itemize}
+\begin{smallGapItemize}
 \item UI elements are key again, leverage many screen built before
 \item new part is how throttle and brake interplay to run the engine
-\end{itemize}
+\end{smallGapItemize}
 
 
 \section{Summary}
 
-\begin{itemize}
+\begin{smallGapItemize}
 \item now we have a generic cab handheld and a diesel cab handheld.
 \item one could come up with a steam or electric engine handheld. 
 \item the firmware already goes a long way to quickly realize further cab handhelds.
 \item would we ever build a handheld with other non-engine functionality... who knows... not right now.
 \item would we build a version that can be integrated into a |\"Stellwerk\" table ? perhaps... just a main controller and an cab UI Elements extension
-\end{itemize}
+\end{smallGapItemize}
 
 As always, there are many options to build a cab handheld. Although this version connects via cable to the LCS Bus, a wireless version is not hard to build. Having more buttons or fewer buttons, having a set of numeric keypad style input, are all quite valid options. It is a matter of what is preferred. Currently, the cab handheld will not offer any controls for accessories, such as turnouts. This is a subject better left to the layout control panels and controlling software. Our cab handheld favors the approach to model more of a locomotive control stand rather than a TV remote style handheld. Since this is a matter of taste and preference, go build your own.
 

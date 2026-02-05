@@ -1,8 +1,10 @@
 %!TEX program = lualatex
 \tracingpages=1
 %--------------------------------------------------------------------------------
-%
-% Central layout switch: control chapter start behavior
+% Central layout switch to control chapter start behavior.
+%  	OpenRighttrue: Chapters start on right-hand pages.
+% 	OpenRightfalse: Chapters start on any page.
+%%
 %--------------------------------------------------------------------------------
 \newif\ifOpenRight
 %\OpenRighttrue   % Chapters start on right-hand pages (default book behavior)
@@ -80,110 +82,24 @@
 	\pagestyle{fancy}
 	
 	%----------------------------------------------------------------------------
-	\include{chapters/chapter-lcs-introduction}
-	 
+	% Book parts
 	%----------------------------------------------------------------------------
-    \part{LCS Concepts}    
-   
-    \include{chapters/chapter-lcs-concepts-general}
-    \include{chapters/chapter-lcs-concepts-message-format} 
-    \include{chapters/chapter-lcs-concepts-message-protocols} 
-    \include{chapters/chapter-lcs-concepts-dcc-subsystem}
-    \include{chapters/chapter-lcs-concepts-analog-subsystem}
-    \include{chapters/chapter-lcs-concepts-hardware-modules}
-    \include{chapters/chapter-lcs-concepts-sensors-and-actors}
-    \include{chapters/chapter-lcs-concepts-summary}
-
-    %----------------------------------------------------------------------------
-    \part{LCS Core Layer} 
+	\include{part-introduction/chapter-lcs-introduction}
+	\include{part-concepts/part-concepts}
+	\include{part-core-layer/part-core-layer}
+	\include{part-hardware/part-hardware}
+	\include{part-modules/part-modules}
+	\include{part-extensions/part-extensions}
+	\include{part-utilities/part-utilities}
+	\include{part-configuration/part-configuration}
+	\include{part-reference/part-reference}
+	\include{part-appendix/part-appendix}
+	\include{part-listings/part-listings}
     
-    \include{chapters/chapter-lcs-runtime-lib}
-    \include{chapters/chapter-lcs-runtime-lib-command-interface}
-    \include{chapters/chapter-lcs-runtime-lib-example}
-    \include{chapters/chapter-lcs-controller-dependent-code} 
-    \include{chapters/chapter-lcs-ui-elements}
-    \include{chapters/chapter-lcs-concepts-firmware-design}
-    
-    %----------------------------------------------------------------------------
-    \part{LCS Hardware}
-    
-    \include{chapters/chapter-lcs-concepts-hardware-main-module-design}
-    \include{chapters/chapter-lcs-main-controller-hardware-pico}
-	\include{chapters/chapter-lcs-power-module-design}
-    \include{chapters/chapter-lcs-railcom-signal-detector}
-    \include{chapters/chapter-lcs-hardware-part-summary}
-   
-    %----------------------------------------------------------------------------
-	\part{LCS Modules}
-
-	\include{chapters/chapter-lcs-base-station-introduction}
- 	\include{chapters/chapter-lcs-base-station-hardware}
- 	\include{chapters/chapter-lcs-base-station-firmware}
- 	
- 	\include{chapters/chapter-lcs-cab-handheld-introduction}
- 	\include{chapters/chapter-lcs-cab-handheld-hardware}
- 	\include{chapters/chapter-lcs-cab-handheld-firmware}
-
-	\include{chapters/chapter-lcs-block-controller-introduction}
-	\include{chapters/chapter-lcs-concepts-signaling-block-control}
- 	\include{chapters/chapter-lcs-block-controller-hardware}
- 	\include{chapters/chapter-lcs-block-controller-firmware}
- 	
- 	\include{chapters/chapter-lcs-gateway-module}
- 	
- 
-  	%----------------------------------------------------------------------------
- 	\part{LCS Extensions}
- 	
- 	\include{chapters/chapter-lcs-concepts-hardware-extension-module-design}
-    \include{chapters/chapter-lcs-extensions-track-occupancy-detector}
-   	\include{chapters/chapter-lcs-extension-32-servo-16-dio}
-    \include{chapters/chapter-lcs-extension-cab-control}
-    
-    % \include{chapters/LCS-Extensions/LCS-Extension-Servo}
-    % \include{chapters/LCS-Extensions/LCS-Extension-GPIO}
-    % \include{chapters/LCS-Extensions/LCS-Extension-Signal}
-    % \include{chapters/LCS-Extensions/LCS-Extension-Turnout}
-    % \include{chapters/LCS-Extensions/LCS-Extension-Relay}
-    % \include{chapters/LCS-Extensions/LCS-Extension-Combo-Board}
-    
-    %----------------------------------------------------------------------------
- 	\part{LCS Utilities}
- 	
- 	\include{chapters/chapter-lcs-dcc-monitoring}
-   	\include{chapters/chapter-lcs-layout-connector-panel}
-    \include{chapters/chapter-lcs-utility-boards}
-	\include{chapters/chapter-lcs-firmware-update}
-    
-    %----------------------------------------------------------------------------
-    \part{LCS Configuration}
-    
-    \include{chapters/chapter-lcs-layout-system-configuration}
-    
-    
-    %----------------------------------------------------------------------------
-    \part{Appendix}   
-    
-    \appendix 
-
-   	\include{appendices/appendix-lcs-resources}
-    \include{appendices/appendix-nodes-and-easyeda}
-    \include{appendices/appendix-inspiring-work-and-links} 
-    \include{appendices/tests}
-
-    
-    % \include{appendices/LCS-Item-Reference}
-    % \include{appendices/LCS-Command-Reference}
-    % \include{appendices/DCC-PP-Command-Reference}
-    % \include{appendices/LCS-Runtime-Lib-Reference}
-    % \include{appendices/LCS-CDC-Lib-Reference}
-    % \include{appendices/Generic-Power-Supply}
-    % \include{appendices/appendix-lcs-guidance-computer}
-    
-    % \iftoggle{includeListings}{ \include{appendices/listings} }
-        
+    %----------------------------------------------------------------------------    
+    % Back matter (table of contents, etc.)
+	%----------------------------------------------------------------------------
     \backmatter    
-    
     \printindex         
 
 \end{document}

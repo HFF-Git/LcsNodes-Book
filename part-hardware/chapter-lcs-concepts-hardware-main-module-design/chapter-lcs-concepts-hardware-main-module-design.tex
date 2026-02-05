@@ -3,11 +3,11 @@
 
 So far we covered the general concepts, messages, protocols as well as the LCS core library and a glimpse how all of this might be used. Let's take a break from all that concepts and mostly software talk. For the LCS core layers and the node firmware to run, hardware modules need to be built. Welcome to the next big part of this book. Here, we will talk about the LCS hardware modules. A hardware module conceptually consist of three key parts.
 
-\begin{itemize}
+\begin{smallGapItemize}
 \item communication
 \item controller
 \item function block(s)
-\end{itemize}
+\end{smallGapItemize}
 
 At the center of a hardware module is the \textbf{controller}. There is a great variety of controllers and development environments available. When selecting a controller for LCS, we will talk in a minute which one was picked, its is important that there is enough CPU power and equally important a powerful development environment. A console command line interface and interfaces to load the software is also very handy for configuring, monitoring and debugging. The \textbf{communication} part implements at a minimum the LCS message bus interface for the messages to transmit between the modules. Finally, the \textbf{function block}s implement the hardware module specific capabilities.
 
@@ -80,7 +80,7 @@ Each node in the layout control system is a node and hence there is a controller
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[page=1, scale=0.7]{./Figures/LCS-FP-MAIN-CTRL-10X16.pdf}
+    \includegraphics[page=1, scale=0.7]{./part-hardware/chapter-lcs-concepts-hardware-main-module-design/LCS-FP-MAIN-CTRL-Sketch.pdf}
     \caption{Board: LCS-FP-MAIN-CTRL-10X16}
     %\label{fig:your-label}
 \end{figure}
@@ -164,14 +164,16 @@ Lines are carefully chosen top allow a 4-wire and a 6-wire cable.
 
 For interchangeability of extensions, there is a standardized \textbf{extension board connector} between controller and extensions. Extension boards have a male connector set on the left hand side. Main controller boards will have a female connector on the right hand side. This way main controller and one extension board can be placed next to each other. Like the controller board, extension boards come in different lengths. The following figure shows the 10x16cm board. 
 
+???m a better picture ? ... 
+
 \begin{figure}[htbp]
     \centering
-    \includegraphics[page=1, scale=0.7]{./Figures/LCS-FP-EXT-L-10X16.pdf}
+    \includegraphics[page=1, scale=0.7]{./part-hardware/chapter-lcs-concepts-hardware-main-module-design/LCS-FP-MAIN-CTRL-Sketch.pdf}
     \caption{LCS-FP-EXT-R-10X16}
     %\label{fig:your-label}
 \end{figure}
 
-Extension boards can also be put into a backplane PCB along with the main controller. This way, more than one extension board can connect to the controller board. The overall concept is very similar to the the shield concept found in the Arduino or Raspberry PI universe, except that we can stack boards, as well as placing two of them next to each other. Up to four extension boards can be connect ed this way.
+Extension boards can also be put into a backplane PCB along with the main controller. This way, more than one extension board can connect to the controller board. The overall concept is very similar to the shield concept found in the Arduino or Raspberry PI universe, except that we can stack boards, as well as placing two of them next to each other. Up to four extension boards can be connect ed this way.
 
 The I2C interface will be the main communication method between the boards. In fact all current extension boards shown in later chapters use the I2C communication channel. Nevertheless, a rather rich set of outputs from the controller should be available to the extension board for flexibility. There should be ports for digital input and output, analog input, PWM outputs, serial IO and so on. The Raspberry Pi pico offers a great flexibility on assigning function blocks such as an SPI or I2C interface to pins. The extension connector outlined below offers a set of pins which are mapped to the PICO capabilities. The following table shows the connector pin assignments for the communication between a main controller board and extension boards. All boards will have a 40-pin connector organized as 2 rows of 20 pins.
 
@@ -281,7 +283,7 @@ When using all four bridge signal output pairs, each each output pair is rated u
 
 \section{Controller and Extension Board}
 
-// ??? what to keep here vs. extension patt ?
+// ??? what to keep here vs. extension part ?
 
 Controller and Extension boards make up a node. The main controller board will connect via two main bus connectors to an extension board. The pins of the connectors were shown in the previous sections. The following figure depicts how the two boards are connected. There are two basic cases. The first case, shown here, is an extension board that simply is plugged into the connector of the main controller or another extension board.
 
@@ -291,9 +293,9 @@ Controller and Extension boards make up a node. The main controller board will c
         \useasboundingbox (0,0) rectangle (15,6);
         \draw[help lines, gray!50, dashed] (0,0) grid(15,6);
 
-        \node at (3.5, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-MAIN-CTRL-Sketch.pdf}};
+        \node at (3.5, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./part-hardware/chapter-lcs-concepts-hardware-main-module-design/LCS-FP-MAIN-CTRL-Sketch.pdf}};
 
-        \node at (11.5, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./Figures/LCS-FP-EXT-L-Sketch.pdf}};
+        \node at (11.5, 2.5) {\includegraphics[page=1, width=0.5\textwidth]{./part-hardware/chapter-lcs-concepts-hardware-main-module-design/LCS-FP-EXT-L-Sketch.pdf}};
 
         \node at (3, 5.5) {\textbf{Main Controller}};
         \node at (11, 5.5) {\textbf{Extension Board}};
