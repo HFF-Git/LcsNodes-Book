@@ -39,7 +39,7 @@ Now that we know the overall concepts, let us first have a look at the message d
 
 All nodes communicate via the layout control bus by broadcasting messages. Every node can send a message, and every node receives the message broadcasted. There is no central master. Since all nodes receive all messages, a node needs to decide whether to react to a message or not. General management and emergency type messages are handled by all nodes. A reply to a specific request will only be handled by the requesting node. The layout control system defines a fairly large set of messages, which can be grouped into several categories:
 
-\begin{itemize}
+\begin{smallGapItemize}
     \item General management
     \item Node and Port management
     \item Event management
@@ -49,7 +49,7 @@ All nodes communicate via the layout control bus by broadcasting messages. Every
     \item RailCom DCC Packet management
     \item Raw DCC Packet management
     \item Firmware Update management
-\end{itemize}
+\end{smallGapItemize}
 
 The current implementation is using the CAN bus, which ensures by definition that a message is correctly transmitted. However, it does not guarantee that the receiver actually processed the message. For critical messages, a request-reply scheme is implemented on top. Also, to address possible bus congestion, a priority scheme for messages is implemented to ensure that each message has a chance for being transmitted.
 
@@ -82,7 +82,6 @@ The general management message group contains commands for dealing with the layo
             \hline
         \end{tabular}
     }
-    %\caption{General Management}
 \end{table}
 
 \section{Node Id Setup}
@@ -103,7 +102,6 @@ When a hardware module is powered on, the first task is to establish the node Id
             \hline
         \end{tabular}
     }
-    %\caption{Node Id Management}
 \end{table}
 
 All nodes monitor the message flow to detect a potential node collision. This could be for example the case when a node from one layout is installed in another layout. When a node detects a collision, it will broadcast the \texttt{(NCOL)} message and enter a halt state. Manual interaction is required. A node can be restarted with the \texttt{(RES-NODE)} command, given that it still reacts to messages on the bus. All ports on the node will also be initialized. In addition a specific port on a node can be initialized. The hardware module replies with an \texttt{(ACK)} message for a successful node Id and completes the node Id allocation process. As the messages hows, node and port ID are combined. LCS can accommodate up to 4095 nodes, each of which can host up to 15 ports. A Node ID 0 is the NIL node. Depending on the context, a port Id of zero refers all ports on the node or just the node itself.
@@ -126,7 +124,6 @@ The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} a
             \hline
         \end{tabular}
     }
-    %\caption{Node and Port Management}
 \end{table}
 
 Nodes do not react to configuration type messages when in operations mode. To configure a node, the node needs to be put into configuration mode. The \texttt{(OPS)} and \texttt{(CFG)} commands are used to put a node into configuration mode or operation mode. Not all messages are supported in operations mode and vice versa. For example, to set a new nodeId, the node first needs to be put in configuration mode. During configuration mode, no operational messages are processed.
@@ -143,7 +140,6 @@ Nodes do not react to configuration type messages when in operations mode. To co
             \hline
         \end{tabular}
     }
-    %\caption{Operation and Configuration Mode}
 \end{table}
 
 \section{Event Management}
@@ -163,7 +159,6 @@ The event management group contains the messages to configure the node event map
             \hline
         \end{tabular}
     }
-    %\caption{Event Management}
 \end{table}
 
 \section{DCC Track Management}
@@ -182,7 +177,6 @@ Model railroads run on tracks. Imagine that. While on a smaller layout, there is
             \hline
         \end{tabular}
     }
-    %\caption{DCC Track Management}
 \end{table}
 
 \section{DCC Locomotive Decoder Management}
@@ -204,7 +198,6 @@ Locomotive management comprises the set of messages that the base station uses t
             \hline
         \end{tabular}
     }
-    %\caption{DCC Locomotive Decoder Management}
 \end{table}
 
 Once the locomotive session is established, the \texttt{(SET-LSPD)}, \texttt{(SET-LMOD)}, \texttt{(SET-LFON)}, \texttt{(SET-LOF)} and \texttt{(SET-FGRP)} are the commands sent by a cab handheld and executed by the base station to control the locomotive speed, direction and functions. \texttt{(SET-LCON)} deals with the locomotive consist management and \texttt{(KEEP)} is sent periodically to indicate that the session is still alive. The locomotive session management is explained in more detail in a later chapter when we talk about the base station.
@@ -226,7 +219,6 @@ Once the locomotive session is established, the \texttt{(SET-LSPD)}, \texttt{(SE
             \bottomrule
         \end{tabular}
     }
-    %\caption{DCC Locomotive Decoder Management}
 \end{table}
 
 Locomotive decoders contain configuration variables too. They are called CV variables. The base station node supports the decoder CV programming on a dedicated track with the \texttt{(REQ-CVS)}, \texttt{(REP-CVS)} and \texttt{(SET-CVS)} messages. The \texttt{(SET-CVM)} message supports setting a CV while the engine is on the main track. \texttt{(DCC-ERR)} is returned when an invalid operation is detected.
@@ -244,8 +236,7 @@ Locomotive decoders contain configuration variables too. They are called CV vari
             SET-CVS  & cv-H & cv-L & mode & val & & & \\
             \hline
         \end{tabular}
-    }
-    %\caption{DCC Locomotive Decoder Management}
+    }    
 \end{table}
 
 The SET-CVM command allows to write to a decoder CV while the decoder is on the main track. Without the RailCom channel, CVs can be set but there is not way to validate that the operation was successful.
@@ -266,7 +257,6 @@ Besides locomotives, the DCC standards defines stationary decoders, called acces
             \hline
         \end{tabular}
     }
-    %\caption{DCC Accessory Decoder Management}
 \end{table}
 
 These commands are there for completeness of the DCC control interfaces. There could be devices that are connected via the DCC track that we need to support. However, in a layout control system the setting of turnouts, signals and other accessory devices are more likely handled via the layout control bus messages and not via DCC packets to the track. This way, there is more bandwidth for locomotive decoder DCC packets.
@@ -291,7 +281,6 @@ With the introduction of the RailCom communication channel, the decoder can also
             \hline
         \end{tabular}
     }
-    %\caption{RailCom DCC Packet management}
 \end{table}
 
 The XPOM messages are DCC messages that are larger than what a CAN bus packet can hold. With the introduction of DCC-A such a packet can hold up to 15 bytes. The LCS messages therefore are sent in chunks with a frame sequence number and it is the responsibility of the receiving node to combine the chunks to the larger DCC packet.
@@ -314,7 +303,6 @@ The base station allows to send raw DCC packets to the track. The \texttt{(SEND-
             \hline
         \end{tabular}
     }
-    %\caption{Raw DCC Packet Management}
 \end{table}
 
 The above messages can send a packet with up to six bytes. With the evolving DCC standard, larger messages have been defined. The XPOM DCC messages are a good example. To send such a large DCC packet, it is decomposed into up to four LCS messages. The base station will assemble the DCC packet and then send it. 
@@ -330,7 +318,6 @@ The above messages can send a packet with up to six bytes. With the evolving DCC
             \hline
         \end{tabular}
     }
-    %\caption{Raw Extended DCC Packet Management}
 \end{table}
 
 \section{DCC errors and status}
@@ -349,7 +336,6 @@ Some DCC commands return an acknowledgment or an error for the outcome of a DCC 
             \hline
         \end{tabular}
     }
-    %\caption{DCC Packet Error and Status}
 \end{table}
 
 \section{Analog Engines}
@@ -375,7 +361,6 @@ LCS supports a method for updating the firmware remotely. This involves loading 
             \hline
         \end{tabular}
     }
-    %\caption{Firmware Update Messages}
 \end{table}
 
 A firmware update starts with the \texttt{(START-LOAD)} message. The transfer uses the \texttt{(START-BLOCK)}, \texttt{(SEND-DATA)} and \texttt{(END-BLOCK)} messages to transmit a block. Each block is validated with a 16-bit checksum. The \texttt{(END-LOAD)} message completes the download, the entire image is checked against a 32-bit checksum.
