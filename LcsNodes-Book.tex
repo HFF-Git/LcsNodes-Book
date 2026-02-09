@@ -4,7 +4,6 @@
 % Central layout switch to control chapter start behavior.
 %  	OpenRighttrue: Chapters start on right-hand pages.
 % 	OpenRightfalse: Chapters start on any page.
-%%
 %--------------------------------------------------------------------------------
 \newif\ifOpenRight
 %\OpenRighttrue   % Chapters start on right-hand pages (default book behavior)
@@ -25,80 +24,84 @@
 \input{latex-resources/packages}
 \input{latex-resources/styles}
 
+%--------------------------------------------------------------------------------
+% Index generation
+%--------------------------------------------------------------------------------
 \makeindex
 
 %--------------------------------------------------------------------------------
 % Document start.
-%
 %--------------------------------------------------------------------------------
 \begin{document}
 
-	%----------------------------------------------------------------------------
+    %----------------------------------------------------------------------------
     % Listing Path and Toggle
-    %
     %----------------------------------------------------------------------------
     \newcommand{\srcinputpath}{../../LcsNodes-Pico/}
     \newtoggle{includeListings}
     \togglefalse{includeListings} 
     
- 	%----------------------------------------------------------------------------
+    %----------------------------------------------------------------------------
     % Title page.
     %
     %----------------------------------------------------------------------------
-    \input{titlepage/titlepage}
+    \input{part-title-page/title-page}
    		
     %----------------------------------------------------------------------------
-	% Page formatting options
-	%----------------------------------------------------------------------------
-	\setlength{\emergencystretch}{3em}  % Allow line breaks in long lines
-	\raggedbottom
-	\linespread{1.1}
-
-	%----------------------------------------------------------------------------
-	% Front matter (table of contents, etc.)
-	%----------------------------------------------------------------------------
-	\frontmatter
-	\pagestyle{fancy}
-	\tableofcontents
-	\addcontentsline{toc}{chapter}{Tables of Contents}
-
-	\cleardoublepage
-	\addcontentsline{toc}{chapter}{List of Figures}
-	\listoffigures
-	\cleardoublepage
-	
-	\addcontentsline{toc}{chapter}{List of Tables}
-	\listoftables
+    % Page formatting options
+    %----------------------------------------------------------------------------
+    \setlength{\emergencystretch}{3em}  % Allow line breaks in long lines
+    \raggedbottom
+    \linespread{1.1}
 
     %----------------------------------------------------------------------------
-	% Fix headers for unnumbered chapters.
-	%----------------------------------------------------------------------------
-	\markboth{ }{ }
+    % Front matter (table of contents, etc.)
+    %----------------------------------------------------------------------------
+    \frontmatter
+    \pagestyle{fancy}
+    \tableofcontents
+    \addcontentsline{toc}{chapter}{Tables of Contents}
 
-	%----------------------------------------------------------------------------
-	% Main matter (chapters)
-	%----------------------------------------------------------------------------
-	\mainmatter
-	\pagestyle{fancy}
+    \cleardoublepage
+    \addcontentsline{toc}{chapter}{List of Figures}
+    \listoffigures
+    \cleardoublepage
 	
-	%----------------------------------------------------------------------------
-	% Book parts
-	%----------------------------------------------------------------------------
-	\include{part-introduction/chapter-lcs-introduction}
-	\include{part-concepts/part-concepts}
-	\include{part-core-layer/part-core-layer}
-	\include{part-hardware/part-hardware}
-	\include{part-modules/part-modules}
-	\include{part-extensions/part-extensions}
-	\include{part-utilities/part-utilities}
-	\include{part-configuration/part-configuration}
-	\include{part-reference/part-reference}
-	\include{part-appendix/part-appendix}
-	\include{part-listings/part-listings}
+    \addcontentsline{toc}{chapter}{List of Tables}
+    \listoftables
+
+    %----------------------------------------------------------------------------
+    % Fix headers for unnumbered chapters.
+    %----------------------------------------------------------------------------
+    \markboth{ }{ }
+
+    %----------------------------------------------------------------------------
+    % Main matter (chapters)
+    %----------------------------------------------------------------------------
+    \mainmatter
+    \pagestyle{fancy}
+	
+    %----------------------------------------------------------------------------
+    % Book parts
+    %----------------------------------------------------------------------------
+    \include{part-introduction/part-introduction}
+    \include{part-concepts/part-concepts}
+    \include{part-core-layer/part-core-layer}
+    \include{part-hardware/part-hardware}
+    \include{part-base-station/part-base-station}
+    \include{part-cab-handheld/part-cab-handheld}
+    \include{part-block-controller/part-block-controller}}
+    \include{part-gateway/part-gateway}
+    \include{part-extensions/part-extensions}
+    \include{part-utilities/part-utilities}
+    \include{part-configuration/part-configuration}
+    \include{part-reference/part-reference}
+    \include{part-appendix/part-appendix}
+    \include{part-listings/part-listings}
     
     %----------------------------------------------------------------------------    
     % Back matter (table of contents, etc.)
-	%----------------------------------------------------------------------------
+    %----------------------------------------------------------------------------
     \backmatter    
     \printindex         
 
