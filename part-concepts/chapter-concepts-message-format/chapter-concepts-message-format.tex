@@ -63,9 +63,7 @@ The byte fields names in an LCS message are explained in greater detail when we 
 
 \section{General Management}
 
-The general management message group contains commands for dealing with the layout system itself. The reset command \texttt{(RESET)} directs all hardware modules, a node, or a port on a node to perform a reset. The entire bus itself can be turned on and off \texttt{(BUS-ON, BUS-OFF)}, enabling or suppressing the message flow. Once the bus is off, all nodes wait for the bus to be turned on again. The base station broadcasts a \texttt{(SYS-TIME)} message with the layout time, \texttt{(LCS-INFO)} broadcasts general system information on a regular basis. Finally, there are messages performing equest acknowledgement \texttt{(ACK/ERR)}.
-
-??? not clear if we need or should have ACC/ERR 
+The general management message group contains commands for dealing with the layout system itself. The reset command \texttt{(RESET)} directs all hardware modules, a node, or a port on a node to perform a reset. The entire bus itself can be turned on and off \texttt{(BUS-ON, BUS-OFF)}, enabling or suppressing the message flow. Once the bus is off, all nodes wait for the bus to be turned on again. The base station broadcasts a \texttt{(SYS-TIME)} message with the layout time, \texttt{(LCS-INFO)} broadcasts general system information on a regular basis. Finally, there are messages performing request acknowledgement \texttt{(ACK/ERR)}.
 
 \begin{table}[ht!]
     \centering 
@@ -78,7 +76,7 @@ The general management message group contains commands for dealing with the layo
             BUS-ON & & & & & & & \\
             BUS-OFF & & & & & & & \\
             SYS-TIME & arg1 & arg2 & arg3 & arg4 & & & \\
-            LCS-INFO & arg1 & arg2 & arg3 & arg4 & & & \\
+            SYS-INFO & arg1 & arg2 & arg3 & arg4 & & & \\
             ACK & nId & pcId & & & & & \\
             ERR & nId & pcId & code & arg1 & arg2 & & \\
             \hline
@@ -143,8 +141,8 @@ Nodes do not react to configuration type messages when in operations mode. To co
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            OPS & npId-H & npId-L & & & & & \\
-            CFG & npId-H & npId-L & & & & & \\
+            OPS & nId & & & & & & \\
+            CFG & nId & & & & & & \\
             \hline
         \end{tabular}
     }
@@ -152,7 +150,7 @@ Nodes do not react to configuration type messages when in operations mode. To co
 
 \section{Event Management}
 
-The event management group contains the messages to configure the node event map and messages to broadcast an event and messages to read out event data. The (SET-NODE) with the item value to set and remove an event map entry from the event map is used to manage the event map. An inbound port can register for many events to listen to, and an outbound port will have exactly one event to broadcast. Ports and Events are numbered from 1 onward. When configuring, the portId \texttt{NIL} has a special meaning in that it refers to all portIds on the node.
+The event management group contains the messages to configure the node event map and messages to broadcast an event and messages to read out event data. An inbound port can register for many events to listen to, and an outbound port will have exactly one event to broadcast. Ports and Events are numbered from 1 onward. When configuring, the portId \texttt{NIL} has a special meaning in that it refers to all portIds on the node.
 
 \begin{table}[ht!]
     \centering 
