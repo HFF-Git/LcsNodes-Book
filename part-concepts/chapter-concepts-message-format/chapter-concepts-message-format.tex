@@ -59,7 +59,7 @@ The message format is independent of the underlying transport method. If the bus
 
 The messages often contain 16-bit values. They are stored in two bytes, the most significant byte first and labeled ``xxx-H'' in the message descriptions to come. The message format shown in the tables of this chapter just presents the opCode mnemonic. The actual value can be found in the core library include file.
 
-The byte fields names in an LCS message are explained in greater detail when we discuss the runtime library. For this chapter, the term \texttt{nId} will refer to node and the term \texttt{pcId} to the port and channel identifier. A node/port/channel identifier is a 16-bit word which consists of the 8-bit nodeId, the 4-bit portId and the 4-bit channel Id. The term \texttt{sId} refers to a locomotive session. The remaining message field names, such as \texttt{UID} or \texttt{spDir} or \texttt{argN}are fairly self-explaining. All other names are fairly self explaining.
+The byte fields names in an LCS message are explained in greater detail when we discuss the runtime library. For this chapter, the term node/port/channel identifier, \texttt{npId}, is a 16-bit word which consists of the 8-bit nodeId, the 4-bit portId and the 4-bit channel Id. The term \texttt{sId} refers to a locomotive session. The remaining message field names, such as \texttt{UID} or \texttt{spDir} or \texttt{argN}are fairly self-explaining.
 
 \section{General Management}
 
@@ -72,13 +72,13 @@ The general management message group contains commands for dealing with the layo
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            RESET & nId & flags & & & & & \\
+            RESET & npId-H & npId-L & flags & & & & \\
             BUS-ON & & & & & & & \\
             BUS-OFF & & & & & & & \\
             SYS-TIME & arg1 & arg2 & arg3 & arg4 & & & \\
             SYS-INFO & arg1 & arg2 & arg3 & arg4 & & & \\
-            ACK & nId & pcId & & & & & \\
-            ERR & nId & pcId & code & arg1 & arg2 & & \\
+            ACK & npId-H & npId-L & & & & & \\
+            ERR & npId-H & npId-L & code & arg1 & arg2 & & \\
             \hline
         \end{tabular}
     }
@@ -95,10 +95,10 @@ When a hardware module is powered on, the first task is to establish the node Id
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            REQ-NID & nId & nUID-4 & nUID-3 & nUID-2 & nUID-1 & flags & \\
-            REP-NID & nId & nUID-4 & nUID-3 & nUID-2 & nUID-1 & flags & \\
-            SET-NID & nId & nUID-4 & nUID-3 & nUID-2 & nUID-1 & flags & \\
-            NCOL    & nId & nUID-4 & nUID-3 & nUID-2 & nUID-1 & & \\
+            REQ-NID & npId-H & npId-L & nUID-4 & nUID-3 & nUID-2 & nUID-1 & flags \\
+            REP-NID & npId-H & npId-L & UID-4 & nUID-3 & nUID-2 & nUID-1 & flags \\
+            SET-NID & npId-H & npId-L & UID-4 & nUID-3 & nUID-2 & nUID-1 & flags \\
+            NCOL    & npId-H & npId-L & UID-4 & nUID-3 & nUID-2 & nUID-1 & \\
             \hline
         \end{tabular}
     }
@@ -108,11 +108,7 @@ All nodes monitor the message flow to detect a potential node collision. This co
 
 \section{Node and Port Attributes}
 
-The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} are available to obtain attribute data from the node or port. The \texttt{(NODE-SET)} allows to set attributes for a node or port for the targeted node. Items are numbers assigned to a data location or an activity. There are reserved items such as getting the number of ports, or setting an LED. In addition, the firmware programmer can also define items with node specific meaning. The firmware programmer defined items are accessible via the \texttt{(NODE-REQ)} and \texttt{(NODE-REP)} messages.
-
-??? shorten the messages, allow only one arg ?
-
-??? add an err argument to REP ?
+The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} are available to obtain attribute data from the node or port. The \texttt{(NODE-SET)} allows to set attributes for a node or port on the targeted node. The \texttt{(NODE-REQ)} message passes a requests to the target node. Again, the \texttt{(NODE-REP)} is the reply message. The reply message can return one or two arguments.
 
 \begin{table}[ht!]
     \centering 
@@ -121,16 +117,15 @@ The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} a
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            NODE-GET & nId & pcId & item & arg1-H & arg1-L & arg2-H & arg2-L \\
-            NODE-SET & nId & pcId & item & val1-H & val1-L & val2-H & val2-L \\
-            NODE-REQ & nId & pcId & item & arg1-H & arg1-L & arg2-H & arg2-L \\
-            NODE-REP & nId & pcId & item & arg1-H & arg1-L & arg2-H & arg2-L \\
+            NODE-GET & npId-H & npId-L & item & arg1-H & arg1-L & & \\
+            NODE-SET & npId-H & npId-L & item & val1-H & val1-L & & \\
+            NODE-REQ & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
+            NODE-REP & npId-H & npId-L & item & arg1-H & arg1-L & & \\
+            NODE-REP2 & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
             \hline
         \end{tabular}
     }
 \end{table}
-
-??? these messages may go away completely and are replaced by a REQ call.
 
 Nodes do not react to configuration type messages when in operations mode. To configure a node, the node needs to be put into configuration mode. The \texttt{(OPS)} and \texttt{(CFG)} commands are used to put a node into configuration mode or operation mode. Not all messages are supported in operations mode and vice versa. For example, to set a new nodeId, the node first needs to be put in configuration mode. During configuration mode, no operational messages are processed.
 
@@ -141,8 +136,8 @@ Nodes do not react to configuration type messages when in operations mode. To co
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            OPS & nId & & & & & & \\
-            CFG & nId & & & & & & \\
+            OPS & pId-H & npId-L & & & & & \\
+            CFG & pId-H & npId-L & & & & & \\
             \hline
         \end{tabular}
     }
@@ -159,9 +154,9 @@ The event management group contains the messages to configure the node event map
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            EVT-ON & nId & pcId & evId-H & evId-L & & & \\
-            EVT-OFF & nId & pcId & evId-H & evId-L & & & \\
-            EVT & nId & pcId & evId-H & evId-L & arg-H & arg-L & \\
+            EVT-ON & npId-H & npId-L & evId-H & evId-L & & & \\
+            EVT-OFF & pId-H & npId-L & evId-H & evId-L & & & \\
+            EVT & npId-H & npId-L & evId-H & evId-L & arg-H & arg-L & \\
             \hline
         \end{tabular}
     }
