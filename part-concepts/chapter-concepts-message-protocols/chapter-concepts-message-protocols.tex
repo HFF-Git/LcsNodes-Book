@@ -432,3 +432,25 @@ Again, as the DCC packets are sent out without further checking you better know 
 \section{Summary}
 
 Most of the messages dealing with nodes, ports and events follow a request reply scheme using the nodeId as the target address. The DCC messages and protocols implicitly refer to nodes that implement base station and handheld functions. The base station is the only node that actually produces DCC packets to be sent to the track. However, any node implementing DCC functions can act on these messages. All message functions as well as functions to configure and manage nodes, ports and events are available for the firmware programmer through the \textbf{LCS Runtime Library}. 
+
+Work into the document...
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|r|r|}
+\hline
+\textbf{Payload} & \textbf{Bits/frame} & \textbf{Baud rate} & \textbf{Max msg/s} & \textbf{Safe msg/s} \\
+\hline
+5 B (event) & 128 & 125 kbit/s & 977 & 480 \\
+            &     & 250 kbit/s & 1953 & 975 \\
+\hline
+6 B (request/reply) & 138 & 125 kbit/s & 906 & 450 \\
+                    &     & 250 kbit/s & 1811 & 900 \\
+\hline
+8 B (worst case) & 157 & 125 kbit/s & 796 & 400 \\
+                 &     & 250 kbit/s & 1599 & 800 \\
+\hline
+\end{tabular}
+\label{tab:can_bus_capacity}
+\caption{CAN Bus Frame Capacity for 29-bit IDs}
+\end{table}
