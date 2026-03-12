@@ -144,21 +144,24 @@ The external I2C line, called the I2C bus, is exposed to the extension boards as
     \endfoot
     \bottomrule
     \endlastfoot
-    1 & GND & common ground. \\
+    1 & VCC & The power line. \\
     \midrule
-    2 & SCL & The I2C SCL line. \\
+    2 & VCC & The power line. \\
     \midrule
-    3 & GND & common ground. \\
+    3 &  & not used. \\
     \midrule
-    4 & SDA & The I2C SDA line. \\
+    4 & SCL & The I2C SCL line. \\
     \midrule
-    5 & VCC & The power line. 5V. \\
+    5 & SDA & The I2C SDA line. \\
     \midrule
-    6 & VCC & The power line. 5V. \\
+    6 &  & not used. \\
+    \midrule
+    7 & GND & The power line. 5V. \\
+    \midrule
+    8 & GND & The power line. 5V. \\
+    
+    
 \end{longtable}
-
-Lines are carefully chosen top allow a 4-wire and a 6-wire cable.
-
 
 \section{LCS Nodes Extension Board Connector}
 
