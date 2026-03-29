@@ -96,9 +96,9 @@ When a hardware module is powered on, the first task is to establish the node Id
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
             REQ-NID & npId-H & npId-L & nUID-4 & nUID-3 & nUID-2 & nUID-1 & flags \\
-            REP-NID & npId-H & npId-L & UID-4 & nUID-3 & nUID-2 & nUID-1 & flags \\
-            SET-NID & npId-H & npId-L & UID-4 & nUID-3 & nUID-2 & nUID-1 & flags \\
-            NCOL    & npId-H & npId-L & UID-4 & nUID-3 & nUID-2 & nUID-1 & \\
+            REP-NID & npId-H & npId-L & nUID-4 & nUID-3 & nUID-2 & nUID-1 & flags \\
+            SET-NID & npId-H & npId-L & nUID-4 & nUID-3 & nUID-2 & nUID-1 & flags \\
+            NCOL    & npId-H & npId-L & nUID-4 & nUID-3 & nUID-2 & nUID-1 & \\
             \hline
         \end{tabular}
     }
@@ -117,11 +117,10 @@ The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} a
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            NODE-GET & npId-H & npId-L & item & arg1-H & arg1-L & & \\
-            NODE-SET & npId-H & npId-L & item & val1-H & val1-L & & \\
+            NODE-GET & npId-H & npId-L & item-H & item-L & & & \\
+            NODE-SET & npId-H & npId-L & item-H & item-L & val-H & val-L & \\
             NODE-REQ & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
-            NODE-REP & npId-H & npId-L & item & arg1-H & arg1-L & & \\
-            NODE-REP2 & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
+            NODE-REP & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
             \hline
         \end{tabular}
     }
@@ -154,9 +153,9 @@ The event management group contains the messages to configure the node event map
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            EVT-ON & npId-H & npId-L & evId-H & evId-L & & & \\
-            EVT-OFF & pId-H & npId-L & evId-H & evId-L & & & \\
-            EVT & npId-H & npId-L & evId-H & evId-L & arg-H & arg-L & \\
+            EVT-ON & evId-H & evId-L & & & & & \\
+            EVT-OFF & evId-H & evId-L & & & & & \\
+            EVT & evId-H & evId-L & arg-H & arg-L & & & \\
             \hline
         \end{tabular}
     }
@@ -183,7 +182,7 @@ Model railroads run on tracks. Imagine that. While on a smaller layout, there is
 
 \section{DCC Locomotive Decoder Management}
 
-Locomotive management comprises the set of messages that the base station uses to control the running equipment. To control a locomotive, a session needs to be established \texttt{(REQ-LOC)}. This command is typically sent by a cab handheld and handled by the base station. The base station allocates a session and replies with the \texttt{(REP-LOC)} message that contains the initial settings for the locomotive speed and direction. \text{(REL-LOC)} closes a previously allocated session. The base station answers with the \texttt{(REP-LOC)} message. The data for an existing DCC session can requested with the \texttt{(QRY-LOC)} command. Data about a locomotive in a consist is obtained with the \texttt{(QRY-LCON)} command. In both cases the base station answers with the \texttt{(REP-LOC)} message.
+Locomotive management comprises the set of messages used by the base station to control running equipment. To control a locomotive, the \texttt{(REQ-LOC)} command is issued, typically by a handheld cab and processed by the base station. Upon receiving this command, the base station allocates a session and responds with a \texttt{(REP-LOC)} message containing the initial speed and direction settings for the locomotive. A previously allocated session can be closed using the \texttt{(REL-LOC)} command, to which the base station also responds with a \texttt{(REP-LOC)} message. Information about an existing DCC session can be requested using the \texttt{(QRY-LOC)} command, while data for a locomotive within a consist can be obtained using the \texttt{(QRY-LCON)} command. In both cases, the base station replies with a \texttt{(REP-LOC)} message.
 
 \begin{table}[ht!]
     \centering 
@@ -192,10 +191,10 @@ Locomotive management comprises the set of messages that the base station uses t
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            REQ-LOC & adr-H & adr-L & flags & & & & \\
-            REP-LOC & sId & adr-H & adr-L & spDir & fn1 & fn2 & fn3 \\
-            REL-LOC & sId & & & & & & \\
-            QRY-LOC & sId & & & & & & \\
+            REQ-LOC & cabId-H & CabId-L & flags & & & & \\
+            REP-LOC & cabId-H & CabId-L & spDir & fn1 & fn2 & fn3 & fn4 \\
+            REL-LOC & cabId-H & CabId-L & & & & & \\
+            QRY-LOC & cabId-H & CabId-L & & & & & \\
             QRY-LCON & conId & index & & & & & \\
             \hline
         \end{tabular}
@@ -211,13 +210,13 @@ Once the locomotive session is established, the \texttt{(SET-LSPD)}, \texttt{(SE
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            SET-LSPD & sId & spDir & & & & & \\
-            SET-LMOD & sId & flags & & & & & \\
-            SET-LFON & sId & fNum  & & & & & \\
-            SET-LFOF & sId & fNum  & & & & & \\
-            SET-FGRP & sId & fGrp  & data & & & & \\
-            SET-LCON & sId & conId & flags & & & & \\
-            KEEP & sId & & & & & & \\
+            SET-LSPD & cabId-H & cabId-L & spDir & & & & \\
+            SET-LMOD & cabId-H & cabId-L & flags & & & & \\
+            SET-LFON & cabId-H & cabId-L & fNum  & & & & \\
+            SET-LFOF & cabId-H & cabId-L & fNum  & & & &  \\
+            SET-FGRP & cabId-H & cabId-L & fGrp  & data & & & \\
+            SET-LCON & cabId-H & cabId-L & conId & flags  & & & \\
+            KEEP & cabId-H & cabId-L & & & & & \\
             \bottomrule
         \end{tabular}
     }
@@ -232,10 +231,10 @@ Locomotive decoders contain configuration variables too. They are called CV vari
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            SET-LSPD & sId & cv-H & cv-L & mode & val & & \\
-            REQ-CVS  & cv-H & cv-L & mode & val & & & \\
-            REP-CVS  & cv-H & cv-L & val  & & & & \\
-            SET-CVS  & cv-H & cv-L & mode & val & & & \\
+            SET-CVM & cabId-H & cabId-L & cv-H & cv-L & mode & val & \\
+            SET-CVS & cv-H & cv-L & mode & val & & & \\
+            REQ-CVS & cv-H & cv-L & mode & val & & & \\
+            REP-CVS & cv-H & cv-L & val  & & & & \\
             \hline
         \end{tabular}
     }    
@@ -274,9 +273,9 @@ With the introduction of the RailCom communication channel, the decoder can also
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            SET-MPOM & sId & ctrl & arg1 & arg2 & arg3 & arg4 & \\
-            REQ-MPOM & sId & ctrl & arg1 & arg2 & arg3 & arg4 & \\
-            REP-MPOM & sId & ctrl & arg1 & arg2 & arg3 & arg4 & \\
+            SET-MPOM & cabId-H & cabId-L & ctrl & arg1 & arg2 & arg3 & arg4 \\
+            REQ-MPOM & cabId-H & cabId-L & ctrl & arg1 & arg2 & arg3 & arg4 \\
+            REP-MPOM & cabId-H & cabId-L & ctrl & arg1 & arg2 & arg3 & arg4 \\
             SET-APOM & adr-H & adr-L & ctrl & arg1 & arg2 & arg3 & arg4 \\
             REQ-APOM & adr-H & adr-L & ctrl & arg1 & arg2 & arg3 & arg4 \\
             REP-APOM & adr-H & adr-L & ctrl & arg1 & arg2 & arg3 & arg4 \\
