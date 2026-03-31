@@ -108,8 +108,7 @@ All nodes monitor the message flow to detect a potential node collision. This co
 
 \section{Node and Port Attributes}
 
-The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} are available to obtain attribute data from the node or port. The \texttt{(NODE-SET)} allows to set attributes for a node or port on the targeted node. The \texttt{(NODE-REQ)} message passes a requests to the target node. Again, the \texttt{(NODE-REP)} is the reply message. The reply message can return one or two arguments.
-
+The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} are available to obtain attribute data from the node or port. The \texttt{(NODE-SET)} allows to set attributes for a node or port on the targeted node. The \texttt{(NODE-FREQ)} message passes a requests to the target node. The \texttt{(NODE-FREP)} is the corresponding reply message.
 \begin{table}[ht!]
     \centering 
     \resizebox{0.9\textwidth}{!}{ 
@@ -119,8 +118,9 @@ The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} a
             \hline
             NODE-GET & npId-H & npId-L & item-H & item-L & & & \\
             NODE-SET & npId-H & npId-L & item-H & item-L & val-H & val-L & \\
-            NODE-REQ & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
-            NODE-REP & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
+            NODE-REP & npId-H & npId-L & item-H & item-L &arg-H & arg-L & \\
+            NODE-FREQ & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
+            NODE-FREP & npId-H & npId-L & item & arg1-H & arg1-L & arg2-H & arg2-L \\
             \hline
         \end{tabular}
     }
