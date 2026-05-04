@@ -4,6 +4,10 @@ LCS hardware modules typically consist of a controller portion and an extension 
 
 Each hardware module almost certainly has additional requirements. Depending on the module type there will be a great variety of extensions. A good example is the sensor and actor hardware for managing the respective turnouts, signals, and so on. A solution to these family of modules is to use the I2C communication bus and a few more controller lines between controller main board and extensions. Rather than exporting as many as possible pins of the controller via an extension connector, the extension connector presented is hopefully a reasonable compromise when it comes to numbers of pins and capabilities. For complex extension boards with many controller interaction points, a monolithic approach, i.e. controller and extension functionality on one board, would perhaps be the better choice. Such boards could still export the basic functions such as I2C via the extension connector to less complex extension boards for providing additional capabilities. Before we discuss any particular extension board, this chapter will present the hardware and firmware foundation for addressing an extension board.
 
+
+// ??? rework... we have node and channels which are the path to hardware boards.
+
+
 \section{Requirements}
 
 As with any LCS library part presented, the key goal is to unify and simplify access to an extension board, while still allowing for great flexibility in actual extension board design. We want to be able to connect pretty much any extension board to a main controller, base station and block controller, as well as connecting several extension boards. For example, take the block controller. As shown before, the block controller exports the track power lines and the extension connector. We would like to be able to connect an extension board that implements the track occupancy detectors. We would also like to connect a further extension board that implements the turnout and signal drivers. And of course we want to connect boards then combine one or many of these functions. A key requirement is therefore to communicate to the main controller what is actually connected and how to access the available functions.
@@ -169,6 +173,14 @@ LCS nodes consist of a main controller board and extension boards. That concept 
 \section{Extension Memory layout}
 
 ??? what is the common register map seen by I2C reads and writes ?
+
+\section{Extension Protocol Messages}
+
+// ??? message layout 
+
+\section{Extension common library}
+
+// ??? ....
 
 
 \section{Summary}

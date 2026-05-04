@@ -92,6 +92,11 @@ Attributes work from MEM, when in CFG then NVM is also used.
 
 when in OPS, items SYNC-MEM and SYNC-NVM are used to also update the counterpart.
 
+\section{Channel Functions and Attributes}
+
+// ??? to do ....
+
+
 \section{Command Line and Display}
 
 The LCS library already offers a command line interface. It provides commands for the basic commands to manage a node and access its data. This interface, while not used in regular operation, is very useful for node firmware testing and debugging. All commands are also available via LCS messages, so that troubleshooting and monitoring can be done when the node is already installed. Following this philosophy, implementing node specific commands are a good idea. Writing your own serial commands is just writing a command line callback and registering it at node startup.
