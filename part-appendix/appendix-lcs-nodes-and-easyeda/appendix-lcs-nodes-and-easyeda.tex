@@ -40,6 +40,16 @@ EasyEDA allows you to create symbols that represent components and can be placed
 
 To ease the development of LCS boards, the entire board and its connectors are available as a symbol. Depending on the category, the symbol features the connection end points for the connectors found on the board. This symbol is associated with the corresponding footprint described in the next section. Note that the footprint needs to match the symbol. That is the number, position and meaning of the connectors found on the board map, only length of the PCB board varies.
 
+// ??? figure of a symbol here ...
+
+\begin{figure}[htbp]
+    \centering
+   % \includegraphics[page=1, scale=0.7]{./schematics/LCS-FP-MAIN-10X12-B.02.10.pdf}
+    \caption{LCS-SYM-MAIN-B-02.10}
+    %\label{fig:your-label}
+\end{figure}
+
+
 
 
 \section{Main Controller Board Footprints}
@@ -83,7 +93,6 @@ This section contains all the footprints available so far. There are three main 
 
 \FloatBarrier
 
-The mounting holes may look a little odd. As shown in the text to follow, there are extension boards with a form factor of 12cm x 10cm. When are the are mounted on top of the 16cm board, the holes nicely match. 
 
 \section{Extension Boards Footprints}
 
@@ -131,11 +140,98 @@ In addition to the basic 16cm x 10cm form factor is a set of 12cm x 10cm boards.
 
 In EasyEDA, the symbol pads and the PCB pads meet via PAD numbers. Across all symbols and PCBs the numbers assignments are shown in the figure below.
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[page=1, scale=0.4]{./schematics/Lcsnodes-PCB-Connector-Footprint-Pad-Numbers-B-02-10.pdf}
-    \caption{PCB-Connector-Footprint-Pad-Numbers}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm, y=1cm, scale=0.7, transform shape]
+
+    \draw[help lines, gray!70, dashed] (0,0) grid (17,18);
+    
+    \node[  tsRoundedRectangle, 
+            minimum width=8cm,
+            minimum height=16cm,
+            line width = 1.3pt,  
+            fill=gray!20,
+            anchor=south west] at (1,1) { };
+            
+    \node[  tsRoundedRectangle, 
+            minimum width=8cm,
+            minimum height=16cm,
+            line width = 1.3pt,  
+            fill=gray!20,
+            anchor=south west] at (10,1) { };
+             
+    \node[  tsRectangle, 
+            minimum width=1cm,
+            minimum height=3cm,  
+            fill=white,
+            anchor=south west] at (2, 13) {\rotatebox{90}{ CAN }};
+            
+    \node[font=\small] at (3.25,13+2.75) {8};
+    \node[font=\small] at (3.25,13+0.25) {1};
+            
+    \node[  tsRectangle, 
+            minimum width=1cm,
+            minimum height=3cm,  
+            fill=white,
+            anchor=south west] at (2, 9) {\rotatebox{90}{ CAN }};
+            
+    \node[font=\small] at (3.25,9+2.75) {18};
+    \node[font=\small] at (3.25,9+0.25) {11};
+            
+    \node[  tsRectangle, 
+            minimum width=1cm,
+            minimum height=3cm,  
+            fill=white,
+            anchor=south west] at (2, 4) {\rotatebox{90}{ I2C }};
+            
+    \node[font=\small] at (3.25,4+2.75) {28};
+    \node[font=\small] at (3.25,4+0.25) {21};
+            
+    \node[  tsRectangle, 
+            minimum width=1cm,
+            minimum height=1.5cm,  
+            fill=white,
+            anchor=south west] at (2, 2) {\rotatebox{90}{ VS }};
+            
+    \node[font=\small] at (3.25,2+1.25) {32};
+    \node[font=\small] at (3.25,2+0.25) {31};
+            
+    \node[  tsRectangle, 
+            minimum width=1cm,
+            minimum height=12cm,  
+            fill=white,
+            anchor=south west] at (7, 3) {\rotatebox{90}{ EXT-OUT }};
+            
+    \node[font=\small] at (7.0-0.25,15+0.25) {40};
+    \node[font=\small] at (8.0+0.25,15+0.25) {41};
+    
+    \node[font=\small] at (7.0-0.25,3-0.25) {98};
+    \node[font=\small] at (8.0+0.25,3-0.25) {99};
+            
+    \node[  tsRectangle, 
+            minimum width=1cm,
+            minimum height=12cm,  
+            fill=white,
+            anchor=south west] at (11, 3) {\rotatebox{90}{ EXT-IN }};
+            
+    \node[font=\small] at (11.0-0.25,15+0.25) {41};
+    \node[font=\small] at (12.0+0.25,15+0.25) {40};
+    
+    \node[font=\small] at (11.0-0.25,3-0.25) {99};
+    \node[font=\small] at (12.0+0.25,3-0.25) {98};
+            
+    \node[  tsRectangle, 
+    		dashed,
+            minimum width=1cm,
+            minimum height=12cm,  
+            fill=white,
+            anchor=south west] at (16, 3) {\rotatebox{90}{ optional connectors }};
+            
+\end{tikzpicture}
+\caption{PAD numbers}
+\label{fig:pad-numbers}
 \end{figure}
+
 
 \FloatBarrier
 
