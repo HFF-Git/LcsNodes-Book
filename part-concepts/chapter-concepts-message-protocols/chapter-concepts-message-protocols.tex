@@ -1,10 +1,10 @@
 %-------------------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------------------
-\chapter{Message Protocols}
+\unnumberedChapter{Message Protocols}
 
 Nodes typically broadcast messages and in case of event messages other nodes interested in them can act. There are also messages that are targeted to a specific node. The addressed node reacts with the request information or acknowledgement of the message receipt. We begin with node management and port management. Next, the event system is described. Finally, the DCC locomotive and track management related commands and messages round up this chapter. The protocols are described as a set of high level messages flow from requestor to receiver and back.
 
-\section{Node startup}
+\unnumberedSection{Node startup}
 
 Node startup includes all the software steps to initialize local data structures, hardware components and whatever else the hardware module requires. To the layout system, the node needs to be uniquely identified across the layout. A configuration software will use the nodeId to manage the node. The \texttt{(REQ-NID)} and \texttt{(REP-NID)} messages are used to establish the nodeId on node startup. On startup the current nodeId stored in the module non-volatile memory is broadcasted. The \texttt{(REQ-NID)} message also contains the node UID. This unique identifier is created when the node is first initialized and all non-volatile data structures are built. The UID will not change until the node is explicitly re-initialized again.
 
@@ -27,7 +27,7 @@ The nodeUID plays an important role to detect nodeId conflicts. If there are two
 
 The above nodeId setup scheme requires the presence of a central node, such a base station, to validate and assign node identifiers. In addition, the nodeId can also be assigned by the firmware programmer and passed to the library setup routine. Once assigned, the node is accessible and the node number can be changed anytime later with the \texttt{(SET-NID)} command. All nodes are always able to detect a nodeId conflict. If two or more nodes have the same nodeId, each node will send an \texttt{(NCOL)} message and go into halted state, repeating the collision message. Manual intervention is required to resolve the conflict through explicitly assigning a new nodeId.
 
-\section{Switching between Modes}
+\unnumberedSection{Switching between Modes}
 
 After node startup, a node normally enters the operation state. During configuration, certain commands are available and conversely some operational commands are disabled. A node is put into the respective mode with the \texttt{(CFG)} and \texttt{(OPS)} message command.
 
@@ -44,7 +44,7 @@ After node startup, a node normally enters the operation state. During configura
     \end{center}
 \end{table}
 
-\section{Setting a new Node Id}
+\unnumberedSection{Setting a new Node Id}
 
 A configuration tool can also set the node Id to a new value. This can only be done when the node is configuration mode. The following sequence of messages shows how the node is temporarily put into configuration mode for setting a new node Id.
 
@@ -69,7 +69,7 @@ A configuration tool can also set the node Id to a new value. This can only be d
 
 It is important to note that the assignment of a node Id through a configuration tool will not result in a potential node Id conflict resolution or detection. This is the responsibility of the configuration tool when using this command. The node Id, once assigned on one way or another, is the handle to address the node. There is of course an interest to not change these numbers every time a new hardware module is added to the layout.
 
-\section{Node Ping}
+\unnumberedSection{Node Ping}
 
 Any node can ping any other node. The target node responds with an (ACK) message. If the nodeId is NIL, all nodes are requested to send an acknowledge (ACK). This command can be used to enumerate which nodes are out there. However, the receiver has to be able to handle the flood of (ACK) messages coming in.
 
@@ -87,7 +87,7 @@ Any node can ping any other node. The target node responds with an (ACK) message
     \end{center}
 \end{table}
 
-\section{Node and Port Reset}
+\unnumberedSection{Node and Port Reset}
 
 A node or individual port can be restarted. This command can be used in configuration as well as operations mode. The node or will perform a restart and initialize its state from the non-volatile memory. A port ID of zero will reset the node and all the ports on the node.
 
@@ -105,7 +105,7 @@ A node or individual port can be restarted. This command can be used in configur
     \end{center}
 \end{table}
 
-\section{Node and Port Access}
+\unnumberedSection{Node and Port Access}
 
 A node can interact with any other node on the layout. The same is true for the ports on a node. Any port can be directly addressed. Node/port attributes and functions are addressed via items. The are reserved item numbers such as software version, nodeId, canId and configuration flags. Also, node or port attributes have an assigned item number range. Finally, there are reserved item numbers available for the firmware programmer.
 
@@ -157,7 +157,7 @@ Some item numbers refer to functions rather than attributes. In addition, all fi
     \end{center}
 \end{table}
 
-\section{Layout Event management}
+\unnumberedSection{Layout Event management}
 
 Events play a key role in the layout control system. Nodes fire events and register their interest in events. Configuring events involves a couple of steps. The first step is to allocate a unique event Id. The number does not really matter other than it is unique for the entire layout. A good idea would be to have a scheme that partitions the event ID range, so events can be be tracked and better managed. Consumer configuration is accomplished by adding entries to the event map. The target node needs to be told which port is interested in which event. A port can be interested in many events, an event can be assigned to many ports. Each combination will result in one event map entry. The \texttt{(SET-NODE)} command is used with the respective item number and item data.
 
@@ -196,7 +196,7 @@ Producers are configured by assigning an eventId to broadcast for this event. Th
 
 Even a small layout can already feature dozens of events. Event management is therefore best handled by a configuration tool, which will allocate an event number and use the defined LCS messages for setting the event map and port map entry variables on a target node.
 
-\section{General LCS Bus Management}
+\unnumberedSection{General LCS Bus Management}
 
 General bus management messages are message such as \texttt{(RESET)}, \texttt{(BUS-ON)}, \texttt{(BUS-OFF)} and messages for acknowledgement of a request. While any node use the acknowledgement messages \texttt{(ACK)} and \texttt{(NACK)}, resetting the system or turning the bus on and off are typically commands issued by the base station node. Here is an example for turning off the message communication. All nodes will enter a wait state for the bus to come up again.
 
@@ -214,7 +214,7 @@ General bus management messages are message such as \texttt{(RESET)}, \texttt{(B
     \end{center}
 \end{table}
 
-\section{DCC Track Management}
+\unnumberedSection{DCC Track Management}
 
 DCC track management messages are commands sent by the base station such as turning the track power on or off. Any node can request such an operation by issuing the \texttt{(TON)} or \texttt{(TOF)} command.
 
@@ -248,7 +248,7 @@ Another command is the emergency stop \texttt{(ESTP)}. It follows the same logic
 
 In addition, LCS nodes that actually manage the track will have a set of node/port attributes for current consumptions, limits, and so on. They are accessed via the node info and control messages.
 
-\section{Locomotive Session Management}
+\unnumberedSection{Locomotive Session Management}
 
 Locomotive session management is concerned with running locomotives on the layout. The standard supported is the DCC standard. Locomotive session commands are translated by the base station to DCC commands and send to the tracks. To run locomotives, the base station node and the handheld nodes, or any other nodes issuing these commands,  work together. First a session for the locomotive needs to be established.
 
@@ -303,7 +303,7 @@ Locomotives can run in consists. A freight train with a couple of locomotive at 
 
 To build a consist, a consist session will be allocated. This is the same process as opening a session for a single locomotive using a short locomotive address. Next, each locomotive, previously already represented through a session, is added to the consist session. The flags define whether the locomotive is the head, the tail or in the middle. We also need to specify whether the is forward or backward facing within the consist.
 
-\section{Locomotive Configuration Management}
+\unnumberedSection{Locomotive Configuration Management}
 
 Locomotives need to be configured as well. Modern decoders feature a myriad of options to set. Each decoder has a set of configuration variables, CV, to store information such as loco address, engine characteristics, sound options and so on. The configuration is accomplished either by sending DCC packets on a dedicated programming track or on the main track using with optional RailCom support. The base station will generate the DCC configuration packets for the programming track using the \texttt{(SET-CVS)}, \texttt{(REQ-CVS)}, \texttt{(REP-CVS)} commands. Each command uses a session Id, the CV Id, the mode and value to get and set. Two methods, accessing a byte or a single bit are supported. The decoder answers trough a fluctuation in the power consumption to give a yes or no answer, according to the DCC standard. The base station has a detector for the answer.
 
@@ -337,14 +337,14 @@ Programming on the main track is accomplished with the \texttt{(SET-CVM)} messag
     \end{center}
 \end{table}
 
-\section{Configuration Management using RailCom}
+\unnumberedSection{Configuration Management using RailCom}
 
 Instead of configuring engines and stationary decoders on the programming track, i.e. a separate track or just a cable to the decoder, configuring  these devices on the main track would be a great asset to have. A key prerequisite for this to work is the support of receiving RailCom datagrams from the decoder.
 
 ??? **note** to be defined... we would need LCS messages to support this capability... \\
 ??? one message could be the channel one message of a RC detector...
 
-\section{DCC Accessory Decoder Management}
+\unnumberedSection{DCC Accessory Decoder Management}
 
 The DCC stationary decoders are controlled with the \texttt{(SET-BACC)} and \texttt{(SET-EACC)} commands. A configuration/management tool and handhelds are typically the nodes that would issues these commands to the base station for generating the DCC packets. The following sequence shows how to send a command to the basic decoder.
 
@@ -363,7 +363,7 @@ The DCC stationary decoders are controlled with the \texttt{(SET-BACC)} and \tex
 
 Since the layout control system uses the LCS bus for accessing accessories, these messages are just intended for completeness and perhaps on a small layout they are used for controlling a few stationary decoders. It is also an option to use a two wire cabling to all decoders to mimic a DCC track and send the packets for the decoders. On a larger layout however, the layout control system bus and the node/event scheme would rather be used.
 
-\section{Sending DCC packets}
+\unnumberedSection{Sending DCC packets}
 
 The base station is the hardware module that receives the LCS messages for configuring and running locomotives. The primary task is to produce DCC signals to send out to the track. In addition to controlling locomotives, the base station can also just send out raw DCC packets.
 
@@ -398,7 +398,7 @@ Sending a large DCC packet will use the **SEND-DCCM** message. The "ctrl" byte d
 
 Again, as the DCC packets are sent out without further checking you better know the packet format by heart. Perhaps put the NMRA DCC specification under your pillow.
 
-\section{Firmware Update Management}
+\unnumberedSection{Firmware Update Management}
 
 \begin{table}[ht!]
     \begin{center}
@@ -429,7 +429,7 @@ Again, as the DCC packets are sent out without further checking you better know 
     \end{center}
 \end{table}
 
-\section{Summary}
+\unnumberedSection{Summary}
 
 Most of the messages dealing with nodes, ports and events follow a request reply scheme using the nodeId as the target address. The DCC messages and protocols implicitly refer to nodes that implement base station and handheld functions. The base station is the only node that actually produces DCC packets to be sent to the track. However, any node implementing DCC functions can act on these messages. All message functions as well as functions to configure and manage nodes, ports and events are available for the firmware programmer through the \textbf{LCS Runtime Library}. 
 

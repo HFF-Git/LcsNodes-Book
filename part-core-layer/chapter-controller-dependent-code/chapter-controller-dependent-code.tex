@@ -1,5 +1,5 @@
 
-\chapter{Controller Dependent Code}
+\unnumberedChapter{Controller Dependent Code}
 
 ??? rework the text ... extend it...
 
@@ -29,7 +29,7 @@ The mapping from resource number to instance needs to be really quick, low overh
 !!!!! the text needs to be worked quite a bit.
 
 
-\section{The big picture}
+\unnumberedSection{The big picture}
 
 The figure depicted below shows the refined overall structure of the node firmware. There is the core library discussed in a previous chapters and a new layer, which is the \textbf{controller dependent code layer}. The layer essentially encapsulates the required controller functions, such as a timer or a digital I/O pin, and offers a common interface to core library and firmware layer that directly uses the controller functions. The picture also shows a component labelled "extension driver". An extension driver is piece of software that knows how to handle an extension board. We get this part later when we talk about more about extensions.
 
@@ -88,7 +88,7 @@ The figure depicted below shows the refined overall structure of the node firmwa
 
 Using the CDC layer does not mean that access to the bare bones controller chip is not possible. Any controller HW function can be accessed directly at the expense of that the code will most likely not be portable between different controller families. Still, here may be good reasons for the direct path. The following sections describe will now what the CDC library is offering across all controller platforms.
 
-\section{Configuring the pins}
+\unnumberedSection{Configuring the pins}
 
 The CDC library is rather low level hardware abstraction to give access to the pins of the Raspberry PI Pico and perhaps over time other controllers as well. The key identifier to access a hardware input/output is the pin number. Using the correct pin numbers according to the hardware developed is therefore very important. At the same time the upper layer code should not deal with these details. There needs to be a mapping of actual pin numbers and functions to the controller family and the hardware developed.
 
@@ -106,9 +106,9 @@ While the whole idea of the CDC is isolating the firmware programmer from the co
 
 Most CDC routines use pins as one of their input argument. These arguments are not checked again at the level of the configuration validation. For performance reasons, just some quick sanity checks are performed.
 
-For each part of the CDC library, there is a configuration routine. For example, the digital IO configuration will set a particular pin to be an input or output pin and so on. During this configuration only basic checking what a controller can support on that pin will be done. The ATmega is far more restrictive with respect to the IO pins used than the Raspberry. The CDC library will do whatever it can to do such checking. During actual usage of such a pin, i.e. the digital read or write in the example above, no further checking will take place. During initialization, the configuration structure is checked against what the controller is capable. This also includes the pins assigned to UART, SPI and I2C pins.
+For each part of the CDC library, there is a configuration routine. For example, the digital IO configuration will set a particular pin to be an input or output pin and so on. During this configuration only basic checking what a controller can support on that pin will be done. The Atmega is far more restrictive with respect to the IO pins used than the Raspberry. The CDC library will do whatever it can to do such checking. During actual usage of such a pin, i.e. the digital read or write in the example above, no further checking will take place. During initialization, the configuration structure is checked against what the controller is capable. This also includes the pins assigned to UART, SPI and I2C pins.
 
-\section{CDC Library setup}
+\unnumberedSection{CDC Library setup}
 
 To the firmware programmer, the library is a set of functions in the name space CDC. A call to any of the routines typically has the form "CDC::xxx". Of course, the name space can be declared upfront so the prefix is not needed. The example shown below will just show the fully qualified signature. The very first thing a node firmware should do is to set up the controller dependent library. If for some reason access to the lower layer is required before the LCS library is initialized, the calls can be made directly from the node firmware. There is also a convenience routine to print the content of the configuration structure.
 
@@ -120,7 +120,7 @@ To the firmware programmer, the library is a set of functions in the name space 
 \end{lstlisting}
 \FloatBarrier
 
-\section{General Controller Attributes and Functions}
+\unnumberedSection{General Controller Attributes and Functions}
 
 The CDC layer provides a set of common low level functions. There is a function that creates a unique ID for the controller board. It is primarily used when a node needs a hardware module unique identifier. The controller internal memory and any internal EEPROM sizes return the hardware capabilities of processor and installed NVM. The NVM select pin is used for the VNVM memory SPI addressing. Finally, the CANBus controller needs to know the SPI bus select pin and the mode, i.e. baud rate and controller frequency. The library also offers the timestamp routines for milliseconds and microseconds since start.
 
@@ -134,7 +134,7 @@ The CDC layer provides a set of common low level functions. There is a function 
 
 Some of the routines can also be found in the Arduino IDE and its libraries for the Arduino. As this project perhaps may also be implemented in an non-Arduino environment, this dependency is also hidden behind the CDC layer.
 
-\section{Power Fail detect}
+\unnumberedSection{Power Fail detect}
 
 The main controller board features optional power failure detection. The power supply provides a signal line to the controller which goes low when power drops. The power fail input pin is set in the configuration structure and just passed as an input to the configure routine. 
 
@@ -142,25 +142,25 @@ The main controller board features optional power failure detection. The power s
 // ??? has changed...
 
 
-\section{External Interrupt}
+\unnumberedSection{External Interrupt}
 
 The CDC library offers a set of routines for handling an external interrupt. While a controller typically allows for interrupts on almost any IO pin, there are one some controllers dedicated IO pins which offer an interrupt input with flexible setting and high resolution timing. A callback needs to be registered for this interrupt.
 
 // ??? has changed ...
 
 
-\section{Status LEDs}
+\unnumberedSection{Status LEDs}
 
 The main controller board features one LED. This is the activity LED, accessed via the \textbf{writeDio} routine. The LCS core library will use this LED to indicate that the node is ready and that there are library activities such as receiving a LCS message. The following just shows an example how to control the LEDs.
 
 ??? this is done via nodeControl calls ...
 
-\section{Watchdog}
+\unnumberedSection{Watchdog}
 
 ??? watch dog facility
 
 
-\section{Timer}
+\unnumberedSection{Timer}
 
 Although the LCS core library itself does not make use of a timer, having a general timer with a callback routine interface is an essential component. The DCC signal generation for example makes intensive use of timers to generate that signal. The timer is a repeating timer and accepts a timer value measured in microseconds. In addition, the timer already starts again counting in parallel to the timer interrupt handler code. Finally, the timer limit, i.e. the timer when the next interrupt would occur, can be set without disturbing the already active count.
 
@@ -174,7 +174,7 @@ Although the LCS core library itself does not make use of a timer, having a gene
 
 Timers work slightly different on Atmega and PICO. Nevertheless, both versions allow to set the new limit, i.e. the timer value when the next interrupt would occur, while already counting toward the limit. Care needs to be taken however to set the new limit while the counter is below this limit. If the new limit value is below the timer counter value, we have passed the limit point already and the counter would simply continue to count and wrap around before hitting the new limit. Any carefully designed timer signal is gone. Again, better be quick in the interrupt handler.
 
-\section{Digital IO}
+\unnumberedSection{Digital IO}
 
 The digital IO routines offer an interface to plain digital input and output operations. If it is an input channel, the input can be set to active low or high input. Also, there is an option to enable the controller internal input pull-up resistor. For configured output pins, two pins can be set in pairs if supported by the actual hardware configuration, i.e. the two IO pins are on the same controller output port. This feature enables the simultaneous setting the two pins. A typical use case is the DCC signal where the two signal levels are set in one call.
 
@@ -188,7 +188,7 @@ The digital IO routines offer an interface to plain digital input and output ope
 \end{lstlisting}
 \FloatBarrier
 
-\section{Analog Input}
+\unnumberedSection{Analog Input}
 
 Analog input configures the respective controller input ports for reading an analog value. The read method offers an asynchronous way in just starting the analog input conversion process and a hardware interrupt when the conversion completes. The registered call back is then passed the value of the conversion process. The \textbf{adcRead} function is a blocking ADC measurement call.
 
@@ -202,7 +202,7 @@ Analog input configures the respective controller input ports for reading an ana
 
 The analog to digital converter system for the Raspberry PI PICO is compared to the Atmega really fast. A typical 12-bit conversion takes about 2 microseconds. The PICO ADC unit resolution will be scaled down to 1024 to match the Atmega resolution.
 
-\section{PWM Output}
+\unnumberedSection{PWM Output}
 
 ... text
 
@@ -216,7 +216,7 @@ The analog to digital converter system for the Raspberry PI PICO is compared to 
 
 The pre-scale options for the Atmega are limited to what the particular timer allows. In other words, the frequency can only be set to the nearest value of what the pre-scale option will allow. Thee PICO is again far more flexible allowing for a true frequency setting.
 
-\section{UART Interface}
+\unnumberedSection{UART Interface}
 
 The UART interface is used to offer a serial communication channel. This is required for the RailCom feature. Currently this interface implements only an asynchronous read into a local data buffer. However, the configuration routine allows to set more parameters that are needed for the current usage. One day, even a write capability may be needed.
 
@@ -232,7 +232,7 @@ The UART interface is used to offer a serial communication channel. This is requ
 
 The Raspberry PI Pico offers to implement the UART channel on one of the PIO state machines. This allows for more than the two UART blocks of the controller. The \textbf{UartMode} parameter selects what kind of UART HW is actually used.
 
-\section{I2C}
+\unnumberedSection{I2C}
 
 Controller offers a serial wire IO block. The I2C will need two pins for clock and data. There is one I2C port on the Atmega1284, and two hardware blocks on the Raspberry Pi Pico. The CDC layer offers an interface to read and write a byte.
 
@@ -244,33 +244,33 @@ Controller offers a serial wire IO block. The I2C will need two pins for clock a
 \end{lstlisting}
 \FloatBarrier
 
-\section{Programmable State Machines}
+\unnumberedSection{Programmable State Machines}
 
 ... explain ...
 
-\subsection{CAN Bus}
+\unnumberedSubSection{CAN Bus}
 
 ... can2040 library, saves us HW.
 
-\subsection{RailCom Datagram Receiver}
+\unnumberedSubSection{RailCom Datagram Receiver}
 
 ... needed for quad block controller
 
-\subsection{DCC Signal Generation}
+\unnumberedSubSection{DCC Signal Generation}
 
 ... future, not done yet 
 
-\subsection{Other Uses} 
+\unnumberedSubSection{Other Uses} 
 
 ... controlling H-Bridges
 
-\section{Extension Connector and Hardware Pins}
+\unnumberedSection{Extension Connector and Hardware Pins}
 
 The routines described have been implemented fairly flexible and their main purpose is to shield the upper library and firmware from the controller specific implementation methods as much as possible. The same routines are also used to control the pins of the extension connector. If you recall, there are two ADC channels, a digital channels and an I2C communication channel available. The first two digital pins can be overlaid with an UART interface, and the last two digital pins allow a PWM capability.
 
 The configuration descriptor structure uses predefined names for the pins of the controller. If the hardware exports these pins via the extension connector, the connector pins can be accessed by these names. However, not all pins need to be provided to the extension connector. If for example, the digital pins DIO 0 .. 4 are used local to the board, the pins are left open on the extension connector. The only mandatory pins available on any extension connector are Power, ground, I2C, reset and E-Stop.
 
-\section{Summary}
+\unnumberedSection{Summary}
 
 The controller dependent code library is the lowest layer in the LCS node software stack. Its purpose is to shield the firmware programmer from the underlying pin assignments and some of the intricacies of the particular controller. At the same time, the layer needs to be rather thin so that it adds very little to the overall path length for performance critical signal management. For special cases, there is always the possibility to access the underlying hardware directly. However, this coding my not be that portable then.
 

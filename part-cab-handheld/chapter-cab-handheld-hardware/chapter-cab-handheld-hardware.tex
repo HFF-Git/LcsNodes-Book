@@ -1,4 +1,4 @@
-\chapter{Cab Handheld Hardware}
+\unnumberedChapter{Cab Handheld Hardware}
 
 // ??? hardware chapter 
 
@@ -9,7 +9,7 @@ This chapter will describe a general handheld to just control locomotives.
 It directly connects via cable to the LCS bus and provides the generic elements to specify the locomotive to operate, set the speed and direction as well as the function keys. Implementing a base station and a handheld is all you would need to run an engine and finally see something for your hard work of building a layout system. The cab handheld described first is a board for developing the firmware. Nevertheless it can be used as a full functioning cab handheld. Later version will build upon the firmware but use a more handy form factor.
  
 
-\section{Cab Handheld Firmware Development Platform}
+\unnumberedSection{Cab Handheld Firmware Development Platform}
 
 A cab handheld as shown in the sketch above consists of the controller portion and a set of buttons and dials. Usually, for the very first steps in firmware design a breadboard implementation of the hardware is used. But why not just create a PCB with all the user elements on it? From experience with breadboards, this setup is by far more robust and you will not chase firmware bugs that turn out to be just a loose connection on a breadboard. This is by the way a lesson learned. With the very reasonable prices for a PCB board, it is almost easier to build a PCB rather early in the design phase and if it has an error, just correct it and order another set of PCBs. Although one could also build the module on a an experimental PCB board, having the schematics done, it is a small step to a dedicated PCB. Definitively worth the small extra effort of making a robust prototype PCB. The following schematic shows the extension board developed for the can handheld firmware development. First, here is the block diagram.
 
@@ -42,7 +42,7 @@ Finally, there is the part with all the buttons, encoders and the OLED Display. 
 
 Granted, it is not really a cab handheld to hold in your hands. Although the final version will have pretty much the same hardware ingredients, the form factor needs to be different. But for development, the setup will be quite helpful and robust. You will avoid chasing software problems that turn out to be just a loose connection on a breadboard. 
 
-\section{A basic Cab Handheld}
+\unnumberedSection{A basic Cab Handheld}
 
 As the name already suggests, the cab handheld is a handheld device with several buttons and a display. To keep it a compact design, we will use both sides of the PCB. The upper side contains the buttons, switches and display, the lower side contains the controller components. The cab handheld will connect via a cable to the LCS bus. Power comes from the LCS bus power lines and the CAN bus interface is used to transmit the messages. Perhaps a later version will also add some WLAN capabilities. While WLAN would come pretty much for free with the PICO W, the power supply side needs to include a battery.
 
@@ -59,11 +59,11 @@ As the name already suggests, the cab handheld is a handheld device with several
 // ??? \textbf{note} to do ..... focus on the firmware first ...
 
 
-\subsection{Summary}
+\unnumberedSubSection{Summary}
 
 Phew. The cab handheld is another big step toward in operating a layout. After all, a layout control system without some form cab handhelds is not very useful. As said, there are many ways to build a cab. The design of UI elements and firmware was greatly influenced by a handheld called \textbf{\textit{Protothrottle}}. The concept of the four screen menu control buttons found its way into the UI Elements library. In addition to the general cab handheld, a cab handheld tailored toward a specific class of engines would be a great addition to operating that engine. The next section will present a diesel cab handheld that resembles a diesel cab stand from the 1950s.
 
-\section{The Diesel Cab Handheld}
+\unnumberedSection{The Diesel Cab Handheld}
 
 The general handheld for controlling a locomotive is just one possible implementation. There is a company, Iowa Scale Engineering, that has built a handled called the \textbf{\textit{Protothrottle}}. This wireless handheld implements as the control elements the cab of a diesel engine. Wow. There is a lever for the diesel engine prime mover, a level for the direction and one for the brakes. You operate the engine with setting the prime mover notch, release the brakes and then the engine moves. When putting the prime mover to "idle", the engine just roll until you apply the brakes. In short, a much more realistic way to operate a diesel locomotive. 
 
@@ -187,7 +187,7 @@ The diesel cab handheld will leverage many of the design elements of the general
 
 Leveraging the cab handheld hardware from the previous chapter, the diesel cab handheld just differs in the levers for throttle, direction and brake instead of the speed knob. All else is fairly the same. Let's get started.
 
-\subsection{Requirements}
+\unnumberedSubSection{Requirements}
 
 \begin{smallGapItemize}
 \item Very similar to the previous cab handheld 
@@ -195,7 +195,7 @@ Leveraging the cab handheld hardware from the previous chapter, the diesel cab h
 \item all else is about the same...
 \end{smallGapItemize}
 
-\subsection{Module hardware}
+\unnumberedSubSection{Module hardware}
 
 \begin{smallGapItemize}
 \item Leverage the generic cab handheld
@@ -205,7 +205,7 @@ Leveraging the cab handheld hardware from the previous chapter, the diesel cab h
 \item rotary encoder, buttons, etc.
 \end{smallGapItemize}
 
-\subsection{Module firmware}
+\unnumberedSubSection{Module firmware}
 
 \begin{smallGapItemize}
 \item UI elements are key again, leverage many screen built before
@@ -213,7 +213,7 @@ Leveraging the cab handheld hardware from the previous chapter, the diesel cab h
 \end{smallGapItemize}
 
 
-\section{Summary}
+\unnumberedSection{Summary}
 
 \begin{smallGapItemize}
 \item now we have a generic cab handheld and a diesel cab handheld.

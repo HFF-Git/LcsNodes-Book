@@ -1,8 +1,8 @@
-\chapter{Track Occupancy Detector Extension Board}
+\unnumberedChapter{Track Occupancy Detector Extension Board}
 
 Track occupancy detectors are essential for building any block control or layout automation. The key idea is to divide the track into sections and then monitor each section for current consumption. The basic principle has been described in the power module chapter. When a locomotive is on the track section a current is flowing and there is a voltage drop along the diodes which is translated to a signal. With a DCC signal on the line, this task is straightforward, there is always a current flowing. In an analog track section, a stopped loco does not draw current. In such cases a very small current is sent periodically, enough to trigger the sensors but not enough to move anything.
 
-\section{Block Diagram}
+\unnumberedSection{Block Diagram}
 
 \begin{figure}[htbp]
     \centering
@@ -11,7 +11,7 @@ Track occupancy detectors are essential for building any block control or layout
 \end{figure}
 \FloatBarrier
 
-\section{Connectors and Logic}
+\unnumberedSection{Connectors and Logic}
 
 \begin{figure}[htbp]
     \centering
@@ -20,7 +20,7 @@ Track occupancy detectors are essential for building any block control or layout
 \end{figure}
 \FloatBarrier
 
-\section{Detectors}
+\unnumberedSection{Detectors}
 
 The sensor detector uses bridge rectifiers instead of discrete diodes. This allows for a rather dense packing. Bridge rectifiers are available for up to two Amps, which will be fine for a HO or smaller gauge layout. For the large scales the sensor needs to be built using discrete diodes, such as the SB560 Schottky Diode. Note also that the power for the track is not routed via the main controller board. The track power is directly connected to the extension board.
 
@@ -38,9 +38,9 @@ The sensor detector uses bridge rectifiers instead of discrete diodes. This allo
 \end{figure}
 \FloatBarrier
 
-\section{PCB}
+\unnumberedSection{PCB}
 
-\section{Block Diagram}
+\unnumberedSection{Block Diagram}
 
 \begin{tikzpicture}[scale=0.9, transform shape]
 
@@ -50,7 +50,7 @@ The sensor detector uses bridge rectifiers instead of discrete diodes. This allo
 \end{tikzpicture}
 
 
-\section{Firmware}
+\unnumberedSection{Firmware}
 
 \begin{itemize}
 \item I2C address considerations
@@ -60,5 +60,5 @@ The sensor detector uses bridge rectifiers instead of discrete diodes. This allo
 \item control and info items to access, every group is one port
 \end{itemize}
 
-\section{Summary}
+\unnumberedSection{Summary}
 

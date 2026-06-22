@@ -1,9 +1,9 @@
 %-------------------------------------------------------------------------------------------------------
-\chapter{RtLib Command Interface}
+\unnumberedChapter{RtLib Command Interface}
 
 ???  explain the general concept ...
 
-The primary communication method of the layout control system are LCS messages sent via the bus. In addition,the runtime library offers a command interface. Each module that offers an USB connector, implements the serial command console interface. The interface is intended for testing and tracing purposes. LCS console commands are entered through the hardware module serial interface. 
+The primary communication method of the layout control system are LCS messages sent via the bus. In addition, the runtime library offers a command interface. Each module that offers an USB connector, implements the serial command console interface. The interface is intended for testing and tracing purposes. LCS console commands are entered through the hardware module serial interface. 
 
 Perhaps the most important command is the help command, which lists all available command and  their basic syntax.
 
@@ -17,7 +17,7 @@ show a node startup message then type "?" and show the list...
 
 Any command not recognized is passed to an optionally registered command line handler. This way, the command interface allows to implement node specific commands.
 
-\subsection{Configuration Mode Commands}
+\unnumberedSection{Configuration Mode Commands}
 
 The configuration mode commands will place a node into either operations or configuration mode.
 
@@ -38,7 +38,7 @@ The configuration mode commands will place a node into either operations or conf
 \end{table}
 \FloatBarrier
 
-\section{Event Commands}
+\unnumberedSection{Event Commands}
 
 Event commands work with the event map. They add and remove an event, search the map for an event/port pair, or locally send an event to the node itself to test the event handling and so on.
 
@@ -61,7 +61,7 @@ Event commands work with the event map. They add and remove an event, search the
 \end{table}
 \FloatBarrier
 
-\section{Node Map and Attributes Commands}
+\unnumberedSection{Node Map and Attributes Commands}
 
 The node map and attribute map will examine and modify these maps.
 
@@ -90,7 +90,7 @@ The node map and attribute map will examine and modify these maps.
 %|!v | attrId \[mode\] | list a global attribute. |
 %|!V | attrId mode val | sets a a global attribute.|
 
-\section{Send a raw Message}
+\unnumberedSection{Send a raw Message}
 
 For testing the message send mechanism, a command is available to send a raw data packet via the LCS bus.
 
@@ -98,7 +98,7 @@ For testing the message send mechanism, a command is available to send a raw dat
 %|:----|:-----|:-----|
 %|!B | byte1 [ byte2 .. byte8 ] | send a raw LCS message |
 
-\section{List node status}
+\unnumberedSection{List node status}
 
 The "s" command will list a great detail on the node data. When debugging a node problem, this is perhaps the most useful command to see what is store locally.
 
@@ -107,7 +107,7 @@ The "s" command will list a great detail on the node data. When debugging a node
 %|!s | \[level\] | list status at detail level, default is summary. ( 1 - ConfigDesc, 2 - NodeMap, 3 - %PortMap, 4 - EventMap, 6 - NVM Area, 7 - MEM Area ) |
 
 
-\section{LCS message text format}
+\unnumberedSection{LCS message text format}
 
 Just like the LCS core library accepts simple ASCII command strings, the LCS messages can also be transmitted as an ASCII text line. This is very useful for building communication gateways that transmit the message via another medium, such as an ethernet channel. There is a simple scheme for the ASCII representation of the message:
 
@@ -133,6 +133,6 @@ int strToLcsMsg( uint8_t *dataBuf, uint8_t dataBufLen, char *msgStr );
 
 Note: to be implemented. Perhaps to simple library routines to create an ASCII version of a LCS message and convert an ASCII string to an LCS message.
 
-\section{Summary}
+\unnumberedSection{Summary}
 
 The command line interface provides an easy way to interact with a node at the command line level. This is very useful for initial testing new hardware and software debugging. All that is needed is a USB interface and a computer. Besides that, this interface is normally not used during regular operations.

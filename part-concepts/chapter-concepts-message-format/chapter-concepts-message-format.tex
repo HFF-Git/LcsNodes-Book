@@ -1,8 +1,8 @@
 %-------------------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------------------
-\chapter{Message Formats}
+\unnumberedChapter{Message Formats}
 
-Now that we know the overall concepts, let us first have a look at the message data formats and protocols. This chapter presents an overview on the available messages formats and provide a short introduction to what they do. 
+Now that we know the overall concepts, let us first have a look at the message data formats and protocols. This chapter presents an overview on the available messages formats and provides a short introduction to what they do. 
 
 \begin{center}
     \begin{tikzpicture} [scale=0.9, transform shape]
@@ -61,7 +61,7 @@ The messages often contain 16-bit values. They are stored in two bytes, the most
 
 The byte fields names in an LCS message are explained in greater detail when we discuss the runtime library. For this chapter, the term node/port/channel identifier, \texttt{npId}, is a 16-bit word which consists of the 8-bit nodeId, the 4-bit portId and the 4-bit channel Id. The term \texttt{sId} refers to a locomotive session. The remaining message field names, such as \texttt{UID} or \texttt{spDir} or \texttt{argN}are fairly self-explaining.
 
-\section{General Management}
+\unnumberedSection{General Management}
 
 The general management message group contains commands for dealing with the layout system itself. The reset command \texttt{(RESET)} directs all hardware modules, a node, or a port on a node to perform a reset. The entire bus itself can be turned on and off \texttt{(BUS-ON, BUS-OFF)}, enabling or suppressing the message flow. Once the bus is off, all nodes wait for the bus to be turned on again. The base station broadcasts a \texttt{(SYS-TIME)} message with the layout time, \texttt{(LCS-INFO)} broadcasts general system information on a regular basis. Finally, there are messages performing request acknowledgement \texttt{(ACK/ERR)}.
 
@@ -84,7 +84,7 @@ The general management message group contains commands for dealing with the layo
     }
 \end{table}
 
-\section{Node Id Setup}
+\unnumberedSection{Node Id Setup}
 
 When a hardware module is powered on, the first task is to establish the node Id in order to broadcast and receive messages. The \texttt{(REQ-NID)} and \texttt{(REP-ID)} messages are the messages used to implement the protocol for establishing the nodeId. More on this in the chapter on message protocols. A virgin node has the hardware module-specific node type and a node Id of \texttt{NIL} also be set directly through the \texttt{(SET-NID)} command. This is typically done by a configuration tool.
 
@@ -106,7 +106,7 @@ When a hardware module is powered on, the first task is to establish the node Id
 
 All nodes monitor the message flow to detect a potential node collision. This could be for example the case when a node from one layout is installed in another layout. When a node detects a collision, it will broadcast the \texttt{(NCOL)} message and enter a halt state. Manual interaction is required. A node can be restarted with the \texttt{(RES-NODE)} command, given that it still reacts to messages on the bus. All ports on the node will also be initialized. In addition a specific port on a node can be initialized. The hardware module replies with an \texttt{(ACK)} message for a successful node Id and completes the node Id allocation process. As the messages hows, node and port ID are combined. LCS can accommodate up to 4095 nodes, each of which can host up to 15 ports. A Node ID 0 is the NIL node. Depending on the context, a port Id of zero refers all ports on the node or just the node itself.
 
-\section{Node and Port Attributes}
+\unnumberedSection{Node and Port Attributes}
 
 The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} are available to obtain attribute data from the node or port. The \texttt{(NODE-SET)} allows to set attributes for a node or port on the targeted node. The \texttt{(NODE-FREQ)} message passes a requests to the target node. The \texttt{(NODE-FREP)} is the corresponding reply message.
 \begin{table}[ht!]
@@ -142,7 +142,7 @@ Nodes do not react to configuration type messages when in operations mode. To co
     }
 \end{table}
 
-\section{Event Management}
+\unnumberedSection{Event Management}
 
 The event management group contains the messages to configure the node event map and messages to broadcast an event and messages to read out event data. An inbound port can register for many events to listen to, and an outbound port will have exactly one event to broadcast. Ports and Events are numbered from 1 onward. When configuring, the portId \texttt{NIL} has a special meaning in that it refers to all portIds on the node.
 
@@ -161,7 +161,7 @@ The event management group contains the messages to configure the node event map
     }
 \end{table}
 
-\section{DCC Track Management}
+\unnumberedSection{DCC Track Management}
 
 Model railroads run on tracks. Imagine that. While on a smaller layout, there is just the track, the track on a larger layout is typically divided into several sections, each controlled by a track node \textnormal{(centralized node or decentralized port)}. The system allows to report back the track sections status \textnormal{(in terms of occupied, free, and detecting the number of engines currently present)}. This function is implemented via the attribute management messages. In addition, the \texttt{TON} and \texttt{TOF} messages turn on and off the tracks on the entire layout. In case of an emergency the \texttt{(E-STOP)} message stops all running engines. 
 
@@ -180,7 +180,7 @@ Model railroads run on tracks. Imagine that. While on a smaller layout, there is
     }
 \end{table}
 
-\section{DCC Locomotive Decoder Management}
+\unnumberedSection{DCC Locomotive Decoder Management}
 
 Locomotive management comprises the set of messages used by the base station to control running equipment. To control a locomotive, the \texttt{(REQ-LOC)} command is issued, typically by a handheld cab and processed by the base station. Upon receiving this command, the base station allocates a session and responds with a \texttt{(REP-LOC)} message containing the initial speed and direction settings for the locomotive. A previously allocated session can be closed using the \texttt{(REL-LOC)} command, to which the base station also responds with a \texttt{(REP-LOC)} message. Information about an existing DCC session can be requested using the \texttt{(QRY-LOC)} command, while data for a locomotive within a consist can be obtained using the \texttt{(QRY-LCON)} command. In both cases, the base station replies with a \texttt{(REP-LOC)} message.
 
@@ -242,7 +242,7 @@ Locomotive decoders contain configuration variables too. They are called CV vari
 
 The SET-CVM command allows to write to a decoder CV while the decoder is on the main track. Without the RailCom channel, CVs can be set but there is not way to validate that the operation was successful.
 
-\section{DCC Accessory Decoder Management}
+\unnumberedSection{DCC Accessory Decoder Management}
 
 Besides locomotives, the DCC standards defines stationary decoders, called accessories. An example is a decoder for setting a turnout or signal. There is a basic and an extended format. The \texttt{(SET-BACC)} and \texttt{(SET-EACC)} command will send the DCC packets for stationary decoders. Similar to the mobile decoders, there are POM / XPOM messages to access the stationary decoder via RailCom capabilities.
 
@@ -262,7 +262,7 @@ Besides locomotives, the DCC standards defines stationary decoders, called acces
 
 These commands are there for completeness of the DCC control interfaces. There could be devices that are connected via the DCC track that we need to support. However, in a layout control system the setting of turnouts, signals and other accessory devices are more likely handled via the layout control bus messages and not via DCC packets to the track. This way, there is more bandwidth for locomotive decoder DCC packets.
 
-\section{RailCom DCC Packet management}
+\unnumberedSection{RailCom DCC Packet management}
 
 With the introduction of the RailCom communication channel, the decoder can also send data back to a base station. The DCC POM and XPOM packets can now not only write data but also read out decoder data via the RailCom back channel. The following messages allow to send the POM / XPOM DCC packets and get their RailCom based replies.
 
@@ -286,7 +286,7 @@ With the introduction of the RailCom communication channel, the decoder can also
 
 The XPOM messages are DCC messages that are larger than what a CAN bus packet can hold. With the introduction of DCC-A such a packet can hold up to 15 bytes. The LCS messages therefore are sent in chunks with a frame sequence number and it is the responsibility of the receiving node to combine the chunks to the larger DCC packet.
 
-\section{Raw DCC Packet Management}
+\unnumberedSection{Raw DCC Packet Management}
 
 The base station allows to send raw DCC packets to the track. The \texttt{(SEND-DCC3)}, \texttt{(SEND-DCC4)}, \texttt{(SEND-DCC5)} and \texttt{(SEND-DCC6)} are the messages to send these packets. Any node can broadcast such a message, the base station is the target for these messages and will just send them without further checking. So you better put the DCC standard document under your pillow.
 
@@ -321,7 +321,7 @@ The above messages can send a packet with up to six bytes. With the evolving DCC
     }
 \end{table}
 
-\section{DCC errors and status}
+\unnumberedSection{DCC errors and status}
 
 Some DCC commands return an acknowledgment or an error for the outcome of a DCC subsystem request. The \texttt{(DCC-ACK)} and \texttt{(DCC-ERR)} messages are defined for this purpose.
 
@@ -339,11 +339,11 @@ Some DCC commands return an acknowledgment or an error for the outcome of a DCC 
     }
 \end{table}
 
-\section{Analog Engines}
+\unnumberedSection{Analog Engines}
 
 The messages defined for the DCC locomotive session management as outlined above are also used for the analog engines. An analog engine will just like its digital counterpart have an allocated locomotive session and the speed/dir command is supported. All other commands will of course not be applicable. The speed/dir command will be sent out on the bus and whoever is in control of the track section where the analog engine is supposed to be, will manage that locomotive. In the following chapters we will answer the question of how exactly multiple analog engines can run on a layout.
 
-\section{Firmware Update Management}
+\unnumberedSection{Firmware Update Management}
 
 LCS supports a method for updating the firmware remotely. This involves loading a new firmware image. A typical approach is to split the available program memory in two partitions and load the new image in the non-active partition. When the firmware is transmitted and valid, the next restart will boot using the new firmware. There is a whole chapter later in the book about the firmware update.
 
@@ -366,7 +366,6 @@ LCS supports a method for updating the firmware remotely. This involves loading 
 
 A firmware update starts with the \texttt{(START-LOAD)} message. The transfer uses the \texttt{(START-BLOCK)}, \texttt{(SEND-DATA)} and \texttt{(END-BLOCK)} messages to transmit a block. Each block is validated with a 16-bit checksum. The \texttt{(END-LOAD)} message completes the download, the entire image is checked against a 32-bit checksum.
 
-
-\section{Summary}
+\unnumberedSection{Summary}
 
 This chapter introduced the general message formats for the layout control bus functions and how they are used in the LCS protocols. The message format is built upon an 8-byte message format that is suitable for the industry standard CAN bus. Although there are many other standards and communication protocols, the CAN bus is a widely used and robust bus. Since all data is encoded in the message, there is no reason to select another communication media. But right now, it is CAN. The next chapter will now concentrate on the message protocols.

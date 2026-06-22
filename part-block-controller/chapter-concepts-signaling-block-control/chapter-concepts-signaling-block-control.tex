@@ -1,4 +1,4 @@
-\chapter{Signaling Block Control}
+\unnumberedChapter{Signaling Block Control}
 
 The previous chapters got us to understand the LCS concepts, to build LCS nodes and power units on different hardware platforms. It all resulted in building an essential piece necessary for any layout, the LCS base station. So far so good. The next big part to address is to build hardware and software to control devices such as signal, turnouts, and so on. Also, we would need to get feedback from the layout where trains exactly and what the currently do. After all, a trains needs to safely get from A to B. Before diving into block controllers, sensors and actors, here is a brief chapter on where the journey will go.
 
@@ -12,11 +12,11 @@ So in general, a route from A to B is a series of blocks each governed by a sign
 
 This chapter will present the signaling block concepts and gives an overview how they are implemented for the layout control system at a high level. The appendix contains further references to detailed literature about the subject. A later chapter will discuss the block controller hardware and firmware.
 
-\section{Requirements}
+\unnumberedSection{Requirements}
 
 As discussed already, a layout is divided into blocks, and a block further divided into subsections. Once the layout is built and configured the relation between the blocks, i.e. which blocks to enter from and to leave top are fixed. There is a static relation and a dynamic one, called routes. Consider a block with an entry and a turnout at the other end. The entry block is fixed and the two exit block too. The actual turnout setting determines which is the follow-on block. Since a block can possibly be entered from both directions, the fundamental block is a piece of track with an optional turnout at each end.
 
-Blocks needs to be uniquely identifiable across the layout, so the configuration tool can describe the overall layout in terms of blocks as the unit of control. The block has a state. At a high level, there are free, locked and occupied blocks. Consider a train in Block A on route from block A to B to C. Block A is marked "occupied". The follow on block B will be marked "locked" and block C is "free". Once the train has left block A into block B, block A will be marked free after a short delay, block B is "occupied" and block C is "locked". Trains always look ahead two blocks, if not more.
+Blocks need to be uniquely identifiable across the layout, so the configuration tool can describe the overall layout in terms of blocks as the unit of control. The block has a state. At a high level, there are free, locked and occupied blocks. Consider a train in Block A on route from block A to B to C. Block A is marked "occupied". The follow on block B will be marked "locked" and block C is "free". Once the train has left block A into block B, block A will be marked free after a short delay, block B is "occupied" and block C is "locked". Trains always look ahead two blocks, if not more.
 
 Each block has attributes for current speed and direction of a train occupying the block. Each block further needs an attribute that specifies the entry speed when moving into this block. A speed of zero means that this block is occupied and a follow-on train cannot enter the block. If for example block C in our example is occupied, a train being in block A needs to enter block B at reduced speed. The algorithms will be described in a further section of this chapter.
 
@@ -24,7 +24,7 @@ A block is divided into one more subsections. While they all share the same powe
 
 A block is guarded by signals. They indicate information to the locomotive engineer about the state of the blocks ahead. The setting of the signals is a consequence of the block events broadcasted among the blocks about trains, speed and direction. Also, blocks broadcast the actual setting of entry or exit turnouts if there are any. A layout control tool needs to be able to set the turnouts as part of setting a route across several blocks.
 
-\section{Block Element Concept}
+\unnumberedSection{Block Element Concept}
 
 A block is the fundamental element of the block signaling system. The following figure shows the possible configuration of a block  element.
 
@@ -32,17 +32,17 @@ A block is the fundamental element of the block signaling system. The following 
 
 From a moving direction viewpoint, each block can be seen as having exactly one entry point and optional two exits, depending whether a turnout is par of the block or not. If there is a turn out it is typically the last subsection of the block element. A block that can be entered from both directions potentially has a turnout at each end. In theory, any possible layout can be realized with this block element. The layout configuration and block control software will thus center around this basic element.
 
-\section{Turnouts}
+\unnumberedSection{Turnouts}
 
 At a maximum, there are two possible turnouts for a block element. A block can have no turnouts, a turnout when entered in forward direction, and a turnout when entered in backward direction. Each turnout position, \textbf{ahead} and \textbf{turn} leads to another block. While the dependency between neighboring blocks are statically configured without turnouts (called switches in the UK), these dependency will become dynamic as soon there is a turnout at the beginning or end of a block. If there is a turnout (or group of turnouts) at the beginning of the block, the status of the block determines if the signal of the block the turnout is pointing can show red or green while the signal from the other direction have to show red by default. The same is true for a turnout at the end respectively. What the signal can display depends always on the status of the block the turnout points to.
 
-\section{Signals}
+\unnumberedSection{Signals}
 
 Signals, also called semaphores in the US, communicate to the train engineer what is ahead. There are two kind of signals, the main signal at the end of a section and a distant signal associated with the main signal. The distant signals is placed in breaking distance seen from the associated main signal. 
 
 Besides the usual red for \"stop\" and green for \"full steam ahead\" there can be a additional yellow light for go ahead at lower speed indicating there will be a turnout pointing to a siding, or a train occupying the next follow-on block.
 
-\section{ABS and ABP}
+\unnumberedSection{ABS and ABP}
 
 With the basic elements  block, subsection, turnouts and signals in place, there are several ways to implement a block control system. The first algorithms is the \textbf{Automated Block System} ( \textbf{\textit{ABS}} ). The Automatic Block Signaling (ABS) system is a type of railroad signaling system that helps manage train movements by dividing a railway line into multiple blocks or sections. Each block is protected by signals that control the movement of trains to prevent collisions and ensure safe operation. A signal at the beginning controls whether that block can be entered at what speed. For example, a halt signal means that the train speed to enter the block is zero. The condition will is also shown with the distant signal. A distant signal is the signal ahead of the main signal that indicated the state of the main signal in breaking distance for the trains. So, a distant signal indicating a "slow" condition shows the condition of main signal ahead, which is the condition to enter the block ahead. The distance between the distance signal and the main signal is called the approach indication. Another variant is to just have main signals, one for each block entry. The approach indication in this case is the length of the block , the signal is the main signal of the block before. This variant can often be found in American railways.
 
@@ -54,7 +54,7 @@ ABS still has a fixed block length that accommodates the largest train length. B
 
 In summary, Automatic Block Signaling is a fundamental safety system in rail operations that helps prevent collisions by controlling the movement of trains through a series of automated signals that respond to track occupancy. ABS can be integrated with other signaling and control systems, such as Centralized Traffic Control (CTC), which allows for more centralized management of train movements over larger areas.
 
-\section{CTC}
+\unnumberedSection{CTC}
 
 Centralized Traffic Control (CTC) is a system used in railway operations to centralize and streamline the control of train movements over a large section of a rail network. Unlike more decentralized systems where individual signal operators control specific areas, CTC allows a single control center to manage train traffic over many miles of track. There are dispatch centers which control the train movements across a larger area. All information about switches, signals and train locations are available in real time to the dispatcher. The dispatcher or operator in the control center can monitor and control signals and track switches remotely, guiding trains safely and efficiently across the network.
 
@@ -68,11 +68,11 @@ In summary, centralized control reduces the risk of accidents caused by human er
 
 However, while CTC is highly effective, it requires significant infrastructure and technology investment, including communication systems and control software. The system depends on reliable data from the field, so failures in track circuits or communication links can disrupt operations. Nevertheless, Centralized Traffic Control is a critical system in modern rail operations, providing a centralized, efficient, and safe method for managing train movements across large sections of a rail network. It has revolutionized how railroads handle traffic, especially in busy or complex areas.
 
-\section{Block Control Algorithms}
+\unnumberedSubSection{Block Control Algorithms}
 
 /// ??? \textbf{note} fill in ...
 
-\subsection{Single Direction Line}
+\unnumberedSubSection{Single Direction Line}
 
 Imagine a single direction line with several blocks. The control element is the speed at which the train can enter to block ahead. If for example the block speed is zero, the train cannot enter this block. The following tasks need to be done periodically for each block.
 \begin{itemize}
@@ -81,16 +81,16 @@ Imagine a single direction line with several blocks. The control element is the 
 \item The entrance signal to this block is set according to the new target speed. If the target speed is lower than the previous one, the signal is set immediately. Otherwise, set the signal is set after a short delay time.
 \end{itemize}
 
-\subsection{Double Direction Line}
+\unnumberedSubSection{Double Direction Line}
 
 // ??? \textbf{note} fill in ...
 
-\subsection{Absolute Permissive Blocks}
+\unnumberedSubSection{Absolute Permissive Blocks}
 
 /// ??? \textbf{note} fill in ...
 
 
-\section{Layering...}
+\unnumberedSection{Layering...}
 
 
 \begin{center}
@@ -148,7 +148,7 @@ Imagine a single direction line with several blocks. The control element is the 
     \end{tikzpicture}
 \end{center}
 
-\section{Summary}
+\unnumberedSection{Summary}
 
 This chapter gave a brief overview on block signaling control concepts and the key algorithms to implement. Our block signaling system will implement single direction ABS, single line ABS and APB using signals on the line. The layout will be divided into blocks with subsections. The length of the block accommodates the largest train length and subsections are granularity of knowing where the trains actually is. Each block is managed by a block controller node, which manages the train hosted, associated signal and turnouts for the block. It also manages communicates the state to the other block controls and the central train authorization system. ( CTC ).
 

@@ -1,5 +1,5 @@
 %--------------------------------------------------------------------------------
-\chapter{LCS Hardware Module Design}
+\unnumberedChapter{LCS Hardware Module Design}
 
 So far we covered the general concepts, messages, protocols as well as the LCS core library and a glimpse how all of this might be used. Let's take a break from all that concepts and mostly software talk. For the LCS core layers and the node firmware to run, hardware modules need to be built. Welcome to the next big part of this book. Here, we will talk about the LCS hardware modules. A hardware module conceptually consist of three key parts.
 
@@ -13,7 +13,7 @@ At the center of a hardware module is the \textbf{controller}. There is a great 
 
  This chapter is the first in series of chapters on hardware modules. Instead of presenting complete schematics for each major hardware module, such as the base station, we will go a slightly different route. We will first present the basic components an LCS node might need. Definitively we will need a controller and a CAN bus interface. Some LCS nodes might make use of an extended non-volatile storage, others need plenty of digital outputs. Just like Lego Blocks, all these parts should be combined easily to form the desired LCS hardware module. We will tackle each component one at a time to understand how they work. The later chapters will just combine these basic blocks with minor adaptations and perhaps some very dedicated components for their functionality.
 
-\section{Selecting the controller}
+\unnumberedSection{Selecting the controller}
 
 The module designs described in this book initially used the AtMega controller platform along with the Arduino IDE to write the software. There is the Arduino IDE and by now a whole set of different processors. Since it was released, the Atmega controller family and boards such as Arduino UNO, Arduino NANO, Arduino MEGA are in widespread use. The LCS core library program and non-volatile storage requirements do place however a higher demand on the controller capabilities.
 
@@ -21,7 +21,7 @@ Meanwhile, the Raspberry PI Pico \texttt{(PICO)} controller joined the club. And
 
 As time goes by, there will be for sure other capable controller entering the market. However, when you want to complete a project versus chasing the latest controllers, you will need to pick. In our case, the PICO is the controller of choice. Its capabilities match our requirements and will be a good choice for the years to come. nevertheless, the LCS library software should be designed as independent of a particular controller as possible. More on this later. 
 
-\section{The Controller Platform}
+\unnumberedSection{The Controller Platform}
 
  The following table gives some guidance on the capabilities needed in our designs. This list also applies in general to other controllers.
 
@@ -64,13 +64,13 @@ As time goes by, there will be for sure other capable controller entering the ma
     \textbf{WLAN} & WLAN is optional, but becoming really popular. There is a PICO version with WLAN capability integrated. \\
 \end{longtable}
 
-\section{Hardware Module Schematics}
+\unnumberedSection{Hardware Module Schematics}
 
 Hardware modules are described to large extent via schematics. The schematics shown in the following chapters are all drawn with the EasyEDA software. It is a great hardware development platform, and you can order PCBs for the final design in one easy step. Following a building block principle, the schematic diagrams will show functional components with many network endpoints where they connect to other building blocks. Each network endpoint is labelled with a name that is unique across all building blocks used in a hardware module schematic drawn. For example, "VCC-3V3" will always refer to the 3.3V power supply line. If two building blocks have an endpoint with the same name, the endpoints will be connected on all building block schematics in the final hardware module schematic.
 
 A general word to the building blocks. They serve as examples of how the individual parts could be implemented and help to understand how each part works. Parts of the library software assume the presence of these blocks and how they basically work. Although the library has been written with as much as possible independence of the hardware, the final adaption of timers, serial lines, I/O pins and so on is required needs to be considered. Throughout the next chapters, you will find comments on what is perhaps generic and what would require some adaption if moving to another processor family.
 
-\section{General Board Layout}
+\unnumberedSection{General Board Layout}
 
 Each node in the layout control system is a node and hence there is a controller for running the node firmware. Without a question, there will be many different nodes and as time goes by perhaps even new controller families. However, each node would need at least some form of power supply, the CAN bus interface and depending on the storage demands and controller family, an external NVM. On top there is the node specific hardware. One approach is to design a board for each dedicated purpose. This board would include all the common portion for a LCS node and the hardware module specific portion. Another approach is to design a node controller board with extension boards that can be connected to it. In the remainder of this chapter, we will describe the main controller and extension concept. However, it is also perfectly all-right to design a hardware component with all the components integrated on one board. For a complex node such as the base station, this is a very reasonable solution. The building blocks shown in this chapter thus also form the basis for a more monolithic hardware module design. But first, let's look at the physical dimension of our boards.
 
@@ -87,7 +87,7 @@ Each node in the layout control system is a node and hence there is a controller
 
 All boards will have a form factor of 10cm wide and 8, 12, and 16cm long. The figure above shows the 10cm by 16cm board form factor. The main controller board has on the left side the connectors for the LCS bus and the power input. On the right side, there are two connectors toward an extension board. As described before, there are two types of extension boards. The usage of the individual connector pins are described in the upcoming chapter. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as symbols and PCB footprints in the EasyEDA library.
 
-\section{LCS Bus connector}
+\unnumberedSection{LCS Bus connector}
 
 Every hardware module needs the LCS bus interface to connect to the bus. Some modules may also draw power from this bus. The modules use an RJ45 connector for connecting to the bus. The bus signals can be grouped in several categories. The CAN bus differential lines represent the CAN bus. The VS line is intended for hardware modules with very little power consumptions so that they can directly be powered by the bus. The DCC signal lines are an exact copy of the DCC signal that would go to a track sent out by the DCC signal generating base station. The signal is intended to be routed from the base station to booster nodes, but also to hardware modules that analyze the DCC signal for some action. Finally there is the STOP signal line. This is a wired OR line that allows a simple button along the layout with access to this line to issue a STOP signal. The base station or any nodes interested in the signal can monitor this line. There are the following signal lines.
 
@@ -124,7 +124,7 @@ Every hardware module needs the LCS bus interface to connect to the bus. Some mo
     8 & CAN-H &  Line H of the differential CAN bus signal. \\
 \end{longtable}
 
-\section{I2C Bus connector}
+\unnumberedSection{I2C Bus connector}
 
 The external I2C line, called the I2C bus, is exposed to the extension boards as well as a connector next to the LCS bus. 
 
@@ -163,7 +163,7 @@ The external I2C line, called the I2C bus, is exposed to the extension boards as
     
 \end{longtable}
 
-\section{LCS Nodes Extension Board Connector}
+\unnumberedSection{LCS Nodes Extension Board Connector}
 
 For interchangeability of extensions, there is a standardized \textbf{extension board connector} between controller and extension boards. Extension boards have a male connector set on the left hand side. Main controller boards will have a female connector on the right hand side. This way main controller and one extension board can be placed next to each other. 
 
@@ -280,7 +280,7 @@ For even more complex extension boards with many connection to the controller bo
 
 
 
-\section{Controller and Extension Board}
+\unnumberedSection{Controller and Extension Board}
 
 // ??? what to keep here vs. extension part ?
 
@@ -311,7 +311,7 @@ Controller and Extension boards make up a node. The main controller board will c
 
 Since there are typically only a few extension boards connected to one controller, the signal line length is reasonable. For a more compact arrangement, extension boards with only the right hand side connector can be plugged into a backplane style board with the main controller next to it. Nothing else as far as connectivity goes is changed. The appendix on the board design details has the detailed layout of such a board.
 
-\section{Summary}
+\unnumberedSection{Summary}
 
 This chapter introduced the basic ideas behind a hardware module, it connectors and board layout. A key concept is the idea of a common component, the main controller, and extensions that can be connected. Nevertheless, there are good cases for combining a main controller and the extension hardware into one monolithic board. But in any case, the connectors and their purposes stay the same from board to board. While the main controller boards always have the LCS bus and power input on the left side, the extension connector and track line connector on the right, extension boards come in two flavors. 
 

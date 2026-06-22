@@ -1,4 +1,4 @@
-\chapter{Block Controller Firmware}
+\unnumberedChapter{Block Controller Firmware}
 
 // ??? \textbf{note} this chapter should come after the extension chapters ... ???
 
@@ -7,7 +7,7 @@ A block controller is an LCS node that can manage one more blocks, each with one
 First, each block must be uniquely defined in the layout. A block controller ID consists of the node ID and a portId resenting that block. A layout could have theoretically 4095 nodes with 4 blocks each. In reality, we need nodes also for other purposes, but still this number is large enough even for really large layouts. Let'S first look a t what ports are needed.
 
 
-\section{Notes}
+\unnumberedSection{Notes}
 
 There is a concept of actual versus target speed. A block always has a target speed and a maximum speed. The maximum speed is due to the landscape. The target speed is set based on the state of the next blocks in line. It specifies what the speed is when leaving this block. 
 
@@ -19,7 +19,7 @@ The block controller need to manage the sessionId and cabId of the engine it cur
 
 On emergency stop, the former target speed is saved. On restart, we can ramp up again to target speed.
 
-\section{Block Controller Ports Overview}
+\unnumberedSection{Block Controller Ports Overview}
 
 A node can have up to 15 ports, portID zero refers to the node itself. For the block controller, portId 1 to 4 are reserved for the blocks that the node can manage. The quad block controller introduced before, will use all four ports. Again, the combination of nodeID and port will uniquely identify that block in the layout. These ports are called \textbf{Block Port} in the text to follow.
 
@@ -35,7 +35,7 @@ When configuring a layout the blocks need to be configured, which means to set a
 
 The block controller will define many items that refer to node and pot map attributes as well as user defined items specific to the block controller.
 
-\section{Block Port}
+\unnumberedSection{Block Port}
 
 \begin{itemize}
 \item block state ( free, used, running, locked, etc. )
@@ -62,7 +62,7 @@ The block controller will define many items that refer to node and pot map attri
 |--------|--------|
 | ... | |
 
-\section{Section Port}
+\unnumberedSection{Section Port}
 
 \begin{itemize}
 \item associated block port
@@ -85,7 +85,7 @@ The block controller will define many items that refer to node and pot map attri
 |--------|--------|
 | ... | |
 
-\section{H-Bridge Port}
+\unnumberedSection{H-Bridge Port}
 
 \begin{itemize}
 \item actual power consumption
@@ -106,7 +106,7 @@ The block controller will define many items that refer to node and pot map attri
 | ... | |
 
 
-\section{Turnout Port}
+\unnumberedSection{Turnout Port}
 
 \begin{itemize}
 \item actual turnout setting
@@ -125,7 +125,7 @@ The block controller will define many items that refer to node and pot map attri
 |--------|--------|
 | ... | |
 
-\section{Signal Port}
+\unnumberedSection{Signal Port}
 
 \begin{itemize}
 \item actual signal state
@@ -143,7 +143,7 @@ The block controller will define many items that refer to node and pot map attri
 | ... | |
 
 
-\section{Block Controller Node}
+\unnumberedSection{Block Controller Node}
 
 \begin{itemize}
 \item global data for the block controller
@@ -160,7 +160,7 @@ The block controller will define many items that refer to node and pot map attri
 | ... | |
 
 
-\section{Info, Control and Events}
+\unnumberedSection{Info, Control and Events}
 
 \begin{itemize}
 \item events are the key mechanism to broadcast the block state. when an engine is entering a block, the event is broadcasted. The configured previous block and the follow-on block are interested in this event and react. In addition, the status can be queried from other nodes anytime.
@@ -168,7 +168,7 @@ The block controller will define many items that refer to node and pot map attri
 \item setting of turnouts and actual block occupancy are non-volatile data to be recovered at restart or after power fail. At restart, block occupancy and turnouts direction are set from this data.
 \end{itemize}
 
-\section{To think about}
+\unnumberedSection{To think about}
 
 \begin{itemize}
 \item layout turn on: what setting for each engine ? automatic ramp up to previous speed levels ?
@@ -178,7 +178,7 @@ The block controller will define many items that refer to node and pot map attri
 \item short rains and block sections, a train should perhaps stop in the middle if desired...
 \end{itemize}
 
-\section{Summary}
+\unnumberedSection{Summary}
 
 \begin{itemize}
 \item a rather complex firmware with a lot of functions.

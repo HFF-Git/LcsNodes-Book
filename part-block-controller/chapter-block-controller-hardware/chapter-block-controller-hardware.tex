@@ -1,4 +1,4 @@
-\chapter{The Block Controller Node Hardware}
+\unnumberedChapter{The Block Controller Node Hardware}
 
 So far, we covered a lot of ground. The Layout Control System rests on the concept of a node with ports and a common bus for nodes to communicate with each other. There are specialized nodes, one of them being the base station responsible for managing the locomotive sessions and generating the DCC signals. The base station is as the name suggest a central piece in a layout. The base station node shown in the previous chapter featured two track outputs, MAIN and PROG. The MAIN track is what powers the layout. However, the base station power module unit allowed for about 2.5 Amps and hence only smaller layouts will just do fine with one base station. For larger layouts, help to power several track sections is needed.
 
@@ -8,7 +8,7 @@ But there is more to it. For a safe and automated operation, dividing the layout
 
 Conceptually, a booster and a block controller have very much in common. They both handle a section or block, they both need power modules to generate the track power, they both need to offer basic sensor and control capabilities to manage a track section or block. Our concept will just unify these two modules types and we will call them block controller from now on. A block controller is a LCS node that manages a track. There are versions with one channel, i.e. one block, and two channels. Support for track occupancy detection, an essential feature for block control, is optional since simple boosters would not need it if they just manage one block with no sections. The text will just use the term block controller and only mention boosters explicitly when needed. Let's get started with the overall requirements.
 
-\section{Requirements}
+\unnumberedSection{Requirements}
 
 Traditionally, block control in a layout system was implemented with central control electronics and/or relays. This introduced not only a significant amount of cabling but also a high complexity in building a block control system. A centralized place for all the parts of a block system also results in long cable connections running in parallel which act like antennas resulting in face signals. As a general rule, cable connections on a model railroad should be as short as possible. With a decentralized concept where each block or a small number of blocks are managed by a dedicated controller, the lines to tracks, detectors and signals can be much shorter. There may be still a central base station, but the cables to track, switches and signals are just connected to local booster units located next to them. Over the years, the rise of digital control helped to simplify the configuration and building but the central approach still dominates most designs along with the high cabling effort. A digital system, for example, will still need the track occupancy network, perhaps RailCom detectors and a network of boosters to control the layout sections.
 
@@ -24,7 +24,7 @@ Blocks can have an optional turnout on the entry and the exit. In other words, t
 
 For digital operations, there is also the requirement for supporting RailCom. A block controller extension should have the optional capability to include a RailCom detector. This detector is also used to identify the actual engine occupying the block. For analog operations the block controller can only detect that there is an engine. Other ways of identifying the engine are needed. It is not a key requirement per se that analog and digital operations are possible simultaneously. But as described in the analog operations chapter there are good reasons to support both modes in one layout. If implemented, the overall layout control needs to manage the type of engine occupying a block and ensure that the next block to enter has the same mode. More on this in the firmware section of this chapter.
 
-\section{Overall hardware module design}
+\unnumberedSection{Overall hardware module design}
 
 For the design of the hardware module, there are two basic ways. As said, one way is to implement a central approach to the management of all the blocks, the other is a decentralized approach where each block is managed separately. Our block control system implements the latter. It is a decentralized system where a block controller manages two, perhaps four blocks. There is no real limit, but the more blocks are managed by one block controller, the more cabling is required, up to having one block controller managing all blocks, and thus we are back to a central approach. The requirements for a decentralized approach are that all components required to manage a block are bundled in the block controller and perhaps extension board.
 
@@ -34,9 +34,9 @@ While all this may sound like a hardware overkill, the occupancy detectors the t
 
 The next sections present two block controller boards, a quad block controller and a dual block controller board. While not every layout will favor a quad block controller, scaling the design down to two or even one block is rather straightforward. The dual block controller offers two blocks or one block with a higher amperage. We will start with the quad block controller, since the dual block controller is just a scaled down version of the building blocks used.
 
-\section{Quad Block Controller}
+\unnumberedSection{Quad Block Controller}
 
-\subsection{Block Diagram}
+\unnumberedSubSection{Block Diagram}
 
 The following schematics show the block controller board for the quad block version. First, there is the main controller part with the connectors, the Raspberry PI PICO, the non-volatile memory, the CAN Bus line driver and the level shifters for the external connector pins used. Note that all the digital pins DIO0 to DIO7 are not exported, they are used on the board itself. The block controller also make use of the track lane connector, which routes the track power signals from the block controller board to the extension board. This way, no extra cables need to be wired from block controller to extension board for this purpose. 
 
@@ -47,7 +47,7 @@ The following schematics show the block controller board for the quad block vers
 \end{figure}
 \FloatBarrier
 
-\subsection{Main Controller}
+\unnumberedSubSection{Main Controller}
 
 The first schematic shows the main controller Raspberry PI Pico, the level shifters required for the extension connector pins, the CAN bus driver and the non-volatile memory. This part is very similar to the main controller board shown in the previous chapters.
 
@@ -58,7 +58,7 @@ The first schematic shows the main controller Raspberry PI Pico, the level shift
 \end{figure}
 \FloatBarrier
 
-\subsection{DCC Signal Input}
+\unnumberedSubSection{DCC Signal Input}
 
 The next schematic shows the DCC signal receiver for the DCC signal coming from the base station. The block controller will take the DCC signal and eventually feed it to the H-Bridge power module. On the input side, there is an opto-coupler. To cover the wide range of input voltages, there is a jumper to select the LED current limit resistor needed. For input ranges up to 10 volts a single resistor of 47O Ohm will do. Higher voltages as we seen the for HP to G-Scale add an 820 Ohm resistor.  
 
@@ -81,7 +81,7 @@ In addition to recognizing the DCC cutout situation, we need to worry about seve
 
 To address these issues, the signal detector will generate a short window of a few microseconds where the power module input signal is put in the "high impedance" state at the start of the cutout phase. Since the signal detector has no knowledge whether the booster is running in DCC or PWM mode, the short window will also take place in PWM mode, although not needed. Currently the implementation uses a window of about 4 microseconds.
 
-\subsection{H-Bridge Decoding Logic}
+\unnumberedSubSection{H-Bridge Decoding Logic}
 
 There are four command to control the H-bridge. All decoding logic for the power unit control is done with dual 4-1 selectors. The signal from the opto-coupler is actually inverted, the wires need to be crossed for DCC signal input. All other signals are active high signals. 
 
@@ -96,7 +96,7 @@ The bridge overall state, i.e. whether active or disconnected is controlled by a
 
 The quad controller is pushing the Raspberry Pi Pico to its limits form a pin perspective. One could argue that the controller itself could just emits the correct control signals to the H-Bridge. True, but there are just not enough pins. Another argument for the decoding logic is that other H-Bridges can one day be used without changing the firmware to control them. 
 
-\subsection{Power Unit}
+\unnumberedSubSection{Power Unit}
 
 Next is the power unit. The workings have already been described in the chapter on power units. The power unit is a H-Bridge with a current consumption measurement. The analog voltage across the shunt resistor is amplified and read in by the controller. Four H-Bridges need four analog inputs on the controller which we don't have on the Raspberry Pi PICO. All analog input signals are therefore multiplexed to one analog input port. We can thus read only one current measurement at a time.
 
@@ -107,7 +107,7 @@ Next is the power unit. The workings have already been described in the chapter 
 \end{figure}
 \FloatBarrier
 
-\subsection{Railcom Support}
+\unnumberedSubSection{Railcom Support}
 
 For DCC Railcom support, the schematic shown below is the RailCom signal detector part. As explained in the DCC chapter, when Railcom is enabled, the decoders will put Railcom datagrams onto the track, which are detected by the circuitry shown below. The controller will just read in the serial communication and decode the datagrams. Although the component is optional, it should be on the board in any case, just to be flexible.
 
@@ -118,7 +118,7 @@ For DCC Railcom support, the schematic shown below is the RailCom signal detecto
 \end{figure}
 \FloatBarrier
 
-\subsection{Power Supply and Connector}
+\unnumberedSubSection{Power Supply and Connector}
 
 And last but not least, there is a power supply and the connectors for the quad block controller board.
 
@@ -129,7 +129,7 @@ And last but not least, there is a power supply and the connectors for the quad 
 \end{figure}
 \FloatBarrier
 
-\subsection{Quad Block Controller PCB}
+\unnumberedSubSection{Quad Block Controller PCB}
 
 The quad controller is implemented on a 10x16cm board layout. As you can see, it is a dense board. Even the place below the PICO board is used. Without SMD parts, this board would for sure not fit onto a 10x16Cm layout.
 
@@ -144,11 +144,13 @@ The quad controller is implemented on a 10x16cm board layout. As you can see, it
 Well, that is the quad block controller. It is so to speak a maximum configuration. When designing a block controller with just two blocks, just take out one H-Bridge mode decoder and one Railcom detector. Furthermore, the L6205 dual H-Bridge can be configured to deliver twice the amperage. For larger scales a version of the block controller needs to be available that delivers on two blocks 5.6 Amps. There could also be a board that just has one block, which would be a classical booster. There could also be a board that has a power H-Bridge piggybacked on top, and so on. This chapter showed a full fledged four channel version, other combinations would still rest on the same core building blocks described.
 
 
-\section{Dual Block Controller}
+\unnumberedSection{Dual Block Controller}
+
+??? make it a MONO controller...
 
 For some use cases, a quad controller is perhaps a bit too much. How about a block controller with just two channels. And in addition to running two blocks each how about a mono board with one higher amperage output. A nice feature of the L6205 dual bridge chip is that it allows to connect the two bridges in parallel delivering 5.6 instead of two times 2.8 Ampere. Let's design such a dual block controller board. Setting jumpers on the board will configure a mono block controller with 5.6 Amps or a dial block controller with two times 2.8 Amps. This way we also have a nice booster unit for larger scales. The overall design of the combo block controller design follows the building blocks outlined before. Here is the block diagram.
 
-\subsection{Block Diagram}
+\unnumberedSubSection{Block Diagram}
 
 \begin{figure}[htbp]
     \centering
@@ -157,7 +159,7 @@ For some use cases, a quad controller is perhaps a bit too much. How about a blo
 \end{figure}
 \FloatBarrier
 
-\subsection{Main Controller}
+\unnumberedSubSection{Main Controller}
 
 The main controller and the DCC signal decoding logic are identical to the quad controller.
 
@@ -169,7 +171,7 @@ The main controller and the DCC signal decoding logic are identical to the quad 
 \FloatBarrier
 
 
-\subsection{DCC Signal Input}
+\unnumberedSubSection{DCC Signal Input}
 
 \begin{figure}[htbp]
     \centering
@@ -178,7 +180,7 @@ The main controller and the DCC signal decoding logic are identical to the quad 
 \end{figure}
 \FloatBarrier
 
-\subsection{H-Bridge decoding logic}
+\unnumberedSubSection{H-Bridge decoding logic}
 
 The Dual H-Bridge control logic implements the same logic, however since there are only two channels, the enable logic is implemented slightly different. There is also a set of jumpers that will put the two H-Bridges in parallel mode. When the H-bridge is configured to run in that mode, the outputs are connected in parallel. The control logic is that of channel zero.
 
@@ -189,7 +191,7 @@ The Dual H-Bridge control logic implements the same logic, however since there a
 \end{figure}
 \FloatBarrier
 
-\subsection{Dual Power Unit}
+\unnumberedSubSection{Dual Power Unit}
 
 The rest of the schematic is straightforward and other than we only need two instead of four units of RailCom, current amplifier and connectors is largely identical. Since we only have two current measurement units, there is no need to multiplex the analog signal. 
 
@@ -200,7 +202,7 @@ The rest of the schematic is straightforward and other than we only need two ins
 \end{figure}
 \FloatBarrier
 
-\subsection{Dual RailCom Detect}
+\unnumberedSubSection{Dual RailCom Detect}
 
 \begin{figure}[htbp]
     \centering
@@ -209,7 +211,7 @@ The rest of the schematic is straightforward and other than we only need two ins
 \end{figure}
 \FloatBarrier
 
-\subsection{Connector and Power Supply}
+\unnumberedSubSection{Connector and Power Supply}
 
 \begin{figure}[htbp]
     \centering
@@ -218,7 +220,7 @@ The rest of the schematic is straightforward and other than we only need two ins
 \end{figure}
 \FloatBarrier
 
-\subsection{Dual Block Controller PCB}
+\unnumberedSubSection{Dual Block Controller PCB}
 
 The dual controller is implemented on a 10x12cm board layout. As you can see, it is a dense board. Even the place below the PICO board is used. Without SMD parts, this board would for sure not fit onto a 10x12Cm layout.
 
@@ -229,7 +231,7 @@ The dual controller is implemented on a 10x12cm board layout. As you can see, it
 
 \end{tikzpicture}
 
-\subsection{Block Controller Firmware}
+\unnumberedSubSection{Block Controller Firmware}
 
 
 ... wrap it up ...
@@ -237,7 +239,7 @@ The dual controller is implemented on a 10x12cm board layout. As you can see, it
 ... firmware comes after the extension board chapters ...
 
 
-\section{H-Bridge control revised}
+\unnumberedSection{H-Bridge control revised}
 
 When looking at the overall schematics, a lot of discrete logic is required to control the H-Bridges. This is largely to the fact that the analog and digital world are supported by the block controller and that we want a common control signal encoding from a software perspective. When we later change the particular H-Bridge chip, the decoding logic will mask it from the software. Furthermore, as far as the quad controller goes, we simply run out of pins of the main controller platform and need a little help through decoding control signals outside of the controller chip.
 
@@ -300,7 +302,7 @@ wait_rising:
 
 This is future work.... stay tuned.
 
-\section{Summary}
+\unnumberedSection{Summary}
 
 This chapter presented the block controllers. Although rather simple in the individual building blocks, it was a champions league effort when it came to the PCB board design. The quad controller is the most complex board of all the board described in this book so far. The dual block controller shows that with little effort and the right H-Bridge chip, a mono block controller with twice the amperage and a dual block controller can nicely be combined. We also abstracted the control of the power unit. From a firmware perspective, the bridge is controlled with two bits, putting the bridge in disconnected mode, PWM modes forward and reverse and finally DCC mode.
 
