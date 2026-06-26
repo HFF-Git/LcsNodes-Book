@@ -1,7 +1,9 @@
 %-------------------------------------------------------------------------------------------------------
 \unnumberedChapter{RtLib Command Interface}
 
-???  explain the general concept ...
+???  explain the general concept ... why it is so useful ...
+
+
 
 The primary communication method of the layout control system are LCS messages sent via the bus. In addition, the runtime library offers a command interface. Each module that offers an USB connector, implements the serial command console interface. The interface is intended for testing and tracing purposes. LCS console commands are entered through the hardware module serial interface. 
 
@@ -38,28 +40,6 @@ The configuration mode commands will place a node into either operations or conf
 \end{table}
 \FloatBarrier
 
-\unnumberedSection{Event Commands}
-
-Event commands work with the event map. They add and remove an event, search the map for an event/port pair, or locally send an event to the node itself to test the event handling and so on.
-
-\begin{table}[ht!]
-    \begin{center}
-        \renewcommand{\arraystretch}{1.2}
-        \caption{Configuration mode commands}
-        \begin{tabularx}{0.9\textwidth}{|l|l|X|}
-            \hline
-            \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
-            \hline
-            a & eventId portId & add an event to the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed.\\
-            \hline
-            r & eventId portId & remove an event the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed.\\
-            \hline
-            e & mode nodeId eventId [ arg ] & simulate sending an event ( mode: 0 - ON, 1 - OFF, 2 - EVT ) \\
-            \hline
-        \end{tabularx}
-    \end{center}
-\end{table}
-\FloatBarrier
 
 \unnumberedSection{Node Map and Attributes Commands}
 
@@ -89,6 +69,30 @@ The node map and attribute map will examine and modify these maps.
 %|!N| item \[arg1\[arg2\]\]| sets a node or port map item.|
 %|!v | attrId \[mode\] | list a global attribute. |
 %|!V | attrId mode val | sets a a global attribute.|
+
+\unnumberedSection{Event Commands}
+
+Event commands work with the event map. They add and remove an event, search the map for an event/port pair, or locally send an event to the node itself to test the event handling and so on.
+
+\begin{table}[ht!]
+    \begin{center}
+        \renewcommand{\arraystretch}{1.2}
+        \caption{Configuration mode commands}
+        \begin{tabularx}{0.9\textwidth}{|l|l|X|}
+            \hline
+            \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
+            \hline
+            a & eventId portId & add an event to the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed.\\
+            \hline
+            r & eventId portId & remove an event the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed.\\
+            \hline
+            e & mode nodeId eventId [ arg ] & simulate sending an event ( mode: 0 - ON, 1 - OFF, 2 - EVT ) \\
+            \hline
+        \end{tabularx}
+    \end{center}
+\end{table}
+\FloatBarrier
+
 
 \unnumberedSection{Send a raw Message}
 

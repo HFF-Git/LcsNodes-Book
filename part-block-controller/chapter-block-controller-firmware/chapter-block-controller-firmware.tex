@@ -15,7 +15,7 @@ The actual speed is the, well, actual speed of the train in the block. In automa
 
 Accelerating or decelerating also factors in the rough position of the train. The computation takes place at the entry of the train into the block. We also factor in a possible change of the block ahead, maybe even the next two blocks ahead.
 
-The block controller need to manage the sessionId and cabId of the engine it currently hosts. We need both when we want to survive a power down. Then the session is lost. When the engine is still in the block, the block controller will request a session. ( think about it.... )
+The block controller needs to manage the sessionId and cabId of the engine it currently hosts. We need both when we want to survive a power down. Then the session is lost. When the engine is still in the block, the block controller will request a session. ( think about it.... )
 
 On emergency stop, the former target speed is saved. On restart, we can ramp up again to target speed.
 
