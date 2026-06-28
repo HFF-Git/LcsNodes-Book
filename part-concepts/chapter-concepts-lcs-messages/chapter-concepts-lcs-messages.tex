@@ -1,8 +1,8 @@
 %-------------------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------------------
-\unnumberedChapter{Message Formats}
+\unnumberedChapter{LCS Message}
 
-Now that we know the overall concepts, let us first have a look at the message data formats and protocols. This chapter presents an overview on the available messages formats and provides a short introduction to what they do. 
+Now that we know the overall concepts, let us first have a look at the message data formats and protocols. This chapter presents an overview on the available messages formats and provides a short introduction to what they do. The chapter is a bit theoretical, but helps to get a feeling for what to overall system does. The baisc understanding of mesage folw will help greatly when the LCS firmware os presented.
 
 \begin{center}
     \begin{tikzpicture} [scale=0.9, transform shape]
@@ -86,7 +86,7 @@ The general management message group contains commands for dealing with the layo
 
 \unnumberedSection{Node Id Setup}
 
-When a hardware module is powered on, the first task is to establish the node Id in order to broadcast and receive messages. The \texttt{(REQ-NID)} and \texttt{(REP-ID)} messages are the messages used to implement the protocol for establishing the nodeId. More on this in the chapter on message protocols. A virgin node has the hardware module-specific node type and a node Id of \texttt{NIL} also be set directly through the \texttt{(SET-NID)} command. This is typically done by a configuration tool.
+When a hardware module is powered on, the first task is to establish the node Id in order to broadcast and receive messages. The \texttt{(REQ-NID)} and \texttt{(REP-ID)} messages are the messages used to implement the protocol for establishing the nodeId. A virgin node has the hardware module-specific node type and a node Id of \texttt{NIL} which can be set directly through the \texttt{(SET-NID)} command. This is typically done by a configuration tool. All nodes monitor the message flow to detect a potential node collision. This could be for example the case when a node from one layout is installed in another layout. When a node detects a collision, it will broadcast the \texttt{(NCOL)} message and enter a halt state. Manual interaction is required.
 
 \begin{table}[ht!]
     \centering 
@@ -104,11 +104,18 @@ When a hardware module is powered on, the first task is to establish the node Id
     }
 \end{table}
 
-All nodes monitor the message flow to detect a potential node collision. This could be for example the case when a node from one layout is installed in another layout. When a node detects a collision, it will broadcast the \texttt{(NCOL)} message and enter a halt state. Manual interaction is required. A node can be restarted with the \texttt{(RES-NODE)} command, given that it still reacts to messages on the bus. All ports on the node will also be initialized. In addition a specific port on a node can be initialized. The hardware module replies with an \texttt{(ACK)} message for a successful node Id and completes the node Id allocation process. As the messages hows, node and port ID are combined. LCS can accommodate up to 4095 nodes, each of which can host up to 15 ports. A Node ID 0 is the NIL node. Depending on the context, a port Id of zero refers all ports on the node or just the node itself.
+Nodes have a unique ID, which is kind of a serial number of the hardware. This number will never change. The nodeUID plays an important role to detect nodeId conflicts. If there are two modules with the same nodeId, the nodeUID is still different. A requesting node will check the \texttt{(REP-NID)} answer, comparing the nodeUID in the message to its own nodeUID. If the UID matches, the nodeId in the message will be the nodeId to set. Note that it can be the one already used, or a new nodeId. If the UIDs do not match, we have two nodes assigned the same nodeId. Both nodes will enter the collision and await manual resolution.
+
+After sending the \texttt{(REQ-NID)} message the node awaits the reply \texttt{(REP-NID)}. The reply typically comes from a base station node or any other configuration software. In fact, any node can take on the role of assigning nodeIds. But a layout can only have one such node in charge of assigning nodeIds. The reply message contains the UID and the nodeId assigned. For a brand new module, this is will the node nodeId from now on.
+
 
 \unnumberedSection{Node and Port Attributes}
 
-The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} are available to obtain attribute data from the node or port. The \texttt{(NODE-SET)} allows to set attributes for a node or port on the targeted node. The \texttt{(NODE-FREQ)} message passes a requests to the target node. The \texttt{(NODE-FREP)} is the corresponding reply message.
+The query node \texttt{(NODE-GET)} and node reply messages \texttt{(NODE-REP)} are available to obtain attribute data indicated by the item number from the node. The \texttt{(NODE-SET)} allows to set attributes for a node or port on the targeted node. The \texttt{NODE-REP} message will represent the reply message. 
+
+
+The \texttt{(NODE-FREQ)} message passes a requests to the target node. The \texttt{(NODE-FREP)} is the corresponding reply message. This message pair is very similar to the attribute access, except it passes two arguments representing the requested function call and return parameters.
+
 \begin{table}[ht!]
     \centering 
     \resizebox{0.9\textwidth}{!}{ 
@@ -142,9 +149,17 @@ Nodes do not react to configuration type messages when in operations mode. To co
     }
 \end{table}
 
+
+
+
+
+
+
 \unnumberedSection{Event Management}
 
-The event management group contains the messages to configure the node event map and messages to broadcast an event and messages to read out event data. An inbound port can register for many events to listen to, and an outbound port will have exactly one event to broadcast. Ports and Events are numbered from 1 onward. When configuring, the portId \texttt{NIL} has a special meaning in that it refers to all portIds on the node.
+Events play a key role in the layout control system. Nodes fire events and register their interest in events. The event management group contains the messages to configure the node event map and messages to broadcast an event and messages to read out event data. An inbound port can register for many events to listen to, and an outbound port will have exactly one event to broadcast. Ports and Events are numbered from 1 onward. The number does not really matter other than it is unique for the entire layout. Producers are configured by assigning an eventId to broadcast for this event. The logic when to send is entirely up to the firmware implementation of the producer. Even a small layout can already feature dozens of events. Event management is therefore best handled by a configuration tool, which will allocate an event number and use the defined LCS messages for setting the event map and port map entry variables on a target node.
+
+A good idea would be to have a scheme that partitions the event ID range, so events can be tracked and better managed. Consumer configuration is accomplished by adding entries to the event map. The target node needs to be told which port is interested in which event. A port can be interested in many events, an event can be assigned to many ports. Each combination will result in one event map entry. The \texttt{(SET-NODE)} command is used with the respective item number and item data. When configuring, the portId \texttt{NIL} has a special meaning in that it refers to all ports on the node.
 
 \begin{table}[ht!]
     \centering 
@@ -160,6 +175,8 @@ The event management group contains the messages to configure the node event map
         \end{tabular}
     }
 \end{table}
+
+An entry can also be removed with the remove an event map entry item in the \texttt{(SET-NODE)} message. Specifying a NIL portId in the messages, indicates that all eventId / portId combinations need to be processed. Adding an event with a NIL portID will result in adding the eventID to all ports, and removing an event with a NIL portID will result in removing all eventId / portID combinations with that eventId.
 
 \unnumberedSection{DCC Track Management}
 
@@ -179,6 +196,8 @@ Model railroads run on tracks. Imagine that. While on a smaller layout, there is
         \end{tabular}
     }
 \end{table}
+
+In addition, LCS nodes that actually manage the track will have a set of node/port attributes for current consumptions, limits, and so on. They are accessed via the node info and control messages.
 
 \unnumberedSection{DCC Locomotive Decoder Management}
 
@@ -222,7 +241,7 @@ Once the locomotive session is established, the \texttt{(SET-LSPD)}, \texttt{(SE
     }
 \end{table}
 
-Locomotive decoders contain configuration variables too. They are called CV variables. The base station node supports the decoder CV programming on a dedicated track with the \texttt{(REQ-CVS)}, \texttt{(REP-CVS)} and \texttt{(SET-CVS)} messages. The \texttt{(SET-CVM)} message supports setting a CV while the engine is on the main track. \texttt{(DCC-ERR)} is returned when an invalid operation is detected.
+Locomotive decoders contain a plethora of configuration variables too. They are called CV variables. The base station node supports the decoder CV programming on a dedicated track with the \texttt{(REQ-CVS)}, \texttt{(REP-CVS)} and \texttt{(SET-CVS)} messages. The \texttt{(SET-CVM)} message supports setting a CV while the engine is on the main track. \texttt{(DCC-ERR)} is returned when an invalid operation is detected.
 
 \begin{table}[ht!]
     \centering 
@@ -240,7 +259,7 @@ Locomotive decoders contain configuration variables too. They are called CV vari
     }    
 \end{table}
 
-The SET-CVM command allows to write to a decoder CV while the decoder is on the main track. Without the RailCom channel, CVs can be set but there is not way to validate that the operation was successful.
+The SET-CVM command allows to write to a decoder CV while the decoder is on the main track. Without the RailCom channel, CVs can be set but there is not way to validate that the operation was successful. The part of the book that presents the base station will go into great detail in DCC based locomotive management.
 
 \unnumberedSection{DCC Accessory Decoder Management}
 
@@ -368,4 +387,4 @@ A firmware update starts with the \texttt{(START-LOAD)} message. The transfer us
 
 \unnumberedSection{Summary}
 
-This chapter introduced the general message formats for the layout control bus functions and how they are used in the LCS protocols. The message format is built upon an 8-byte message format that is suitable for the industry standard CAN bus. Although there are many other standards and communication protocols, the CAN bus is a widely used and robust bus. Since all data is encoded in the message, there is no reason to select another communication media. But right now, it is CAN. The next chapter will now concentrate on the message protocols.
+This chapter introduced the general message formats and high level protocol view for the layout control bus functions and how they are used in the LCS protocols. The message format is built upon an 8-byte message format that is suitable for the industry standard CAN bus. Although there are many other standards and communication protocols, the CAN bus is a widely used and robust bus. Since all data is encoded in the message, there is no reason to select another communication media. But right now, it is CAN. The next chapter will now concentrate on the message protocols.

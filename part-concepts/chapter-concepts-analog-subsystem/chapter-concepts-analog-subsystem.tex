@@ -1,10 +1,10 @@
 \unnumberedChapter{The Analog Subsystem}
 
-Analog? Yes, there is analog. Although the Layout Control System is a digital system with locomotives controlled via DCC, there are cases where implementing a layout based on controlling all rolling stock via DCC would mean to equip all your analog running engines with DCC decoders. Besides that it represents quite a considerable cost and converting some older locomotives is a real project in itself. Also, there are model railroad clubs with literally hundreds of locomotives. Their layouts are often analog and you will find miles of cables to a central control station. Converting all of the existing infrastructure in one swoop represents a considerable cost.
+Analog? Yes, there is analog. Although the Layout Control System is a digital system with locomotives controlled via DCC, there are cases where implementing a layout based on controlling all rolling stock via DCC would mean to equip all your analog running engines with DCC decoders. Besides that it represents quite a considerable cost, converting some older locomotives is a real project in itself. There are model railroad clubs with literally hundreds if not thousands of locomotives of all ages. Their layouts are often analog and you will find miles of cables to a central control station. Converting all of the existing infrastructure in one swoop represents a considerable cost and is perhaps impractical. Wouldn't it be nice to manage both worlds in the same layout?
 
 This chapter presents an overview for a subsystem managing analog locomotives in addition to the DCC locomotives. We will however only focus on analog running equipment. Devices such as signals, turnouts and other stationary equipment is managed with the LCS node, port, event system, i.e. digital. This chapter will introduce extensions required to manage an analog and also a potentially hybrid layout.
 
-\unnumberedSection{Requirements}
+\unnumberedSection{Analog Locomotives}
 
 The first major difference to a DCC based system is that for a given track section there can only be one locomotive or consist. In contrast to a digital signal with a permanent flow of the square wave signal, an analog system will use a pulse width modulated (PWM) approach. A wider pulse width will make the engines run faster, a smaller pulse width makes it run slower. The signal contains no information about the actual engine and just delivers power corresponding to speed desired to the track section.
 
@@ -24,6 +24,10 @@ The first major difference to a DCC based system is that for a given track secti
          \draw[thick] (current) -- ++(0,1) -- ++(2,0) -- ++(0,-1) -- ++(1,0);
          \coordinate (current) at ($(current) + ( 3, 0)$);
          \draw[thick] (current) -- ++(0,1) -- ++(2,0) -- ++(0,-1) -- ++(1,0);
+         
+         \draw[thick] (current) -- ++(0,1) -- ++(2,0) -- ++(0,-1) -- ++(1,0);
+         \coordinate (current) at ($(current) + ( 3, 0)$);
+         \draw[thick] (current) -- ++(0,1) -- ++(2,0) -- ++(0,-1) -- ++(1,0);
 
          \draw [decorate,decoration={brace,amplitude=10pt,mirror}] (2,1) -- (5,1);
         \node at (3.5, 0.25) {Period};
@@ -31,15 +35,12 @@ The first major difference to a DCC based system is that for a given track secti
     \end{tikzpicture}
 \end{center}
 
-To still run several engines, the layout needs to be divided into several sections or blocks. Just as we divided a layout into sections with separate DCC boosters, analog layouts will control sections with a separate power module. It is not necessary to have a power module for each section, but the more sections and power modules the more analog engines could run simultaneously. Built on top, an analog layout often has a concept of blocks to run trains automated managed by a block signal control system. The blocks are often divided further into subsections and there are track occupancy detectors to know where the loco is within the block.
+To still run several engines, the layout needs to be divided into several sections or blocks. Just as we divided a layout into sections with separate DCC boosters, analog layouts will control sections with a separate power module. It is not necessary to have a power module for each section, but the more sections and power modules the more analog engines could run simultaneously. Built on top, an analog layout often has already a concept of blocks to run trains automated managed by a block signal control system. The blocks are often divided further into subsections and there are track occupancy detectors to know where the loco is within the block.
 
 Just like their DCC cousin, analog track sections need special consideration when an engine is moving from one block to the next. For DCC track sections, each having a booster receiving the same DCC signal from the base station, there is a short window of power disconnect to address any small booster timing differences. For the analog world, the current section and the following one need to be also in sync for the engine to cross from one block to the next. The PWM signals, which deliver the power to the locomotive, need to be synchronized in order to avoid that one block still delivers power and the next block not quite yet. In addition, the follow on block needs to have the same polarity.
 
-An analog track block would also need to know the actual engine characteristics of the engine in a block. Each engine has different power consumption characteristics, so the speed is a function of engine type and actual train load. This track control mechanism is very closely associated with an overall block signaling control system. In fact, an analog system almost every time has a block signaling system implemented to manage several engines. Note that in an analog the smarts must be in the block controller and not in the engine. In a DCC system, the smarts is in the engine. In A DCC system the booster are there to address the overall power needed, dividing a layout into several power sections. In an analog system, the sections are there to address the need to run many engine simultaneously. There can only be one engine in a track sections or block.
+An analog track block would also need to know the actual engine characteristics of the engine in a block. Each engine has different power consumption characteristics, so the speed is a function of engine type and actual train load. This track control mechanism is very closely associated with an overall block signaling control system. In fact, an analog system almost every time has a block signaling system implemented to manage several engines. Note that in an analog the smarts must be in the block controller and not in the engine. In a DCC system, the smarts is in the engine. In A DCC system the booster is there to address the overall power needed, dividing a layout into several power sections. In an analog system, the sections are additionally there to address the need to run many engine simultaneously. There can only be one engine in a track sections or block.
 
-There is also the situation that a layout is in a transition from analog to digital. Wouldn't it be nice to manage both worlds in the same layout? A block could either host a DCC equipped locomotive or an analog locomotive, but never at the same time. Also, it needs to be ensured that the follow-on block where the engine is heading is of the right kind. This is brings up several more design questions, and we will talk about it in the following sections.
-
-In any case, an analog system also needs a means of a cab handheld to control the engine. Following the LCS overall concept, the communication between the cab handheld and the layout nodes that ultimately control the engine, is digital. The concept of a locomotive session and a base station that manages all active sessions supports both DCC as well as analog engines. The base station managing locomotive sessions would need to be enhanced slightly to also support analog running equipment. Of course the cab handheld for an analog locomotive is much simpler. All that is needed is the direction and speed control.
 
 \unnumberedSection{Overall concept}
 
@@ -135,7 +136,7 @@ However, an analog engine has no concept being directly addressable. The typical
     \end{tikzpicture}
 \end{center}
     
-The LCS base station that manages all active locomotives, will work slightly different for an analog locomotive. It will create a session keeping track of controlling attributes such as speed and direction. A cab handheld will just send its request to the base station as before using the DCC LCS message commands. The base station will contrast to a digital locomotive emit no DCC signals on the track. 
+The LCS base station that manages all active locomotives. It will create a session keeping track of controlling attributes such as speed and direction. A cab handheld will just send its request to the base station as before using the DCC LCS message commands. However, the base station will in contrast to a digital locomotive emit no DCC signals on the track. 
 
 The DCC signals that a cab handheld send to the base station, will also be received by the block controller. The block controller will decode the LCS DCC message and if it concerns the locomotive that according to the block controller data is currently managed by the block will put the the PWM signal according to the command on the track section.
 
@@ -156,8 +157,6 @@ Layouts with analog engines will almost certainly have a number of blocks that c
 Just like the DCC subsystem, care needs to be taken when a locomotive crosses from one block fed from a power module to the next block fed by another power module. The actual current put on the tracks needs to be in sync, such that there is not awkward jump or worse current flow between the blocks connected via the locomotive wheels when crossing. It needs a way of synchronizing the PWM signals. Classic analog block control system transmitted a separate signal for all block controllers. In our world, the DCC signal emitted to all block controller nodes throughout the LCS layout via the LCS bus is our synchronization method.
 
 \unnumberedSection{A short Glimpse at Software Implementation}
-
-... rework the text ...
 
 The block controller is the heart of managing a block in an analog layout. It will be responsible for managing the track block with a number of subsections. Using the LCS event system, blocks communicate and broadcast data about the locomotive entering and leaving their block. Using defined node and port attributes, they also communicate about block occupancy. Turnout control and position feedback as well as track signal control are also be the part of the duties of a block controller.
 
