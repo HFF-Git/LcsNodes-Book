@@ -53,22 +53,16 @@ The node map and attribute map will examine and modify these maps.
             \hline
             \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
             \hline
-            - & - & - \\
+            g & npId item [ val ] & retrieves an attribute \\
             \hline
-            - & - & - \\
+            p & noId item val & sets an attribute \\
             \hline
-            - & - & - \\
+            r & npId item [ val1 [ val2 ]] & request a function \\
             \hline
         \end{tabularx}
     \end{center}
 \end{table}
 \FloatBarrier
-
-%%|:----|:-----|:-----|
-%|!n| item \[arg1\[arg2\]\]| lists a node or port map item.|
-%|!N| item \[arg1\[arg2\]\]| sets a node or port map item.|
-%|!v | attrId \[mode\] | list a global attribute. |
-%|!V | attrId mode val | sets a a global attribute.|
 
 \unnumberedSection{Event Commands}
 
@@ -82,10 +76,6 @@ Event commands work with the event map. They add and remove an event, search the
             \hline
             \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
             \hline
-            a & eventId portId & add an event to the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed.\\
-            \hline
-            r & eventId portId & remove an event the eventMap. If the portId is omitted, all eventMap entries with a matching eventId will be removed.\\
-            \hline
             e & mode nodeId eventId [ arg ] & simulate sending an event ( mode: 0 - ON, 1 - OFF, 2 - EVT ) \\
             \hline
         \end{tabularx}
@@ -93,22 +83,82 @@ Event commands work with the event map. They add and remove an event, search the
 \end{table}
 \FloatBarrier
 
+// ??? adding, removing is done via request functions...
+
 
 \unnumberedSection{Send a raw Message}
 
 For testing the message send mechanism, a command is available to send a raw data packet via the LCS bus.
 
-%|Command | Arguments | Operation |
-%|:----|:-----|:-----|
-%|!B | byte1 [ byte2 .. byte8 ] | send a raw LCS message |
+\begin{table}[ht!]
+    \begin{center}
+        \renewcommand{\arraystretch}{1.2}
+        \caption{Configuration mode commands}
+        \begin{tabularx}{0.9\textwidth}{|l|l|X|}
+            \hline
+            \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
+            \hline
+            B & byte1 [ ... byte8 ] & send a raw CAN bus data packet.\\
+            \hline
+        \end{tabularx}
+    \end{center}
+\end{table}
+\FloatBarrier
+
 
 \unnumberedSection{List node status}
 
-The "s" command will list a great detail on the node data. When debugging a node problem, this is perhaps the most useful command to see what is store locally.
+The "s" command will list a great detail on the node data. When debugging a node problem, this is perhaps the most useful command to see what is store locally. 
+\begin{table}[ht!]
+    \begin{center}
+        \renewcommand{\arraystretch}{1.2}
+        \caption{Configuration mode commands}
+        \begin{tabularx}{0.9\textwidth}{|l|l|X|}
+            \hline
+            \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
+            \hline
+            s & sItem & display status view "sItem".\\
+            \hline
+        \end{tabularx}
+    \end{center}
+\end{table}
+\FloatBarrier
 
-%|Command | Arguments | Operation |
-%|:----|:-----|:-----|
-%|!s | \[level\] | list status at detail level, default is summary. ( 1 - ConfigDesc, 2 - NodeMap, 3 - %PortMap, 4 - EventMap, 6 - NVM Area, 7 - MEM Area ) |
+The \texttt{s} command accepts a numeric parameter which indicates what status information to print.
+
+\begin{table}[ht!]
+    \begin{center}
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabularx}{0.9\textwidth}{|l|l|l|l|X|}
+            \hline
+            \textbf{Command} & \textbf{MEM}  & \textbf{NVM} & \textbf{FMT} & \textbf{Operation} \\
+            \hline
+            s & 0 & - & - & board summary.\\
+            \hline
+            s & & 21 & - & Node Header.\\
+            \hline
+            s & 2 & 22 & 42 & Node Map.\\
+            \hline
+            s & 3 & 23 & - & Node Data.\\
+            \hline
+            s & - & 24 & - & Event Map.\\
+            \hline
+            s & 5 & 25 & 45 & Port Map.\\
+            \hline
+            s & 6 & - & 46 & Task Map.\\
+            \hline
+            s & - & - & 50 & I2C Devices.\\
+            \hline
+            s & - & - & 51 & Resource Descriptor Map.\\
+            \hline
+            s & - & - & 52 & Resource Map.\\
+            \hline
+        \end{tabularx}
+    \end{center}
+\end{table}
+\FloatBarrier
+
+this deserves some examples, ....
 
 
 \unnumberedSection{LCS message text format}
@@ -130,10 +180,6 @@ int lcsMsgToStr( char *msgStr, uint8_t *dataBuf, uint8_t dataBufLen );
 int strToLcsMsg( uint8_t *dataBuf, uint8_t dataBufLen, char *msgStr );
 \end{lstlisting}
 
-
-%%```cpp
-
-%```
 
 Note: to be implemented. Perhaps to simple library routines to create an ASCII version of a LCS message and convert an ASCII string to an LCS message.
 

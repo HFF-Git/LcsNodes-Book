@@ -1,0 +1,83 @@
+%-------------------------------------------------------------------------------------------------------
+%
+%-------------------------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------------
+%
+%-------------------------------------------------------------------------------------------------------
+\unnumberedChapter{LCS Runtime}
+
+Now that we have a good overview of the overall architecture and the underlying concepts, this part of the book introduces the layout and design of the LCS firmware. Firmware for an LCS node typically consists of two major parts. The upper layer is the application firmware written by the board designer, while the lower layer is the \textbf{LCS Runtime}. The runtime library forms the primary interface between the application firmware and the hardware module. This chapter introduces the key concepts behind the runtime and explains how it simplifies firmware development.
+
+\unnumberedSection{Concepts}
+
+The fundamental idea behind the LCS Runtime is that the firmware designer should spend time implementing application functionality rather than dealing with infrastructure. Tasks such as message passing, managing volatile and non-volatile data structures, scheduling background activities, and accessing low-level hardware are handled by the runtime library.
+
+The primary design objective of the runtime library is therefore to relieve the firmware programmer of as much low-level work as possible. Instead of implementing initialization, storage management, and message processing in every firmware project, these services are provided transparently by the runtime. The application firmware simply calls a small set of intuitive and easy-to-remember runtime functions. Together, these functions provide a consistent programming model across all LCS hardware modules.
+
+\unnumberedSection{Big Picture}
+
+The figure below illustrates the relationship between the three software layers. The application firmware interacts with the hardware almost exclusively through the LCS Runtime using function calls. The runtime, in turn, communicates with the hardware through the Controller Dependent Code layer. Events originating in the runtime or the hardware are delivered back to the application through callback functions, allowing the firmware to remain responsive without blocking execution.
+
+\begin{center}
+    \begin{tikzpicture} [scale=0.9, transform shape]
+        % \draw[help lines, gray!50, dashed] (0,0) grid(16,12);
+
+        % Define nodes
+        \node[  tsRoundedRectangle, 
+                minimum width=16cm,
+                minimum height=2.5cm,
+                text width=12cm,
+                text centered,
+                fill=yellow!40] (fl) at (8,10.5) {Firmware Layer};
+
+        \node[  tsRoundedRectangle, 
+                minimum width=12cm,
+                minimum height=2.5cm,
+                text width=6cm,
+                text centered,
+                fill=green!40] (rl) at (10,7) {LCS Runtime Library};
+
+        \node[  tsRoundedRectangle, 
+                minimum width=14cm,
+                minimum height=1.5cm,
+                text width=8cm,
+                text centered,
+                fill=green!40] (cdc) at (9,4) {Controller dependent code};
+
+        \node[  tsRoundedRectangle, 
+                minimum width=16cm,
+                minimum height=2cm,
+                text width=6cm,
+                text centered,
+                fill=red!40] (mh) at (8,1) {Module Hardware};
+                
+        \node at (4, 8.75) {direct call};
+
+        \draw[<->, ultra thick, line cap=round] (1,2) -- (1,9.25);
+        \draw[<->, ultra thick, line cap=round] (3,4.8) -- (3,9.25);
+        \draw[<->, ultra thick, line cap=round] (cdc.south) -- (9,2);
+        
+        \draw[<->, ultra thick, line cap=round] (7, 5.75) -- (7,4.8) node [midway, right] {function call};
+        \draw[<->, ultra thick, line cap=round] (7,9.25) -- (7,8.25) node [midway, right] {function call};
+        
+        \draw[<-, ultra thick, line cap=round] (11, 5.75) -- (11,4.8) node [midway, right] {callback};
+        \draw[<-, ultra thick, line cap=round] (11,9.25) -- (11,8.25) node [midway, right] {callback};
+
+
+    \end{tikzpicture}
+\end{center}
+\FloatBarrier
+
+\unnumberedSection{Runtime Library}
+
+Virtually all services provided by the LCS Runtime are message based. For example, retrieving a data item from another node is implemented by sending a message to that node and processing the reply. Since waiting for a reply would unnecessarily stall the firmware and prevent other activities from running, runtime functions return immediately. When the requested operation completes, the result is delivered through one of the predefined callback functions.
+
+This asynchronous programming model is perhaps the single most important concept to understand when developing firmware for LCS nodes. Once understood, it becomes a natural and efficient way of structuring firmware that remains responsive even while multiple operations are in progress.
+
+The following chapters describe the most important runtime interfaces, the available callback functions, and the runtime's storage and data management facilities.
+
+\unnumberedSection{Controller Dependent Code}
+
+The hardware chapters present a variety of boards based on different controller families. Each board has its own hardware resources and peripheral assignments. Rather than cluttering the runtime library with large numbers of conditional compilation directives, the hardware configuration is described by a static descriptor structure, with one descriptor defined for each supported hardware platform.
+
+While firmware functionality may evolve over time, the hardware layout of a particular board is fixed. This makes a static hardware description both simple and efficient. To the firmware designer, the underlying hardware is therefore presented through a thin abstraction layer located below the runtime. This layer is referred to as the \textbf{Controller Dependent Code (CDC)} and isolates the runtime library from controller-specific implementation details.

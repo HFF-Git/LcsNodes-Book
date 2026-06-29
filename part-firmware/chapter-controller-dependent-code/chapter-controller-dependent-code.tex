@@ -1,9 +1,11 @@
 
 \unnumberedChapter{Controller Dependent Code}
 
-??? rework the text ... extend it...
+A main controller board features the controller itself, the CAN bus interface, the non-volatile memory and the extension connector with several IO pins of the controller assigned to it. During board initialization the controller hardware needs to be mapped to the actual board. 
 
-Enough software talk ? Well not quite. A main controller board features the controller itself, the CAN bus interface, the non-volatile memory and the extension connector with several IO pins of the controller assigned to it. During board initialization the controller hardware needs to be mapped to the actual board. Two processor versions of the main controller board were presented. It can be easily seen that different controller and board versions would place a great configuration and perhaps conditional compile burden on the LCS core library. To address this problem, there is a hardware layer library at the very bottom of the architecture that isolates the controller dependencies.
+
+
+Two processor versions of the main controller board were presented. It can be easily seen that different controller and board versions would place a great configuration and perhaps conditional compile burden on the LCS core library. To address this problem, there is a hardware layer library at the very bottom of the architecture that isolates the controller dependencies.
 
 
 Concept: there are resource numbers which are the index into a descriptor array that describes a resource, such as a GPIO pin or UART.
@@ -29,66 +31,10 @@ The mapping from resource number to instance needs to be really quick, low overh
 !!!!! the text needs to be worked quite a bit.
 
 
-\unnumberedSection{The big picture}
-
-The figure depicted below shows the refined overall structure of the node firmware. There is the core library discussed in a previous chapters and a new layer, which is the \textbf{controller dependent code layer}. The layer essentially encapsulates the required controller functions, such as a timer or a digital I/O pin, and offers a common interface to core library and firmware layer that directly uses the controller functions. The picture also shows a component labelled "extension driver". An extension driver is piece of software that knows how to handle an extension board. We get this part later when we talk about more about extensions.
-
-\begin{center}
-    \begin{tikzpicture} [scale=0.9, transform shape]
-        \draw[help lines, gray!50, dashed] (0,0) grid(16,12);
-
-        % Define nodes
-        \node[  tsRoundedRectangle, 
-                minimum width=16cm,
-                minimum height=2.5cm,
-                text width=12cm,
-                text centered,
-                fill=yellow!50] (fl) at (8,10.5) {Firmware Layer};
-
-        \node[  tsRoundedRectangle, 
-                minimum width=8cm,
-                minimum height=2.5cm,
-                text width=6cm,
-                text centered,
-                fill=green!80] (rl) at (12,7) {LCS Runtime Library};
-
-        \node[  tsRoundedRectangle, 
-                minimum width=3cm,
-                minimum height=2.5cm,
-                text width=3cm,
-                text centered,
-                fill=green!80] (dr) at (5.5,7) {Driver Library};
-
-        \node[  tsRoundedRectangle, 
-                minimum width=14cm,
-                minimum height=1.5cm,
-                text width=6cm,
-                text centered,
-                fill=red!60] (cdc) at (9,4) {Controller dependent code};
-
-        \node[  tsRoundedRectangle, 
-                minimum width=16cm,
-                minimum height=2cm,
-                text width=6cm,
-                text centered,
-                fill=red!60] (mh) at (8,1) {Module Hardware};
-
-        \draw[<->, ultra thick, line cap=round] (1,2) -- (1,9.2);
-        \draw[<->, ultra thick, line cap=round] (3,4.8) -- (3,9.2);
-        \draw[<->, ultra thick, line cap=round] (7.125,7) -- (8,7);
-        \draw[<->, ultra thick, line cap=round] (cdc.south) -- (9,2);
-        \draw[<->, ultra thick, line cap=round] (dr.south) -- (5.5,4.8);
-        \draw[<->, ultra thick, line cap=round] (rl.south) -- (12,4.8);
-       % \draw[<->, ultra thick, line cap=round] (5.5,9.2) -- (dr.north);
-        \draw[<->, ultra thick, line cap=round] (12,9.2) -- (rl.north);
-
-    \end{tikzpicture}
-\end{center}
-\FloatBarrier
 
 Using the CDC layer does not mean that access to the bare bones controller chip is not possible. Any controller HW function can be accessed directly at the expense of that the code will most likely not be portable between different controller families. Still, here may be good reasons for the direct path. The following sections describe will now what the CDC library is offering across all controller platforms.
 
-\unnumberedSection{Configuring the pins}
+\unnumberedSection{CDC Resource Descriptor Map}
 
 The CDC library is rather low level hardware abstraction to give access to the pins of the Raspberry PI Pico and perhaps over time other controllers as well. The key identifier to access a hardware input/output is the pin number. Using the correct pin numbers according to the hardware developed is therefore very important. At the same time the upper layer code should not deal with these details. There needs to be a mapping of actual pin numbers and functions to the controller family and the hardware developed.
 
@@ -106,7 +52,12 @@ While the whole idea of the CDC is isolating the firmware programmer from the co
 
 Most CDC routines use pins as one of their input argument. These arguments are not checked again at the level of the configuration validation. For performance reasons, just some quick sanity checks are performed.
 
-For each part of the CDC library, there is a configuration routine. For example, the digital IO configuration will set a particular pin to be an input or output pin and so on. During this configuration only basic checking what a controller can support on that pin will be done. The Atmega is far more restrictive with respect to the IO pins used than the Raspberry. The CDC library will do whatever it can to do such checking. During actual usage of such a pin, i.e. the digital read or write in the example above, no further checking will take place. During initialization, the configuration structure is checked against what the controller is capable. This also includes the pins assigned to UART, SPI and I2C pins.
+For each part of the CDC library, there is a configuration routine. For example, the digital IO configuration will set a particular pin to be an input or output pin and so on. During this configuration only basic checking what a controller can support on that pin will be done. The Atmega is far more restrictive with respect to the IO pins used than the Raspberry. The CDC library will do whatever it can to do such checking. During actual usage of such a pin, i.e. the digital read or write in the example above, no further checking will take place. During initialization, the configuration structure is checked against what the controller is capable. This also includes the pins assigned to UART or I2C pins.
+
+
+
+
+
 
 \unnumberedSection{CDC Library setup}
 
@@ -183,7 +134,21 @@ The digital IO routines offer an interface to plain digital input and output ope
 \lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
    
-    Declaration part...
+uint8_t         configureDio( uint8_t rNum );
+uint8_t         configureDio(   uint8_t rNum, 
+                                uint8_t pinA, 
+                                uint8_t pinB, 
+                                uint8_t pinMode );
+uint8_t         readDio( uint8_t rNum, bool *valA, bool *valB = nullptr );
+uint8_t         writeDio( uint8_t rNum, bool valA, bool valB = false );
+uint8_t         toggleDio( uint8_t rNum );
+uint8_t         registerDioCallback( uint8_t rNum, 
+                                     uint8_t event, 
+                                     GpioCallback func );
+uint8_t         unregisterDioCallback( uint8_t rNum );
+
+uint8_t         getGpioPinA( uint8_t rNum) ;
+uint8_t         getGpioPinB( uint8_t rNum );
     
 \end{lstlisting}
 \FloatBarrier
@@ -195,7 +160,9 @@ Analog input configures the respective controller input ports for reading an ana
 \lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
    
-    Declaration part...
+uint8_t         configureAdc( uint8_t rNum );
+uint8_t         configureAdc( uint8_t rNum, uint8_t adcPin, uint8_t adcNum );
+uint8_t         readAdc( uint8_t rNum, uint16_t *val );
     
 \end{lstlisting}
 \FloatBarrier

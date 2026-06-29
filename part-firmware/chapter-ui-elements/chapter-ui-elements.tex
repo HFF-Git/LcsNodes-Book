@@ -2,6 +2,8 @@
 
 // ??? motivation ...
 
+// ??? do not show too much code, refer to the cab handheld to see how it all works ...
+
 User interfaces such as Cab Handhelds or Switch Panels offer the user control and display elements for a layout. Typically there many buttons and LEDs but also rotary encoders and displays. You start an Arduino project and the first Led is blinking, a button is pushed. Before you know it, buttons need to be debounced, short and long pressed, active high or active low. You would like to toggle a Led and remember its state. There are displays with different interfaces and capabilities. On some displays you want to control the brightness and contrast. Finally, in some projects you run out of physical pins and want to connect an array of buttons or LEDs through a shift register. The list is long. In all Arduino projects you implement it somehow directly in project just to take part of the functions to the next project and so on. UI Elements is the LCS library that implements the most common UI elements.
 
 \unnumberedSection{Concepts}
@@ -22,34 +24,7 @@ A button is an object that has one input value and analyzes whether the button w
 
 \lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
-#include "UIElements.h"
 
-// create the button, pin 5 is the button input
-UIButton aButton( 5 );
-
-bool getButtonData( uint8_t pin ) {
-
-	return( digitalread( pin ));
-}
-
-void buttonHandler( uint8_t buttonId ) {
-
-	// the button was clicked. 
-	// buttonId contains the pin number 5
-}
-
-void setup ( ) {
-
-	// the setup function, register the click callback
-	aButton.attachgetDataFunction( getButtonData );
-	aButton.attachButtonClicked( buttonHandler );
-}
-
-void loop ( ) {
-
-    // in the main loop of the program the UIElements "tick" function.
-	UIElements::tick( );
-}
 
 \end{lstlisting}
 \FloatBarrier
@@ -65,35 +40,7 @@ A rotary encoder works similar to a button. It is a type of position sensor that
 
 \lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
-#include "UIElements.h"
 
-// create the rotary encoder, pin 5 and 6 are the inputs, 
-// MIN and MAX defines the encoder range.
-UIEncoder anEncoder( 5, 6, MIN, MAX );
-
-bool getEncoderData( uint8_t pin ) {
-
-	return( digitalRead( pin ));
-}
-
-void positionChangedHandler( uint8_t newPosition ) {
-
-	// the encoder was turned, the delta passed to the callback function.
-}
-
-void setup ( ) {
-	
-	// the setup function 
-	// register the positionChanged callback
-	anEncoder.attachGetDataFunction( getEncoderData );
-    anEncoder.attachPositionChanged( positionChangedHandler );
-}
-
-void loop ( ) {
-
-    // in the main loop of the program the UIElements "tick" function.
-	UIElements::tick( );
-}
 \end{lstlisting}
 \FloatBarrier
 
@@ -112,28 +59,8 @@ The display UI element provides as a common function set the methods to clear a 
 
 \lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
-#include "UIElements.h"
 
-UIDisplay *oled;
 
-void setup ( ) {
-
-	oled = new UIDisplayOledSSD1306 ( DT_OLED_DISPLAY_128x64_16_4 );
-
-	// write to top of screen
-	oled -> clear( );
-	oled -> print( "Hello world!");
-
-	// write to line 2
-	oled -> setCursor( 0, 2 );
-	oled -> print( "Line 2");
-}
-
-void loop ( ) {
-	// in the main loop of the program the UIElements "tick" function. This is not really
-	// necessary for the display function, but for the rest of UI elements.
-	UIElements::tick( );
-}
 \end{lstlisting}
 \FloatBarrier
 
