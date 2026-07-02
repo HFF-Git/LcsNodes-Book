@@ -1,0 +1,73 @@
+\unnumberedChapter{Base Station Commands}
+
+
+In addition to the LCS core library serial commands available to any node, the base station implements a serial command interface which accepts a subset of the \texttt{DCC++} / DCC-EX commands. As a short introduction, \texttt{DCC++} was an implementation of a DCC base station using an Arduino Uno and a motor shield. For a very small budget and with little effort, the world of DCC opened up to everyone. Part of the \texttt{DCC++} system is an ASCII interface to send commends to the base station. Not only is this command line feature useful for debugging the base station code, it is really valuable when interfacing to tools such as Decoder Pro provided by the JMRI organization, which implemented an ACCI interface to \texttt{DCC++}. 
+
+The command listed in the table below are an accurate implementation of the original DCC++ commands. In addition some commands have been added.
+
+\begin{longtable}{@{}|p{0.2\linewidth}|p{0.2\linewidth}|p{0.4\linewidth}|@{}}
+    \caption{Table Caption} \\
+    \toprule
+    \textbf{Command} & \textbf{Reply} & \textbf{Operation} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Command} & \textbf{Reply} & \textbf{Operation} \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{3}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    \textbf{O} cabId & & allocate a session for the cab \\
+    \midrule
+    \textbf{K} sessionId & & release a session \\
+    \midrule
+    \textbf{t} sessionId cabId speed direction & & set cab speed / direction \\
+    \midrule
+    \textbf{f} cabId funcId val & & set cab function value, function group DCC format \\
+    \midrule
+    \textbf{v} sessionId funcId val & & set cab function value, individual \\
+    \midrule
+    \textbf{R} cvId callbacknum callbacksub & & read CV byte on the programming track \\
+    \midrule
+    \textbf{W} cvId val callbacknum callbacksub & & write CV byte on the programming track \\
+    \midrule
+    \textbf{B} cvId bitPos bitVal callbacknum callbacksub & & write CV bit on the programming track \\
+    \midrule
+    \textbf{b} cabId cvId bitPos bitVal & & write CV bit on the programming track \\
+    \midrule
+    \textbf{w} cabId cvId val & & write CV byte on the operations track \\
+    \midrule
+    \textbf{M} sessionId byte1 byte2 [byte3 ... byte10] & & send DCC packet on operations track \\
+    \midrule
+    \textbf{P} sessionId byte1 byte2 [byte3 ... byte10] & & send DCC packet on programming track \\
+    \midrule
+    \textbf{X} & & emergency stop all \\
+    \midrule
+    \textbf{0} & & turn operations and programming track power off \\
+    \midrule
+    \textbf{1} & & turn operations and programming track power on \\
+    \midrule
+    \textbf{2} & & turn operations power on \\
+    \midrule
+    \textbf{3} & & turn programming track power on \\
+    \midrule
+    \textbf{a} [opt] & & list current consumption (0 → MAIN [default], 1 → PROG, 2 → both) \\
+    \midrule
+    \textbf{C} [option] & & set options: 0 → service track in operations mode, 1 → service track in service mode, 2 → enable RailCom, 3 → disable RailCom \\
+    \midrule
+    \textbf{s} [level] & & list status (0 → summary [default], 1 → configuration, 2 → session map) \\
+    \midrule
+    \textbf{S} & & list base station configuration \\
+    \midrule
+    \textbf{L} & & list base station session table \\
+    \midrule
+    \textbf{D} & & enter diagnostics mode (need restart later) \\
+    \midrule
+    \textbf{?} & & list this help \\
+\end{longtable}
+
+

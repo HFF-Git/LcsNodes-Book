@@ -13,34 +13,52 @@ It directly connects via cable to the LCS bus and provides the generic elements 
 
 A cab handheld as shown in the sketch above consists of the controller portion and a set of buttons and dials. Usually, for the very first steps in firmware design a breadboard implementation of the hardware is used. But why not just create a PCB with all the user elements on it? From experience with breadboards, this setup is by far more robust and you will not chase firmware bugs that turn out to be just a loose connection on a breadboard. This is by the way a lesson learned. With the very reasonable prices for a PCB board, it is almost easier to build a PCB rather early in the design phase and if it has an error, just correct it and order another set of PCBs. Although one could also build the module on a an experimental PCB board, having the schematics done, it is a small step to a dedicated PCB. Definitively worth the small extra effort of making a robust prototype PCB. The following schematic shows the extension board developed for the can handheld firmware development. First, here is the block diagram.
 
+\unnumberedSubSection{Block Diagram}
+
 \begin{figure}[ht]
     \centering
-    \includegraphics[page=1, width=0.9\textwidth]{./Schematics/Schematic_LcsNodes-Cab-Dev.pdf}
+    \includegraphics[page=1, width=0.9\textwidth]{./part-cab-handheld/chapter-cab-handheld-hardware/Schematic_LcsNodes-Cab-Dev-B.01.10.pdf}
     \caption{Block Diagram}
     %\label{fig:schematic}
 \end{figure}
+
+\unnumberedSubSection{Nain Controller}
 
 There is essentially a main controller part with the Raspberry Pi Pico, a CAN bus interface and the non-volatile memory. This part should be very familiar by now. Besides the two I2C connections and the CAN bus pins, almost all GPIO pins are dedicated to a button or encoder. Since the GPIOs can be configured with internal pull-up, no external resistors are necessary. The power supply will be fed from the LCS bus. The whole board can also be fed from the USB port of the PICO. Again, this is very handy for initial debugging the firmware. The LCS Bus connector will connect the cab handheld to the LCS layout. We use only the CAN Bus lines and optional the power line input.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[page=2, width=0.9\textwidth]{./Schematics/Schematic_LcsNodes-Cab-Dev.pdf}
+    \includegraphics[page=2, width=0.9\textwidth]{./part-cab-handheld/chapter-cab-handheld-hardware/Schematic_LcsNodes-Cab-Dev-B.01.10.pdf}
     \caption{Controller}
     %\label{fig:schematic}
 \end{figure}
 \FloatBarrier
 
+\unnumberedSubSection{Interface}
+
 Finally, there is the part with all the buttons, encoders and the OLED Display. The following schematic completes the cap handheld schematic for firmware development.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[page=3, width=0.9\textwidth]{./Schematics/Schematic_LcsNodes-Cab-Dev.pdf}
+    \includegraphics[page=3, width=0.9\textwidth]{./part-cab-handheld/chapter-cab-handheld-hardware/Schematic_LcsNodes-Cab-Dev-B.01.10.pdf}
     \caption{UI Elements}
     %\label{fig:schematic}
 \end{figure}
 \FloatBarrier
 
 Granted, it is not really a cab handheld to hold in your hands. Although the final version will have pretty much the same hardware ingredients, the form factor needs to be different. But for development, the setup will be quite helpful and robust. You will avoid chasing software problems that turn out to be just a loose connection on a breadboard. 
+
+\unnumberedSubSection{PCB}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{./part-cab-handheld/chapter-cab-handheld-hardware/PCB_LcsNodes-Cab-Dev-B.01.10.pdf}
+    \caption{PCB}
+    %\label{fig:schematic}
+\end{figure}
+\FloatBarrier
+
+
 
 \unnumberedSection{A basic Cab Handheld}
 
@@ -58,8 +76,6 @@ As the name already suggests, the cab handheld is a handheld device with several
 
 // ??? \textbf{note} to do ..... focus on the firmware first ...
 
-
-\unnumberedSubSection{Summary}
 
 Phew. The cab handheld is another big step toward in operating a layout. After all, a layout control system without some form cab handhelds is not very useful. As said, there are many ways to build a cab. The design of UI elements and firmware was greatly influenced by a handheld called \textbf{\textit{Protothrottle}}. The concept of the four screen menu control buttons found its way into the UI Elements library. In addition to the general cab handheld, a cab handheld tailored toward a specific class of engines would be a great addition to operating that engine. The next section will present a diesel cab handheld that resembles a diesel cab stand from the 1950s.
 
@@ -156,7 +172,7 @@ The diesel cab handheld will leverage many of the design elements of the general
                 minimum height=0.75cm,
                 text width=1cm,
                 text centered,
-                fill=red!50] (throttle) at (5,4.5) {Throttle};
+                fill=green!50] (throttle) at (5,4.5) {Throttle};
                 
                 
        	\node[ tsRoundedRectangle, 
@@ -164,15 +180,14 @@ The diesel cab handheld will leverage many of the design elements of the general
                 minimum height=0.75cm,
                 text width=1cm,
                 text centered,
-                fill=red!50] (dir) at (6,3) {Dir};
+                fill=green!50] (dir) at (6,3) {Dir};
                 
       	\node[ tsRoundedRectangle, 
                 minimum width=3cm,
                 minimum height=0.75cm,
                 text width=1cm,
                 text centered,
-                fill=red!50] (brake) at (2.5,2.5) {Brake};
-                
+                fill=green!50] (brake) at (2.5,2.5) {Brake};
                 
        	\node[ tsRoundedRectangle, 
                 minimum width=1cm,
