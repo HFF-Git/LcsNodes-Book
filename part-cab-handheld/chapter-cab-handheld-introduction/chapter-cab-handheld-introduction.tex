@@ -8,7 +8,7 @@ This chapter will describe a general handheld to just control locomotives. It di
 
 A cab handheld needs to be able to control the loco. This implies that there is a local non-volatile memory that allows to remember locomotives once controlled. This way one can easily switch between a small set of locomotives and their characteristics. A display will show the actual state of cab handheld and allows together with the configuration buttons to configure the cab handheld. Looking at commercially available handhelds, they all seem to resemble TV controls. A numeric keyboard, some up and down buttons and the speed knob. ( No offense ). In all fairness, they are built to control not only the engines but also the rest of the layout.
 
-But how about a cab handheld that features instead of all the functions to control an entire layout just the features to control an engine. Our cab handheld will have dedicated buttons and levers for let's say a horn or whistle, a bell, and so on. There are also configuration buttons, dedicated buttons and switches, and a very small set of buttons to map to loco specific functions. Furthermore, there is of course the rotary knob for setting the locomotive speed. The following figure shows a rough sketch of the cab handheld elements.
+But how about a cab handheld that just feature instead of all the functions for controlling an entire layout just the features for controlling an engine. Our cab handheld will have dedicated buttons and levers for let's say a horn or whistle, a bell, and so on. There are also configuration buttons, dedicated buttons and switches, and a very small set of buttons to map to loco specific functions. Furthermore, there is of course the rotary knob for setting the locomotive speed. The following figure shows a rough sketch of the cab handheld elements.
 
 \begin{center}
     \begin{tikzpicture}[scale=0.9, transform shape]
@@ -30,9 +30,9 @@ But how about a cab handheld that features instead of all the functions to contr
                 fill=gray!30] (display) at (4.5,9.5) {Display};
         
         \node[ tsRoundedRectangle, 
-                minimum width=1cm,
+                minimum width=1.2cm,
                 minimum height=1cm,
-                text width=1cm,
+                text width=1.2cm,
                 text centered,
                 fill=red!50] (horn) at (6.5,12.5) {Horn};
         
@@ -123,67 +123,10 @@ But how about a cab handheld that features instead of all the functions to contr
     \end{tikzpicture}
 \end{center}
 
-Configuration and part of operation takes place with four buttons, which surround the screen display. The MENU button allows to toggle through the menus defined. To select a menu, the SELECT button is used. The menu toggle and select scheme can be nested. Within a menu screen, the MENU, UP and DOWN buttons are used screen specific and the SELECT button typically confirms the selected action. The direction buttons REV and FWD and the SPEED knob set the speed and direction of the locomotive or consist. F1 to F4 are four general buttons that can be mapped to special functions of the particular locomotive. The Horn and Bell button are rounding up the initial design.
+Configuration and part of operation takes place with four buttons, which surround the screen display. The \texttt{MENU} button allows to toggle through the menus defined. To select a menu, the \texttt{SELECT} button is used. The menu toggle and select scheme can be nested. Within a menu screen, the \texttt{MENU}, \texttt{UP} and \texttt{DOWN} buttons are used screen specific and the \texttt{SELECT} button typically confirms the selected action. The direction buttons \texttt{REV} and \texttt{FWD} and the \texttt{SPEED} knob set the speed and direction of the locomotive or consist. \texttt{F1} to \texttt{F4} are four general buttons that can be mapped to special functions of the particular locomotive. The Horn and Bell button are rounding up the initial design.
 
-The screen itself has also a common structure for all data displayed. 
-
-// ??? perhaps move into the picture above ?
-
-
-\begin{center}
-    \begin{tikzpicture}[scale=0.9, transform shape]
-        
-     	\draw[	help lines, gray!50, dashed] (0,0) grid(8,4);
-     	
-    	\node[	tsRectangle, 
-     	 		minimum width=2cm,
-                minimum height=1cm,
-                text width=1cm,
-                text centered,
-                draw=gray,
-                fill=none] (men) at (1,3.5) {Men};
-                
-      	\node[	tsRectangle, 
-     	 		minimum width=2cm,
-                minimum height=1cm,
-                text width=1cm,
-                text centered,
-                draw=gray,
-                fill=none] (up) at (7,3.5) {Up};
-                
-       	\node[	tsRectangle, 
-     	 		minimum width=2cm,
-                minimum height=1cm,
-                text width=1cm,
-                text centered,
-                draw=gray,
-                fill=none] (sel) at (1,0.5) {Sel};
-                
-       	\node[	tsRectangle, 
-     	 		minimum width=2cm,
-                minimum height=1cm,
-                text width=1cm,
-                text centered,
-                draw=gray,
-                fill=none] (down) at (7,0.5) {Dn};
-                
-        \node[	tsRectangle, 
-     	 		minimum width=8cm,
-                minimum height=4cm,
-                text width=4cm,
-                text centered,
-                fill=none] (screen) at (4,2) { };
-               
-		\node at (4,3.5) {data field 1};
-		\node at (4,0.5) {data field 2};
-		\node at (4,2.5) {screen line 1};
-		\node at (4,1.5) {screen line 2};
-       
-    \end{tikzpicture}
-\end{center}
-
-The screen display has several fields. The corner field match the buttons MENU, SEL, UP and DONW. The field width is four characters. The text shown is screen dependent. Typically the action of the four buttons is shown. Between the two corner fields on the top and on the button, there is a data field with up to eight characters. Finally, there are two screen lines in the center of the screen. 
+The screen itself has also a common structure for all data displayed. The corner field match the navigation buttons next to the corner. The text shown is screen dependent. Typically the action of the four buttons is shown. Between the two corner fields on the top and on the button, there is a data field with general status information. Finally, there are two context dependent screen lines in the center of the screen. 
 
 As always, there are many options to build a cab handheld. Although this version connects via cable to the LCS Bus, a wireless version is not hard to build. Having more buttons or fewer buttons, having a set of numeric keypad style input, are all quite valid options. It is a matter of what is preferred. Currently, the cab handheld will not offer any controls for accessories, such as turnouts. This is a subject better left to the layout control panels and controlling software. Our cab handheld favors the approach to model more of a locomotive control stand rather than a TV remote style handheld. Since this is a matter of taste and preference, go build your own.
 
-There is certainly the option to connect commercially available handhelds. This would require to provide a gateway from let's say a LocoNet protocol based handheld to the LCS protocol. Refer to the base station part where it shows an optional LocoNet interface. Well, one day you should be able to connect such handhelds via the LocoNet bus. But right now the topic is on the backlog list.
+There is certainly the option to connect commercially available handhelds. This would require to provide a gateway from let's say a LocoNet protocol based handheld to the LCS protocol. Well, one day you should be able to connect such handhelds via the LocoNet bus. But right now the topic is on the backlog list. It is a subject for the Gateway part of this book.

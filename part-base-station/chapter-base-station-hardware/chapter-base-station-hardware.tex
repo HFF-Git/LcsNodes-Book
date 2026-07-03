@@ -10,7 +10,7 @@ The base station is essentially based on a main controller board, a power module
 \end{figure}
 \FloatBarrier
 
-There are two more building blocks we have to introduce first. They are the \texttt{power unit} and the \texttt{RailCom detector}.
+As said, there are two more building blocks we have to introduce first. They are the \texttt{power unit} and the \texttt{RailCom detector}.
 
 \unnumberedSection{Power Module}
 
@@ -64,15 +64,12 @@ All power modules are expected to deliver a voltage proportional to the power co
 
 Power consumption measurement is necessary for another important DCC requirement. A DCC decoder in programming mode will raise its power consumption to acknowledge an operation with a raise by about 60mA. This short rise needs to be detected as well. It requires to calibrate the actual power consumption of the decoder, build a base of typical consumption and then detect the temporary raise. With the basics in place now, the next section will show different designs for a power module using the L6205 chip for the implementation. As always, there are other H-Bridges and also breakout boards that could also be used as the heart of a power module building block.
 
-
-
-\textbf{???} talk about short circuit implications. L6205 stops the bridge in microseconds, we can hardly detect that and will see a zero consumption on our periodic measurement. So, as long we test in the limit and stay below a real short circuit, we are fine. On a short circuit, the chip does a much better job. We need to indirectly conclude the problem. For example, we told the bridge to produce output power, but our measurement tells us there is no consumption. 
-
+Finally, there is support for short circuit detection and protection. The L6205 H-Bridge stops in microseconds on a shirt circuit detection. We can hardly detect that by power consumption measurement and will see a zero consumption on our periodic measurement. So, as long we measure within in the defined power limit and stay below a real short circuit, we are fine. On a short circuit, the chip does a much better job. Fortunately the L6205 chip sends a signal for a short circuit. We feed this direct to a controller pin for short circuit processing.
 
 
 \unnumberedSection{DCC and RailCom Signal Detector}
 
-Although a possibly standalone component in a layout, the RailCom detector is typically a part of the base station. It sits between the power module and the track. DCC is a broadcasting protocol. To address programming engines on the MAIN track the problem of providing a back channel had to be solved. First, the DCC signal generator needs to be able to include a cutout period in the bitstream. As shown in the DCC subsystem chapter, the cutout period happens right after the last bit of a packet sent as part of the preamble section of the next packet. The power module short circuits the track during this period. The decoder uses the period to send a short bit stream which in turn is detected by the RailCom detector. This section will just discuss the hardware part for receiving the RailCom bitstream in the cutout period. There is of course a software part that receives and decodes the RailCom datagrams. The details of RailCom message processing are described in the base station chapter.
+Although a possibly standalone component in a layout, the RailCom detector is typically also a part of the base station. It sits between the power module and the track. DCC is a broadcasting protocol. To address programming engines on the MAIN track the problem of providing a back channel had to be solved. First, the DCC signal generator needs to be able to include a cutout period in the bitstream. As shown in the DCC subsystem chapter, the cutout period happens right after the last bit of a packet sent as part of the preamble section of the next packet. The power module short circuits the track during this period. The decoder uses the period to send a short bit stream which in turn is detected by the RailCom detector. This section will just discuss the hardware part for receiving the RailCom bitstream in the cutout period. There is of course a software part that receives and decodes the RailCom datagrams. The details of RailCom message processing are described in the base station chapter.
 
 \begin{tikzpicture}[scale=0.9, transform shape]
 
@@ -110,13 +107,14 @@ The power unit of our base station uses the L6205 dual H-Bride IC for a dual pow
 \end{figure}
 \FloatBarrier
 
-When building a base station, one H-bridge is used or the main track and the other for the programming track. The programming track that actually would need a much lower current, why use a design with two equally powered H-bridges? One answer is that you can get such an ICs with two H-Bridges inside. The other answer is that a design with two equal H-Bridges would allow for an interesting feature. Imagine you could feed the main track signal to both the MAIN and the PROG track. A locomotive could drive under its own power onto the PROG track, which is acting as a MAIN track section. Then the DCC signal is switched back from MAIN to PROG and the locomotive configuration can begin. Now, the same could also be accomplished with some relay based logic, but wouldn't this be an elegant approach? More on this idea in the base station chapter.
-
+When building a base station, one H-bridge is used or the main track and the other for the programming track. The programming track actually would need a much lower current, so why use a design with two equally powered H-bridges? One answer is that you can get such an ICs with two H-Bridges inside. The other answer is that a design with two equal H-Bridges would allow for an interesting feature. Imagine you could feed the main track signal to both the MAIN and the PROG track. A locomotive could drive under its own power onto the PROG track, which is acting as a MAIN track section. Then the DCC signal is switched back from MAIN to PROG and the locomotive configuration can begin. Now, the same could also be accomplished with some relay based logic, but wouldn't this be an elegant approach? The hardware is there.
 
 
 \unnumberedSection{RailCom Detector}
 
 Both channels also feature a RailCom detector. 
+
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[page=4, width=0.8\textwidth]{./part-base-station/chapter-base-station-hardware/Schematic_LcsNodes-Base-Station-Board-B.02.10.pdf}
@@ -133,7 +131,7 @@ Refer to the base station firmware chapter on what we actually do with a RailCom
 
 \unnumberedSection{ Connectors and Power}
 
-Finally, there are the connectors and the power supplies. 
+Finally, there are the connectors and the power supplies. There are the standard LCS Can bus connectors and the external I2C channel connector. On the left side, there is the 60-pin connector for possible extension boars. 
 
 \begin{figure}[htbp]
     \centering
@@ -142,6 +140,11 @@ Finally, there are the connectors and the power supplies.
     %\label{fig:schematic}
 \end{figure}
 \FloatBarrier
+
+// ?? external connector offers just a few lines out ...
+
+The power supply ....
+
 
 \unnumberedSection{Base Station PCB}
 
@@ -164,9 +167,16 @@ The following picture shows the PCB for the monolithic base station. It is a 12c
     \node at (8,4) {picture};
 \end{tikzpicture}
 
+\unnumberedSection{A little history}
+
+The base station was also the first major LCS node with a considerable amount of hardware and software and thus went to several iterations and a considerable amount of learning curves. The very first version started with an Arduino Mega and Motor driver breakout board. The software was the original DCC++ software. The next versions actually were just refactoring efforts and work on the software. I learned a great deal on how all this works. The next base station version was a single board with all possible interfaces on an experimental PCB. It already featured CAN BUS, dual H-Bridges, and a controller, the Atmega 1284. This board served a long time for software development and further experiments. 
+
+The next version of the base station was built with a main controller PCB described in the earlier chapters and a dual power unit, that also featured the RailCom detector. And again further software refactoring, refinement and learning. Finally, after a switch to the Raspberry Pi Pico controller, first on breadboard  then on PCBs, the base station shown in this chapter is the current version. The lessons learned proved to be very valuable for the overall concept development and hardware design. And in addition, there was a great deal of reading on chip specifications and, very importantly, the DCC standards. The appendix contains a list of material and web links. I highly recommend to read the electrical and DCC related standards published by the RailCommunity organization.
+
 
 \unnumberedSection{Summary}
 
-The base station, no matter how it is implemented, is a key component in any digital layout. It is primarily responsible for the locomotive session management and track signal generation. There could be designs where the base station is a device in a nice housing with a display, switches and so on. Other designs just put the LCS node somewhere on the layout. All these options will work just fine. And just like any other LCS node, the base station firmware offers through node and port attributes status and control functions.
+The base station, no matter how it is implemented, is a key component in any digital layout. It is primarily responsible for the locomotive session management and track signal generation. There could be designs where the base station is a device in a nice housing with a display, switches and so on. Other designs just put the LCS node somewhere on the layout. All these options will work just fine. And just like any other LCS node, the base station firmware offers through node and port attributes status and control functions. The base station firmware is next.
 
-The base station was also the first major LCS node with a considerable amount of hardware and software and thus went to several iterations and a considerable amount of learning curves. The very first version started with an Arduino Mega and Motor driver breakout board. The software was the original DCC++ software. The next versions actually were just refactoring efforts and work on the software. I learned a great deal on how all this works. The next base station version was a single board with all possible interfaces on an experimental PCB. It already featured CAN BUS, dual H-Bridges, and a controller, the Atmega 1284. This board served a long time for software development and further experiments. The next version of the base station was built with a main controller PCB described in the earlier chapters and a dual power unit, that also featured the RailCom detector. And again further software refactoring, refinement and learning. Finally, after a switch to the Raspberry Pi Pico controller, first on breadboard  then on PCBs, the base station shown in this chapter is the current version. The lessons learned proved to be very valuable for the overall concept development and hardware design. And in addition, there was a great deal of reading on chip specifications and, very importantly, the DCC standards. The appendix contains a list of material and web links. I highly recommend to read the electrical and DCC related standards published by the RailCommunity organization.
+
+

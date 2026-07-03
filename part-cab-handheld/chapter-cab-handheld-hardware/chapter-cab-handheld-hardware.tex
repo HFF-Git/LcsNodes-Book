@@ -1,17 +1,10 @@
 \unnumberedChapter{Cab Handheld Hardware}
 
-// ??? hardware chapter 
-
-
-This chapter will describe a general handheld to just control locomotives. 
-
-
-It directly connects via cable to the LCS bus and provides the generic elements to specify the locomotive to operate, set the speed and direction as well as the function keys. Implementing a base station and a handheld is all you would need to run an engine and finally see something for your hard work of building a layout system. The cab handheld described first is a board for developing the firmware. Nevertheless it can be used as a full functioning cab handheld. Later version will build upon the firmware but use a more handy form factor.
- 
+A cab handheld as shown in the sketch in the previous chapter consists of the controller portion and a set of buttons and dials. It directly connects via cable to the LCS bus and provides the generic elements to specify the locomotive to operate, set the speed and direction as well as the function keys. Implementing a base station and a handheld is all you would need to run an engine and finally see something for your hard work of building a layout system. This chapter will describe a general handheld to just control locomotives. 
 
 \unnumberedSection{Cab Handheld Firmware Development Platform}
 
-A cab handheld as shown in the sketch above consists of the controller portion and a set of buttons and dials. Usually, for the very first steps in firmware design a breadboard implementation of the hardware is used. But why not just create a PCB with all the user elements on it? From experience with breadboards, this setup is by far more robust and you will not chase firmware bugs that turn out to be just a loose connection on a breadboard. This is by the way a lesson learned. With the very reasonable prices for a PCB board, it is almost easier to build a PCB rather early in the design phase and if it has an error, just correct it and order another set of PCBs. Although one could also build the module on a an experimental PCB board, having the schematics done, it is a small step to a dedicated PCB. Definitively worth the small extra effort of making a robust prototype PCB. The following schematic shows the extension board developed for the can handheld firmware development. First, here is the block diagram.
+Usually, for the very first steps in firmware design a breadboard implementation of the hardware is used. But why not just create a PCB with all the user elements on it? From experience with breadboards, this setup is by far more robust and you will not chase firmware bugs that turn out to be just a loose connection on a breadboard. This is by the way a lesson learned. With the very reasonable prices for a PCB board, it is almost easier to build a PCB rather early in the design phase and if it has an error, just correct it and order another set of PCBs. Although one could also build the module on a an experimental PCB board, having the schematics done, it is a small step to a dedicated PCB. Definitively worth the small extra effort of making a robust prototype PCB. The following schematic shows the extension board developed for the can handheld firmware development. First, here is the block diagram.
 
 \unnumberedSubSection{Block Diagram}
 
@@ -21,6 +14,8 @@ A cab handheld as shown in the sketch above consists of the controller portion a
     \caption{Block Diagram}
     %\label{fig:schematic}
 \end{figure}
+\FloatBarrier
+
 
 \unnumberedSubSection{Nain Controller}
 
@@ -62,7 +57,7 @@ Granted, it is not really a cab handheld to hold in your hands. Although the fin
 
 \unnumberedSection{A basic Cab Handheld}
 
-As the name already suggests, the cab handheld is a handheld device with several buttons and a display. To keep it a compact design, we will use both sides of the PCB. The upper side contains the buttons, switches and display, the lower side contains the controller components. The cab handheld will connect via a cable to the LCS bus. Power comes from the LCS bus power lines and the CAN bus interface is used to transmit the messages. Perhaps a later version will also add some WLAN capabilities. While WLAN would come pretty much for free with the PICO W, the power supply side needs to include a battery.
+The basic cab handheld is essentially the same hardware, except the form factor changes. 
 
 \begin{itemize}
 \item a 8x12cm board, used from both sides (?)
