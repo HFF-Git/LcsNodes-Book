@@ -1,18 +1,16 @@
 
 \unnumberedChapter{Controller Dependent Code}
 
-A main controller board features the controller itself, the CAN bus interface, the non-volatile memory and the extension connector with several IO pins of the controller assigned to it. During board initialization the controller hardware needs to be mapped to the actual board. 
+A main controller board features the controller itself, the CAN bus interface, the non-volatile memory and the extension connector with several IO pins of the controller assigned to it. During board initialization the controller hardware needs to be mapped to the actual board. It can be easily seen that different controller and board versions would place a great configuration and perhaps conditional compile burden on the LCS core library. To address this problem, there is a hardware layer library at the very bottom of the architecture that isolates the controller dependencies.
 
-
-
-Two processor versions of the main controller board were presented. It can be easily seen that different controller and board versions would place a great configuration and perhaps conditional compile burden on the LCS core library. To address this problem, there is a hardware layer library at the very bottom of the architecture that isolates the controller dependencies.
+\unnumberedSection{Concept}
 
 
 Concept: there are resource numbers which are the index into a descriptor array that describes a resource, such as a GPIO pin or UART.
 
 A program needs such a descriptor at startup. These descriptors can be constant structures, one for each board / version in production. 
 
-The runtime init library accepts this structures and executes the data. Ideally, nothing more needs tobe done for configuration. Still, the configure routines are also available to override this initial setting.
+The runtime init library accepts this structures and executes the data. Ideally, nothing more needs to be done for configuration. Still, the configure routines are also available to override this initial setting.
 
 It is essential that the init and configure routines cab be called many tines. One could init CDC and later call initRuntime which would also call CDC init. 
 
@@ -93,13 +91,6 @@ The main controller board features optional power failure detection. The power s
 // ??? has changed...
 
 
-\unnumberedSection{External Interrupt}
-
-The CDC library offers a set of routines for handling an external interrupt. While a controller typically allows for interrupts on almost any IO pin, there are one some controllers dedicated IO pins which offer an interrupt input with flexible setting and high resolution timing. A callback needs to be registered for this interrupt.
-
-// ??? has changed ...
-
-
 \unnumberedSection{Status LEDs}
 
 The main controller board features one LED. This is the activity LED, accessed via the \textbf{writeDio} routine. The LCS core library will use this LED to indicate that the node is ready and that there are library activities such as receiving a LCS message. The following just shows an example how to control the LEDs.
@@ -131,6 +122,10 @@ The digital IO routines offer an interface to plain digital input and output ope
 
 // ??? add the interrupt stuff...
 
+The CDC library offers a set of routines for handling an external interrupt. While a controller typically allows for interrupts on almost any IO pin, there are one some controllers dedicated IO pins which offer an interrupt input with flexible setting and high resolution timing. A callback needs to be registered for this interrupt.
+
+// ??? has changed ...
+
 \lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
    
@@ -152,6 +147,9 @@ uint8_t         getGpioPinB( uint8_t rNum );
     
 \end{lstlisting}
 \FloatBarrier
+
+
+
 
 \unnumberedSection{Analog Input}
 
@@ -181,7 +179,20 @@ The analog to digital converter system for the Raspberry PI PICO is compared to 
 \end{lstlisting}
 \FloatBarrier
 
-The pre-scale options for the Atmega are limited to what the particular timer allows. In other words, the frequency can only be set to the nearest value of what the pre-scale option will allow. Thee PICO is again far more flexible allowing for a true frequency setting.
+The pre-scale options for the Atmega are limited to what the particular timer allows. In other words, the frequency can only be set to the nearest value of what the pre-scale option will allow. The PICO is again far more flexible allowing for a true frequency setting.
+
+\unnumberedSection{I2C}
+
+Controller offers a serial wire IO block. The I2C will need two pins for clock and data. There is one I2C port on the Atmega1284, and two hardware blocks on the Raspberry Pi Pico. The CDC layer offers an interface to read and write a byte.
+
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
+   
+    Declaration part...
+    
+\end{lstlisting}
+\FloatBarrier
+
 
 \unnumberedSection{UART Interface}
 
@@ -199,17 +210,6 @@ The UART interface is used to offer a serial communication channel. This is requ
 
 The Raspberry PI Pico offers to implement the UART channel on one of the PIO state machines. This allows for more than the two UART blocks of the controller. The \textbf{UartMode} parameter selects what kind of UART HW is actually used.
 
-\unnumberedSection{I2C}
-
-Controller offers a serial wire IO block. The I2C will need two pins for clock and data. There is one I2C port on the Atmega1284, and two hardware blocks on the Raspberry Pi Pico. The CDC layer offers an interface to read and write a byte.
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-   
-    Declaration part...
-    
-\end{lstlisting}
-\FloatBarrier
 
 \unnumberedSection{Programmable State Machines}
 
@@ -231,15 +231,10 @@ Controller offers a serial wire IO block. The I2C will need two pins for clock a
 
 ... controlling H-Bridges
 
-\unnumberedSection{Extension Connector and Hardware Pins}
-
-The routines described have been implemented fairly flexible and their main purpose is to shield the upper library and firmware from the controller specific implementation methods as much as possible. The same routines are also used to control the pins of the extension connector. If you recall, there are two ADC channels, a digital channels and an I2C communication channel available. The first two digital pins can be overlaid with an UART interface, and the last two digital pins allow a PWM capability.
-
-The configuration descriptor structure uses predefined names for the pins of the controller. If the hardware exports these pins via the extension connector, the connector pins can be accessed by these names. However, not all pins need to be provided to the extension connector. If for example, the digital pins DIO 0 .. 4 are used local to the board, the pins are left open on the extension connector. The only mandatory pins available on any extension connector are Power, ground, I2C, reset and E-Stop.
 
 \unnumberedSection{Summary}
 
-The controller dependent code library is the lowest layer in the LCS node software stack. Its purpose is to shield the firmware programmer from the underlying pin assignments and some of the intricacies of the particular controller. At the same time, the layer needs to be rather thin so that it adds very little to the overall path length for performance critical signal management. For special cases, there is always the possibility to access the underlying hardware directly. However, this coding my not be that portable then.
+The controller dependent code library is the lowest layer in the LCS node software stack. Its purpose is to shield the firmware programmer from the underlying pin assignments and some of the intricacies of the particular controller. At the same time, the layer needs to be rather thin so that it adds very little to the overall path length for performance critical signal management. For special cases, there is always the possibility to access the underlying hardware directly. However, this coding may not be that portable then.
 
 .. does not completely shield us, and it is not desired anyway...
 

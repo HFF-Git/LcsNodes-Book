@@ -31,6 +31,8 @@ The power-fail detector triggers early, while the supply voltage is still within
 \end{figure}
 \FloatBarrier
 
+// ??? we will see most of these parts again in later schematics... building blocks.
+
 \unnumberedSection{Connectors and Level Shifters}
 
 The second part depicts the connectors and the level shifters.
@@ -46,39 +48,57 @@ The second part depicts the connectors and the level shifters.
 
 The ADC inputs also need a divider to map the incoming voltage range of 0 to 5V to 0 to 3V3. A simple resistor divider does the job.
 
+I2C driver ...
+
 
 ??? talk about the mapping of PICO pins to extension connector pins. Should allow that function blocks such as SPI, UART, I2C, etc can be accessed.
 
 \unnumberedSection{PICO Pin Mapping}
 
-EXT             - pin 4
-
-DIO 0,1         - 6,7
-
-DIO 2,3         - 8,9
-
-DIO 4,5         - 10,11
-
-DIO 6,7         - 12,13
-
-DIO 8,9         - 18,19
-
-DIO 10,11       - 20,21
-
-CAN             - 0,1
-
-I2C NVM         - 2,3
-
-I2C EXT         - 16,17
-
-Ready Led       - 14
-
-Activity Led    - 15
+\begin{longtable}{@{}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.2\linewidth}|@{}}
+    \caption{Pico Pin Mapping} \\
+    \toprule
+    \textbf{LCS Name} & \textbf{PICO Pin} & \textbf{LCS Name } & \textbf{PICO Pin} & \textbf{Purpose} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{LCS Name} & \textbf{PICO Pin} & \textbf{LCS Name } & \textbf{PICO Pin} & \textbf{Purpose} \\
+    \midrule
+    \endhead
+    \midrule
+    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \midrule
+    \endfoot
+    \bottomrule
+    \endlastfoot
+    EXT-INT & 4 & PFAIL & 15 & \\
+    \midrule
+    ACT-LED & 14 & & & \\
+    \midrule
+    CAN-H & 0 & CAN-L & 1 & \\
+    \midrule
+    NVM-SDA & 2 & NVM-SCL & 3 & \\
+    \midrule
+    EXT-SDA & 16 & EXT-SCL & 17 & \\
+    \midrule
+    DIO-0 & 6 & DIO-1 & 7 & \\
+    \midrule
+    DIO-2 & 8 & DIO-3 & 9 & \\
+    \midrule
+    DIO-4 & 10 & DIO-5 & 11 & \\
+    \midrule
+    DIO-6 & 12 & DIO-7 & 13 & \\
+    \midrule
+    DIO-8 & 18 & DIO-9 & 19 & \\
+    \midrule
+    DIO-10 & 20 & DIO-11 & 21 & \\
+    \midrule
+\end{longtable}  
 
 
 \unnumberedSection{A Main Controller Board PCB for PICO}
 
-And here is the PCB for the PICO based main controller. It is a 10cmx 12cm board. Note that there is quite some real estate allocated to the level shifters between 5V and 3V3. When most of the IO pins are used in a monolithic board design, these level shifters are perhaps not needed. Since our extension connectors standardizes on 5V for digital levels, we need them for this board.
+And here is the PCB for the PICO based main controller. It is a 10cmx 12cm board. Note that there is quite some real estate allocated to the level shifters between 5V and 3V3. When most of the IO pins are used in a monolithic board design, these level shifters are perhaps not needed. Since our extension connectors standardizes on 5V for digital levels, we need them here.
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{./part-hardware/chapter-main-controller-hardware-pico/PCB_LcsNodes-Main-Controller-Board-B.02.10.pdf}
@@ -86,9 +106,3 @@ And here is the PCB for the PICO based main controller. It is a 10cmx 12cm board
     %\label{fig:schematic}
 \end{figure}
 \FloatBarrier
-
-\unnumberedSection{Summary}
-
-We now have a core library which can handle the basics of just about any node and we have a main controller board that will form the heart of many projects to come for the layout control system. However, while LCS boards will all run the same core library, there are still differences how for example the controller pins are assigned on the boards. It is very likely that new software versions and perhaps different processors and boards layouts will require that the core library is adapted to each processor / board combination. This is especially true for monolithic board designs, where there is a great freedom which pins to use for what. At this point, many projects found on the web will now start a symphony of "ifdefs" in their coding. The conditional compiles often reach up to the highest layers of the firmware programming. This \textbf{controller dependent layer} presented before addresses this issue with offering a mapping structure that will translate between the symbolic names and the actual HW counterpart.
-
-Just before we move on, a good question is what can be done with this board ?. It seems to be just a fancy wrapping around the controller chip. Well, first of all, it is a fully function node, capable of receiving CAN bus messages. It also features the library runtime storage and exports a variety of pins to the extension connector. During the development of the concepts and the runtime library this board served as the development platform. When designing a new node type, it is a great starting point to take care of the main controller part, allowing to concentrate fully on the node additional capabilities. We will pick up on this in later chapters when extensions are presented.    

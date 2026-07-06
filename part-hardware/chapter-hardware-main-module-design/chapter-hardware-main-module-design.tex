@@ -78,10 +78,8 @@ Each node in the layout control system is a node and hence there is a controller
 
 Another approach is to design a node controller board with extension boards that can be connected to it. In the remainder of this chapter, we will describe the main controller board and the extension concept. However, it is also perfectly all-right to design a hardware component with all the components integrated on one board. For a complex node such as the base station, this is a very reasonable solution. But first, let's look at the physical dimension of our boards.
 
-
 \begin{figure}[ht]
-\centering
-
+	\centering
 	\begin{tikzpicture}[scale=0.9, transform shape]
 
     	\draw[help lines, gray!50, dashed] (0,0) grid (16,8);
@@ -104,8 +102,7 @@ Another approach is to design a node controller board with extension boards that
     	\node [rotate=90] at ( 14, 4 ) {Extension Connector };
 
 	\end{tikzpicture}
-
-	\caption{Main Controller Board Footprint}
+	% \caption{Main Controller Board Footprint}
 \end{figure}
 
 All boards will have a form factor of 10cm wide and 8cm, 12cm and 16cm long. The figure above shows the 10cm by 12cm board form factor. The main controller board has on the left side the connectors for the LCS bus, the external I2C bus and the power input. On the right side, there is one connector toward an extension board. As described before, there are two types of extension boards. The usage of the individual connector pins are described in the upcoming chapter. To ease the hardware schematic development and ensure that all boards fit together, the PCB boards along with their connectors are available as symbols and PCB footprints in the EasyEDA library.
@@ -280,28 +277,48 @@ For even more complex extension boards with many connection to the controller bo
 
 Controller and Extension boards make up a node. The main controller board will connect via the main bus connectors to an extension board. The pins of the connectors were shown in the previous sections. The following figure depicts how the two boards are connected. There are two basic cases. The first case, shown here, is an extension board that simply is plugged into the connector of the main controller or another extension board.
 
-\begin{figure}[htbp]
+\begin{figure}[ht]
     \centering
     \begin{tikzpicture}[scale=1, transform shape]
-        \useasboundingbox (0,0) rectangle (15,6);
-        \draw[help lines, gray!50, dashed] (0,0) grid(15,6);
+        \useasboundingbox (0,0) rectangle (15,10);
+        \draw[help lines, gray!50, dashed] (0,0) grid(15,10);
         
-        \node at (3.5, 2.5) {\includegraphics[page=1, scale=0.5]
+        \node at (3.5, 6.5) {\includegraphics[page=1, scale=0.5]
 				{./part-hardware/chapter-hardware-main-module-design/LCS-FP-MAIN-10X12-B.02.10.pdf}};
 
-        \node at (11.5, 2.5) {\includegraphics[page=1, scale=0.5]
+        \node at (11.5, 6.5) {\includegraphics[page=1, scale=0.5]
 				{./part-hardware/chapter-hardware-main-module-design/LCS-FP-EXT-10X12-B.02.10.pdf}};
 
-        \node at (3, 5.5) {\textbf{Main Controller}};
-        \node at (11, 5.5) {\textbf{Extension Board}};
-        \node at (3.5, 2.25) {Extension Bus};
-
-        \draw[line width=1mm, gray!40, ->] (5,2.25) -- (11,2.25);
-    
+        \node at (3, 9.5) {\textbf{Main Controller Board}};
+        \node at (11, 9.5) {\textbf{Extension Board}};
+        
+        \node at (3.5, 6.5) {Extension Bus};
+        \draw[line width=1mm, gray!40, ->] (5,6.5) -- (11,6.5);
+        
+        \node at (13.5, 1.5) {\textbf{Socket Boards}};
+        
+        \node at (3.5, 1.5) {\includegraphics[page=1, scale=0.35,  angle=270]
+				{./part-hardware/chapter-hardware-main-module-design/LCS-FP-SOCKET-5X8-B.01.00.pdf}};
+				
+		\node at (6.5, 1.5) {\includegraphics[page=1, scale=0.35,  angle=270]
+				{./part-hardware/chapter-hardware-main-module-design/LCS-FP-SOCKET-5X8-B.01.00.pdf}};
+				
+		\node at (10.5, 1.5) {\includegraphics[page=1, scale=0.35,  angle=270]
+				{./part-hardware/chapter-hardware-main-module-design/LCS-FP-SOCKET-5X8-B.01.00.pdf}};
+				
+				
+		\draw[line width=0.5mm, gray!40, <->] (0.5,5.85) -- (0.25,5.85) -- (0.25, 3.25) -- (3.2, 3.25) -- (3.2, 3);
+    	\draw[line width=0.5mm, gray!40, <->] (4,3) -- (4,3.25) -- (6.2,3.25) -- (6.2,3);
+    	\draw[line width=0.5mm, gray!40, <->] (6.75,3) -- (6.75,3.25) -- (10.2,3.25) -- (10.2,3);
+    	
+     
     \end{tikzpicture}
     \caption{Connecting boards}
     %\label{fig:composite-image}
 \end{figure}
+
+
+// ??? explain socket boards...
 
 Since there are typically only a few extension boards connected to one controller, the signal line length is reasonable. For a more compact arrangement, extension boards with only the right hand side connector can be plugged into a backplane style board with the main controller next to it. Nothing else as far as connectivity goes is changed. The appendix on the board design details has the detailed layout of such a board.
 

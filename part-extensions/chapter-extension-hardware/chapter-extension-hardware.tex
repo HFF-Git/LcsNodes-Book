@@ -1,14 +1,5 @@
 \unnumberedChapter{Hardware Extension Module Design}
 
-// intro, motivation ....
-
-
-
-LCS hardware modules typically consist of a controller portion and an extension portion. Welcome to the extension part of hardware module design. To recap, controller boards features an extension connector that contains signal lines to the extension board. This connector provides among other lines an I2C bus, which is the communication bus to elements on the extension boards.
-
-Each hardware module almost certainly has additional requirements. Depending on the module type there will be a great variety of extensions. A good example is the sensor and actor hardware for managing the respective turnouts, signals, and so on. A solution to these family of modules is to use the I2C communication bus and a few more controller lines between controller main board and extensions. Rather than exporting as many as possible pins of the controller via an extension connector, the extension connector presented is hopefully a reasonable compromise when it comes to numbers of pins and capabilities. For complex extension boards with many controller interaction points, a monolithic approach, i.e. controller and extension functionality on one board, would perhaps be the better choice. Such boards could still export the basic functions such as I2C via the extension connector to less complex extension boards for providing additional capabilities. Before we discuss any particular extension board, this chapter will present the hardware and firmware foundation for addressing an extension board.
-
-
 // ??? rework... we have node and channels which are the path to hardware boards.
 
 
@@ -145,51 +136,19 @@ Now, we not only know what boards are actually connected but also what software 
 
 // ??? \textbf{note} what could we do about "real" interrupts from an extension board ?
 
-\unnumberedSection{Utility for writing the NVM}
-
-// ??? simplify to just have a REQ item ?
-
-The structure on each extension board is from the extension library perspective a read-only structure. But of course initially it needs to be filled with valid data. The hardware offers a jumper on the board to enable writing to the NVM chip. Any main controller board could be used to just write to the extension board. This is accomplished with a little utility program or a set of commands implemented in the command line interface of the core library.
-
-// ??? to be decided and implemented. I like the idea for simple commands on the core library level... easiest way to move quickly forward.
 
 \unnumberedSection{Summary}
 
 LCS nodes consist of a main controller board and extension boards. That concept can be found throughout all what is presented in this book. This chapter gave an insight how many different extension boards are connected and managed. We are now read to look at actual extension board implementations in the chapters to come.
 
 
-\unnumberedChapter{Smart Extension}
-
-// ??? we actually only have smart extension now ....
+??? a newer concept, started with "basic" extension, but this is more powerful.
 
 
-
-
-??? describe a way to build extensions using a little micro controller. The Attiny family. 
-
-??? it fits nicely into the concept but is much more powerful...
-
-\unnumberedSection{Concepts}
-
-\unnumberedSection{The Attiny Microcontroller}
-
-??? what is the Attiny, what will it do for us ?
-
-\unnumberedSection{Extension Memory layout}
-
-??? what is the common register map seen by I2C reads and writes ?
-
-\unnumberedSection{Extension Protocol Messages}
-
-// ??? message layout 
-
-\unnumberedSection{Extension common library}
-
-// ??? ....
 
 
 \unnumberedSection{Summary}
 
-??? a newer concept, started with "basic" extension, but this is more powerful.
+
 
 

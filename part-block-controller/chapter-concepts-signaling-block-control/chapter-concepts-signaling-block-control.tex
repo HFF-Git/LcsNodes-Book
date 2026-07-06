@@ -1,6 +1,5 @@
 \unnumberedChapter{Signaling Block Control}
 
-The previous chapters got us to understand the LCS concepts, to build LCS nodes and power units on different hardware platforms. It all resulted in building an essential piece necessary for any layout, the LCS base station. So far so good. The next big part to address is to build hardware and software to control devices such as signal, turnouts, and so on. Also, we would need to get feedback from the layout where trains exactly and what the currently do. After all, a trains needs to safely get from A to B. Before diving into block controllers, sensors and actors, here is a brief chapter on where the journey will go.
 
 Safely getting a train from point A to B is the basic unit of work for a railway. In contrast to let's say a car, trains run on orders and there is a planned schedule. It is a planned movement. A train is also different to a car in that it cannot react rather quick to events such as a blocking signal. Try stopping a 15000 ton freight train half mile long. As a consequence, there is a concept of train authorization and train movement. The authorization represents the train order and the train movement gets the train safely from A to B obeying the rules of the signaling system. In the early days, there was one train moving from A to B and the authorization instance just authorized the train movement from A to B. A follow-on train moving from station A to station B had to wait for the complete route cleared over many miles as for a train moving in the opposite direction on a single line. With rising traffic the throughput was limited and new concepts were needed. One obvious solution was higher train speed and using two lines.
 
@@ -28,7 +27,14 @@ A block is guarded by signals. They indicate information to the locomotive engin
 
 A block is the fundamental element of the block signaling system. The following figure shows the possible configuration of a block  element.
 
-%!\href{./Figures/Block-Element-Concept.png }{Analog-Block-Element-Concept-Control.png}
+\begin{center}
+    \begin{tikzpicture}[scale=0.9, transform shape]
+        
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,8);
+        \node at (8,4) {Runtime Lib refined};
+    \end{tikzpicture}
+\end{center}
+
 
 From a moving direction viewpoint, each block can be seen as having exactly one entry point and optional two exits, depending whether a turnout is par of the block or not. If there is a turn out it is typically the last subsection of the block element. A block that can be entered from both directions potentially has a turnout at each end. In theory, any possible layout can be realized with this block element. The layout configuration and block control software will thus center around this basic element.
 
@@ -46,7 +52,14 @@ Besides the usual red for \"stop\" and green for \"full steam ahead\" there can 
 
 With the basic elements  block, subsection, turnouts and signals in place, there are several ways to implement a block control system. The first algorithms is the \textbf{Automated Block System} ( \textbf{\textit{ABS}} ). The Automatic Block Signaling (ABS) system is a type of railroad signaling system that helps manage train movements by dividing a railway line into multiple blocks or sections. Each block is protected by signals that control the movement of trains to prevent collisions and ensure safe operation. A signal at the beginning controls whether that block can be entered at what speed. For example, a halt signal means that the train speed to enter the block is zero. The condition will is also shown with the distant signal. A distant signal is the signal ahead of the main signal that indicated the state of the main signal in breaking distance for the trains. So, a distant signal indicating a "slow" condition shows the condition of main signal ahead, which is the condition to enter the block ahead. The distance between the distance signal and the main signal is called the approach indication. Another variant is to just have main signals, one for each block entry. The approach indication in this case is the length of the block , the signal is the main signal of the block before. This variant can often be found in American railways.
 
-% !\href{./Figures/Line-of-Blocks.png }{Line-of-Blocks.png}
+\begin{center}
+    \begin{tikzpicture}[scale=0.9, transform shape]
+        
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,8);
+        \node at (8,4) {Runtime Lib refined};
+    \end{tikzpicture}
+\end{center}
+
 
 So far, the signals refer to the series of blocks in one direction. Multiple trains can follow each other in one direction. If the route is to be used in both directions, signals need to be placed also in the other direction. Also the route needs to be reserved, such that two trains do not enter the route from both ends. When a train is moving from A to B, signals guarding the route B to A will all show a halt condition and are cleared on a block by block fashion according to the movement of the train from block to block. To avoid that two trains enter a line from both directions and then have to stop in the middle, a kind of reservation system is needed to manage the current route direction. This system is called \textbf{Absolute Permissive Blocks} ( \textbf{\textit{APB}} ).
 
@@ -90,63 +103,6 @@ Imagine a single direction line with several blocks. The control element is the 
 /// ??? \textbf{note} fill in ...
 
 
-\unnumberedSection{Layering...}
-
-
-\begin{center}
-    \begin{tikzpicture}[scale=0.9, transform shape]
-        
-        \draw[help lines, gray!50, dashed] (0,0) grid(16,12);
-    
-        \node[  tsRoundedRectangle, 
-                minimum width=10cm,
-                minimum height=1.5cm,
-                text width=3cm,
-                text centered,
-                fill=red!50] (orders) at (6,10) {Orders};
-    
-        \node[  tsRoundedRectangle, 
-                minimum width=10cm,
-                minimum height=1.5cm,
-                text width=3cm,
-                text centered,
-                fill=red!50] (signaling) at (6,7) {Signaling};
-    
-        \node[  tsRoundedRectangle, 
-                minimum width=10cm,
-                minimum height=1.5cm,
-                text width=3cm,
-                text centered,
-                fill=red!50] (blocks) at (6,4) {Blocks};
-    
-        \node[  tsRoundedRectangle,  
-                minimum width=4cm,
-                minimum height=1.5cm,
-                text width=3cm,
-                text centered,
-                fill=yellow!50] (sensors) at (3,1) {Sensors};
-    
-        \node[  tsRoundedRectangle, 
-                minimum width=4cm,
-                minimum height=1.5cm,
-                text centered,
-                text width=3cm, fill=yellow!50] (actors) at (9,1) {Actors};
-    
-        \draw[<->, ultra thick, line cap=round] (orders.south) -- (signaling.north);
-        \draw[<->, ultra thick, line cap=round] (signaling.south) -- (blocks.north);
-        \draw[->, ultra thick, line cap=round] (sensors.north) -- ($(blocks.south) - (3,0)$);
-        \draw[<-, ultra thick, line cap=round] (actors.north) -- ($(blocks.south) + (3,0)$);
-
-        \draw[decorate,decoration={brace,amplitude=8pt,mirror,mirror}, line width=2pt] (12,0) -- (12,5);
-        \draw[decorate,decoration={brace,amplitude=8pt,mirror,mirror}, line width=2pt] (12,6) -- (12,8);
-        \draw[decorate,decoration={brace,amplitude=8pt,mirror,mirror}, line width=2pt] (12,9) -- (12,11);
-      
-        \node at (14.5, 2.5) {\textbf{\parbox{3cm}{Layout\\Elements}}};
-        \node at (14.5, 7) {\textbf{\parbox{3cm}{Safety\\Rules}}};
-        \node at (14.5, 10) {\textbf{\parbox{3cm}{Route\\Planning}}};
-
-    \end{tikzpicture}
-\end{center}
 
 \unnumberedSection{Summary}
 

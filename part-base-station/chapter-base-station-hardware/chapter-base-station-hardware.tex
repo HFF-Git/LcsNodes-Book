@@ -83,7 +83,8 @@ The RailCom channel was an important addition to the DCC standard. With RailCom 
 
 \unnumberedSection{Base Station Main Controller}
 
-The Raspberry PI Pico has enough capacity to implement the CAN bus protocol directly using one of the cores. As a result, only the line driver is necessary to implement the CAN bus interface. There are the level shifters for the I2C bus and a few other external signals. The Power supply needs to have a method to detect that there is an USB cable connected to the PICO and ensure that there is no conflict between the power sources. Like any LCS node, the controller needs a non-volatile memory. The base station hosts an I2C type NVM with up to 64Kbytes. The key reason for such a high capacity is that a base station might store a lot of data for each engine that it can manage.
+The schematic parts of the base station main controller should be familiar. Exactly, they are almost an exact copy of the genric main controller... 
+
 
 \begin{figure}[htbp]
     \centering
@@ -148,7 +149,7 @@ The power supply ....
 
 \unnumberedSection{Base Station PCB}
 
-The following picture shows the PCB for the monolithic base station. It is a 12cm by 10cm board, with the standard connectors in the usual place. 
+The following picture shows the PCB for the LCS base station. It is a 12cm by 10cm board, with the standard connectors in the usual place. 
 
 
 
@@ -160,18 +161,13 @@ The following picture shows the PCB for the monolithic base station. It is a 12c
 \end{figure}
 \FloatBarrier
 
-
-
-\begin{tikzpicture}[scale=0.7, transform shape]
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-    \node at (8,4) {picture};
-\end{tikzpicture}
-
 \unnumberedSection{A little history}
 
-The base station was also the first major LCS node with a considerable amount of hardware and software and thus went to several iterations and a considerable amount of learning curves. The very first version started with an Arduino Mega and Motor driver breakout board. The software was the original DCC++ software. The next versions actually were just refactoring efforts and work on the software. I learned a great deal on how all this works. The next base station version was a single board with all possible interfaces on an experimental PCB. It already featured CAN BUS, dual H-Bridges, and a controller, the Atmega 1284. This board served a long time for software development and further experiments. 
+The base station was also the first major LCS node with a considerable amount of hardware and software and thus went to several iterations and a fair amount of learning curves. The very first version started with an Arduino Mega and Motor driver breakout board. The software was the original DCC++ software. The next versions actually were just refactoring efforts and work on the software. I learned a great deal on how all this works. The next base station version was a single board with all possible interfaces on an experimental PCB. It already featured CAN BUS, dual H-Bridges, and a controller, the Atmega 1284. This board served a long time for software development and further experiments. 
 
 The next version of the base station was built with a main controller PCB described in the earlier chapters and a dual power unit, that also featured the RailCom detector. And again further software refactoring, refinement and learning. Finally, after a switch to the Raspberry Pi Pico controller, first on breadboard  then on PCBs, the base station shown in this chapter is the current version. The lessons learned proved to be very valuable for the overall concept development and hardware design. And in addition, there was a great deal of reading on chip specifications and, very importantly, the DCC standards. The appendix contains a list of material and web links. I highly recommend to read the electrical and DCC related standards published by the RailCommunity organization.
+
+Another significant effort was the switch from the Arduino IDE and universe to vsCode with cMake. The entire project setup is in one GIT repository and changing a byte in any library results in a consistent re-build of all components. 
 
 
 \unnumberedSection{Summary}

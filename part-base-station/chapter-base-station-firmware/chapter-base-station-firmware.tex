@@ -4,7 +4,7 @@ With the base station hardware in place, let's look at the firmware. First of al
 
 The base station is a rather complex node. Especially the DCC signal generation requires the node to be very close to the controller chip hardware capabilities. The individual parts will be described in the following sections. From an overall firmware perspective, the base station does its work in a functions that is called periodically from the LCS core library. The difference to other nodes is that the key work of producing the DCC signal is interrupt driven. There is a central timer that interrupts whenever the signals need to change their value is the central heartbeat of the node. The same is the case for the RailCom UART input. Everything that is part of the interrupt driven signal path will also just use interrupts for asynchronous execution. All else takes place outside the interrupt routines and is rather straightforward.
 
-The base station module firmware is divided into a couple of key software modules. The section that follow present a high level overview and review some of the design choices taken. The source files also contains an extensive documentation how this all works. 
+The base station module firmware is divided into a couple of key software modules. The section that follow present a high level overview and review some of the design choices taken. The source files contains an extensive documentation how this all works. 
 
 \unnumberedSection{Locomotive Session Management}
 
@@ -16,9 +16,8 @@ As the layout and the number of running engines grows, the DCC bus may reach its
 
 In general, base stations are required to send a valid DCC packet every 30 milliseconds to indicate that the DCC protocol is still active. Further more, there should be a time gap of at least 5 milliseconds between two packets addressing the same decoder. The base station itself is required to send every 5 seconds what its capabilities are. For example, the base station can broadcast that it supports 128-step speed setting. There are also attributes for stationary decoders as well. Finally, the base station broadcasts a "layout" time. This can be used by all decoders to simulate timing aspects of their features.
 
-// ??? \textbf{note} update the following paragraph when the session management refresh work is implemented... we need a more global approach to periodic work in the code ...
 
-Right now, the scheme is simple. A DCC management LCS message directly results in the DCC command sent to the track. The refresh function just advances through the session map and emits a DCC refresh packet for each active session. More experience with a really large layout is needed before changing this simple approach.
+Right now, the broadcast scheme is simple. A DCC management LCS message directly results in the DCC command sent to the track. The refresh function just advances through the session map and emits a DCC refresh packet for each active session. More experience with a really large layout is needed before changing this simple approach.
 
 \unnumberedSection{Base Station Global Functions}
 

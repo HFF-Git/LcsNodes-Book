@@ -14,8 +14,6 @@ The fundamental idea behind the LCS Runtime is that the firmware designer should
 
 The primary design objective of the runtime library is therefore to relieve the firmware programmer of as much low-level work as possible. Instead of implementing initialization, storage management, and message processing in every firmware project, these services are provided transparently by the runtime. The application firmware simply calls a small set of intuitive and easy-to-remember runtime functions. Together, these functions provide a consistent programming model across all LCS hardware modules.
 
-\unnumberedSection{Big Picture}
-
 The figure below illustrates the relationship between the three software layers. The application firmware interacts with the hardware almost exclusively through the LCS Runtime using function calls. The runtime, in turn, communicates with the hardware through the Controller Dependent Code layer. Events originating in the runtime or the hardware are delivered back to the application through callback functions, allowing the firmware to remain responsive without blocking execution.
 
 \begin{center}
@@ -73,8 +71,6 @@ The figure below illustrates the relationship between the three software layers.
 Virtually all services provided by the LCS Runtime are message based. For example, retrieving a data item from another node is implemented by sending a message to that node and processing the reply. Since waiting for a reply would unnecessarily stall the firmware and prevent other activities from running, runtime functions return immediately. When the requested operation completes, the result is delivered through one of the predefined callback functions.
 
 This asynchronous programming model is perhaps the single most important concept to understand when developing firmware for LCS nodes. Once understood, it becomes a natural and efficient way of structuring firmware that remains responsive even while multiple operations are in progress.
-
-The following chapters describe the most important runtime interfaces, the available callback functions, and the runtime's storage and data management facilities.
 
 \unnumberedSection{Controller Dependent Code}
 
