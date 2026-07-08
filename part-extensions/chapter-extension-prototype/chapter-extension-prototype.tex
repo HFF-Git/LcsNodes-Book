@@ -2,18 +2,10 @@
 
 Sometimes it is very useful to build a first sketch of a new extension board design. Sometimes an extension board just offers a dedicated function special to a current project and it is not worth the effort to design and build a dedicated PCB for it. In all these cases a kind of prototyping board will come in very handy.
 
-\unnumberedSection{Block Diagram}
-
-The block diagram shows the prototyping board components. All that there is, is the extension board decoding logic and the NVM for storing the configuration data. The board features all connectors, but will not route the track connectors. All in all a very simple board. Almost too simple for a block diagram.
-
-\begin{tikzpicture}[scale=0.9, transform shape]
-
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-    \node at (8,4) {picture};
-
-\end{tikzpicture}
 
 \unnumberedSection{Logic}
+
+// ??? quite simple We just feature the ATTINY controller and route the pins to sockets to use in the other half of the board...
 
 \begin{tikzpicture}[scale=0.9, transform shape]
 
@@ -35,7 +27,7 @@ The prototyping board is a 10cm x 12cm board with all connectors and a bread boa
 
 \unnumberedSection{Firmware}
 
-Actually, there is none. Nevertheless, the board decoding logic and the local NVM memory can be used according to the prototype needs.
+Actually, there is none. Just the Attiny core library.
 
 \unnumberedSection{Summary}
 

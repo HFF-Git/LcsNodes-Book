@@ -4,6 +4,8 @@ A cab control extension is essentially a cab handheld put in a stationary place.
 
 // ??? design a board with an Attiny as the interface to UI elements...
 
+// ??? or just use a 16 port i2c interface... e.g. MCP23017. Nice part is that we entirely control via I2C and can even have more than one such puppies on a controller ...
+
 \unnumberedSection{Block Diagram}
 
 The cab control extension board will contains the same arrangement of buttons, knobs and display as we have seen with the cab handheld. However, in contrast to the cab handheld, there is no controller directly managing these buttons and knobs. All there is, is the I2C bus to an extension board. The cab control extension therefore needs an I2C IO expander chip for the buttons and encoders.

@@ -14,33 +14,45 @@ All LCS node data is kept in volatile \texttt{(MEM)} and non-volatile \texttt{(N
 
 \begin{center}
 	\begin{tikzpicture} [scale=0.9, transform shape]
-        \draw[help lines, gray!50, dashed] (0,0) grid(16,12);
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,14);
         
-        % Define nodes
-        \node[  tsRoundedRectangle, 
-                minimum width=4cm,
-                minimum height=12cm,
-                text width=4cm,
-                text centered,
-                fill=yellow!10] (fl) at (2.5,10.5) {Create};
-                
-        \node[  tsRoundedRectangle, 
-                minimum width=4cm,
-                minimum height=12cm,
-                text width=4cm,
-                text centered,
-                fill=yellow!10] (fl) at (7.5,10.5) {NVM};
-                
-        \node[  tsRoundedRectangle, 
-                minimum width=4cm,
-                minimum height=12cm,
-                text width=4cm,
-                text centered,
-                fill=yellow!10] (fl) at (12.5,10.5) {MEM};
-        
-                
-       
-        
+         % Rectangles
+
+     % Rectangles
+
+    \draw[rounded corners=2pt, fill=yellow!10] (0,0) rectangle (3,3);
+
+    \draw[rounded corners=2pt, fill=yellow!10] (5,0) rectangle (9,8);
+
+    \draw[rounded corners=2pt, fill=yellow!10] (11,0) rectangle (15,12);
+
+    % Labels
+
+    \node at (1.5,1.5) {Defaults};
+    
+    \node at (7,8.5) {NVM};
+    \node at (7,1) {Node Map};
+    \draw (5,2) -- (9,2);
+	\node at (7,3) {Attribute Data};
+	\draw (5,4) -- (9,4);
+    \node at (7,5) {Event Map};
+    \draw (5,6) -- (9,6);
+    \node at (7,7) {User Data};
+    
+ 
+    \node at (13,12.5) {MEM};     
+    \node at (13,1) {Node Map};
+    \draw (11,2) -- (15,2);
+	\node at (13,3) {Attribute Data};
+	\draw (11,4) -- (15,4);
+    \node at (13,5) {Event Map};
+    \draw (11,6) -- (15,6);
+    \node at (13,7) {User Data};
+    \draw (11,8) -- (15,8);       
+    \node at (13,9) {Port Map};
+    \draw (11,10) -- (15,10);
+    \node at (13,11) {Task Map};           
+              
   	\end{tikzpicture}
 \end{center}
 \FloatBarrier

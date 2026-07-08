@@ -38,7 +38,7 @@ Finally, there is the \textbf{node specific firmware}. This part is written by t
 
 \unnumberedSection{Node and Port Items}
 
-// ??? combine node and port attributes section ?
+// ??? where do we list the runtime library predefined items? 
 
 A key idea of designing the firmware is that there is no need to update the firmware every time configuration or other parameters change. It is in a sense quite similar to a DCC decoder which offers a large set of variables that can be set with values that the decoder firmware interprets. LCS nodes have a concept of attributes that is very similar to these variables. A node variable can be queried and set from any other node.
 
@@ -49,37 +49,11 @@ A node has up to 128 such variables. That is not a lot, you might say. Well, not
 Finally, think about where these variable values would come from. There will be the day where a hardware piece breaks down and needs to be restored. It is rather easy to load the node variables and attributes from a central database, as well as to first of all store these values in such a place.
 
 
-Ports are the higher level endpoints on a node. They too features variables accessible via the items already presented. There are just no local attributes related to a port. But what is a port actually used for? When designing a node firmware, the designer should use ports to group functions that are accessible by a combination of node and port identifiers. As seen in the concepts chapter, they together form a 16-bit value. A good example is a block controller that has four channels to manage a block on the layout. Each block, you guessed it, can be represented as a port. When talking to the block, just the node and port ID is enough to address it.
-
-... idea of a path to describe an element in an extension board. We would need for example to access the state of sections in a block, a single section and also the state of all sections.
-
-... node:port:element is a path. ( where port is one of the driver mapped ports )
-
-... driver code just needs to deal with port:element locally
+Ports and channels are the higher level endpoints on a node. They too features variables accessible via the items already presented. There are just no local attributes related to a port. But what is a port actually used for? When designing a node firmware, the designer should use ports to group functions that are accessible by a combination of node and port identifiers. As seen in the concepts chapter, they together form a 16-bit value. A good example is a block controller that has four channels to manage a block on the layout. Each block, you guessed it, can be represented as a port. When talking to the block, just the node and port ID is enough to address it.
 
 ... elements are accessed via the GET/PUT/REQ items defined. 
 
 ... what exactly can be accessed from other notes ?
-
-.. rough idea:
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-   
-    union pathDesc { 
-
-        struct path {
-
-            uint reserved   : 4;
-            uint port       : 4;
-            uint element    : 8;
-        };
-
-        uint16_t word;
-    }
-    
-\end{lstlisting}
-
 
 But ports are also the endpoint for events. Remember each node can broadcast an event observable by all nodes on the system. Events are created to represent an, well, event that somebody would be interested in. For example a track power shortage. Or a block section is occupied event. Or whatever you see as a reasonable event to broadcast to the world. And again these the event map data can be queried and loaded from another node.
 

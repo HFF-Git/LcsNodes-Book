@@ -19,13 +19,38 @@ A layout control system needs a form of DCC signal generator. They can be direct
 The power module exports the DCC signals via the external connectors and also as part of the LCS message bus connector. The track power extension connector is used by extension boards that directly use the H-Bridge output. A good example is an occupancy detector board which takes the DCC outputs and routes them to different sections, each equipped with a detectors for power consumption on the track. The power module unit features two identical channels. They are labelled "MAIN" and "PROG". Although the "PROG" channel would not need to deliver a high amperage, the dual H-Bridge is there anyway. And as said before, it would be nice to dynamically treat the PROG track as a type MAIN track too. 
 
  The main task of the DCC track power module is to provide the DCC signal to the track. DCC signals are square wave signals with a defined duty cycle period. A duty cycle of 58 microseconds represents a "DCC one", a duty cycle of 116 microseconds a "DCC zero" bit. A typical solution to this task is a H-Bridge design. The following figure shows the H-Bridge signal convention for LCS power modules.
+ 
+ \begin{tikzpicture}[scale=0.9, transform shape]
 
-\begin{tikzpicture}[scale=0.9, transform shape]
+    \draw[help lines, gray!50, dashed] (0,-2) grid (16,3);
 
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
-    \node at (8,4) {picture};
+    % Square wave
+
+    \draw[line width=1pt]
+
+        (2,2) -- (3,2) -- (3,0) -- (4,0) -- (4,2)
+        -- (5,2) -- (5,0) -- (6,0) -- (6,2)
+        -- (8,2) -- (8,0) -- (10,0);
+
+    % Braces
+
+    \draw[decorate, decoration={brace, mirror}]
+
+        (2,-0.5) -- (4,-0.5)
+        node[midway, below=8pt] {116\,\si{\micro\second}};
+
+    \draw[decorate, decoration={brace, mirror}]
+
+        (4,-0.5) -- (6,-0.5)
+        node[midway, below=8pt] {116\,\si{\micro\second}};
+
+    \draw[decorate, decoration={brace, mirror}]
+
+        (6,-0.5) -- (10,-0.5)
+        node[midway, below=8pt] {232\,\si{\micro\second}};
 
 \end{tikzpicture}
+
 
 While a power module can vary in capacity and technology components, our logical design expect to send the same digital signals to a power module, no matter what it's design. It is a key requirements to derive from the DCC signal on the bus connector the state "+", "-" and "short circuit". The latter is needed for the cutout option. There is also the need to detect a logic "one" on both signal inputs and interpret this as setting the bridge to a high impedance state. This requirement comes primarily from the capability to also issue PWM signals, which will depending in the direction alternate between a positive or negative voltage and the high impedance state. There is a whole family of H-Bridge ICs and breakout boards. If a particular H-Bridge IC does not map the inputs to the table below, some gate logic needs to be added. The following table depicts the power module digital input management signals. The table below fits the L6205 H-Bridge nicely.
 
@@ -69,11 +94,13 @@ Finally, there is support for short circuit detection and protection. The L6205 
 
 \unnumberedSection{DCC and RailCom Signal Detector}
 
-Although a possibly standalone component in a layout, the RailCom detector is typically also a part of the base station. It sits between the power module and the track. DCC is a broadcasting protocol. To address programming engines on the MAIN track the problem of providing a back channel had to be solved. First, the DCC signal generator needs to be able to include a cutout period in the bitstream. As shown in the DCC subsystem chapter, the cutout period happens right after the last bit of a packet sent as part of the preamble section of the next packet. The power module short circuits the track during this period. The decoder uses the period to send a short bit stream which in turn is detected by the RailCom detector. This section will just discuss the hardware part for receiving the RailCom bitstream in the cutout period. There is of course a software part that receives and decodes the RailCom datagrams. The details of RailCom message processing are described in the base station chapter.
+Although a possibly standalone component in a layout, the RailCom detector is typically also a part of the base station. It sits between the power module and the track. DCC is a broadcasting protocol. To address programming engines on the MAIN track the problem of providing a back channel had to be solved. First, the DCC signal generator needs to be able to include a cutout period in the bitstream. 
+
+As shown in the DCC subsystem chapter, the cutout period happens right after the last bit of a packet sent as part of the preamble section of the next packet. The power module short circuits the track during this period. The decoder uses the period to send a short bit stream which in turn is detected by the RailCom detector. This section will just discuss the hardware part for receiving the RailCom bitstream in the cutout period. There is of course a software part that receives and decodes the RailCom datagrams. The details of RailCom message processing are described in the base station chapter.
 
 \begin{tikzpicture}[scale=0.9, transform shape]
 
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
+    \draw[help lines, gray!50, dashed] (0,0) grid( 16,4);
     \node at (8,4) {picture};
 
 \end{tikzpicture}
