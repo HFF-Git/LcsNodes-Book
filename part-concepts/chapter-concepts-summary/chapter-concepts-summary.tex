@@ -1,7 +1,11 @@
 \unnumberedChapter{Concepts Summary}
 
-This part outlined the main concepts behind the layout control system. Perhaps a lot to take in at once. When presenting the main LCS components in the following chapters, this part of the book as a part to always come back to read up on the concepts and principles. 
+This part introduced the fundamental concepts behind the Layout Control System. It is perhaps a lot to absorb in one reading. As the following parts present the individual hardware modules and their firmware in greater detail, this chapter is worth returning to whenever a concept or term needs a quick refresher.
 
-// ??? what to summarize in items style fashion ...
+In summary, the Layout Control System consists of hardware modules hosting one or more software nodes. A node is divided into ports, which in turn may be divided into channels. A channel represents the endpoint where sensors and actors are connected. Every endpoint is uniquely identified by its \texttt{npId}.
 
-The next part will present the overall firmware of a LCS hardware module. It is the intention that the designer of a specific firmware can rely on a solid foundation managing the hardware, providing a set of libraries for writing code on the particular controller platform.
+Communication between nodes is entirely message based. Two communication models are provided: direct addressing for point-to-point communication and the producer/consumer event model for loosely coupled interaction between nodes.
+
+The LCS runtime provides a common software foundation for all node firmware. It offers a consistent programming interface while transparently handling many lower-level services such as message transport, event dispatching, attribute management and communication protocols. This allows the firmware developer to concentrate on implementing the functionality of a node rather than the underlying infrastructure.
+
+The next part of the book builds upon these concepts by introducing the design of the LCS runtime and firmware architecture. It describes the software framework that forms the foundation for every LCS node, independent of the underlying hardware platform.

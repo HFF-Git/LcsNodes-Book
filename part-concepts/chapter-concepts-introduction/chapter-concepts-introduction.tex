@@ -117,7 +117,7 @@ The layout control system is organized around a common communication bus. This b
 
 CAN messages are broadcast on the bus, so every connected module can receive them. Under the classic CAN standard, a message payload is limited to eight bytes; consequently, eight bytes is also the maximum message size defined for the LCS bus. In a practical installation, available bandwidth limits a single CAN bus to roughly 110 modules. This is sufficient for most layouts. Very large layouts could use an alternative bus technology or several CAN segments connected by routers.
 
-The software architecture should nevertheless be able to manage thousands of modules. Although the underlying transport technology may eventually change, the LCS message format, maximum message size, and broadcast communication model are part of the system design and remain stable.
+The software architecture should nevertheless be able to manage hundreds of modules. Although the underlying transport technology may eventually change, the LCS message format, maximum message size, and broadcast communication model are part of the system design and remain stable.
 
 \unnumberedSection{LCS Hardware}
 
@@ -128,9 +128,10 @@ Hardware modules are normally installed close to the equipment they serve and ar
 Examples of hardware modules include:
 
 \begin{smallGapItemize}
-\item main controller
-\item block controller
-\item base station
+\item \textbf{Main controller}. A general purpose controller without any special function other than the CAN bus interface and non-volatile storage.
+\item \textbf{Base Station}. A controller with a power unit to generate DCC signal and manage locomotive sessions.
+\item \textbf{Block Controller}. A controller with a power unit to drive DCC and PWM signals to the tracks.
+
 \end{smallGapItemize}
 
 Each hardware module has two conceptual parts: the \textbf{module main controller} and the \textbf{module extension}. The main controller contains the controller chip, non-volatile memory for retaining data across power cycles, the CAN-bus interface, and interfaces to the node-specific electronics. The node-specific electronics are provided by the module extension.
@@ -150,9 +151,9 @@ Examples of extension hardware include:
 \begin{smallGapItemize}
 \item \textbf{Occupancy Detector}. This extension is a companion to the block-controller board. It provides four track channels that correspond to the block-controller outputs, with a set of detectors on each channel.
 \item \textbf{Turnout}. This extension controls a set of turnouts and provides frog polarization. Like the occupancy-detector extension, it is intended for use with the block-controller board.
+\item \textbf{Signal}. This general-purpose extension drives LED-equipped signals. It meets their power requirements and supports functions such as dimming and blinking of individual lamps.
 \item \textbf{Servo}. This universal extension can be connected to any of the controller boards presented in this book. It provides a set of general-purpose servo outputs.
 \item \textbf{GPIO}. This universal digital input/output extension is typically used for switches and push buttons as inputs, and for LEDs as outputs. The number and type of output loads must be chosen within the drive capability of the individual output pins.
-\item \textbf{Signal}. This general-purpose extension drives LED-equipped signals. It meets their power requirements and supports functions such as dimming and blinking of individual lamps.
 \item \textbf{Relays}. This general-purpose extension drives a set of external relays. It can support relays with different coil-voltage requirements.
 \item \textbf{Cab Control}. Cab handhelds and stationary cab-control devices can also be implemented as extensions. For example, such an extension can be combined with a base station to create a complete control station for a smaller layout.
 \item \textbf{Prototyping}. A prototyping extension provides the extension-address-resolution logic and space for a custom hardware design. It is useful for quickly developing or testing a new function.
@@ -168,4 +169,4 @@ Above this layer sits the \textbf{LCS Runtime Library}. The runtime provides the
 
 At the top are the module-specific functions. A base station, for example, implements the DCC subsystem and locomotive management. Other module types provide their own specialized functions while using the services of the runtime library and controller-dependent code. Where justified, they may also access the underlying hardware directly.
 
-Callbacks are a central part of this model. A typical firmware initializes the runtime, which in turn initializes the lower layers. It then registers callback routines for the runtime events relevant to the module. Finally, the firmware starts the runtime. From that point, the runtime receives messages, performs periodic tasks, and invokes the registered callbacks whenever the module must respond.
+\textbf{Callbacks} are a central part of this model. A typical firmware initializes the runtime, which in turn initializes the lower layers. It then registers callback routines for the runtime events relevant to the module. Finally, the firmware starts the runtime. From that point, the runtime receives messages, performs periodic tasks, and invokes the registered callbacks whenever the module must respond.

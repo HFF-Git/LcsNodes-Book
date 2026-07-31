@@ -1,103 +1,65 @@
 \chapter{Tests}
 
+%--------------------------------------------------------------------------------
 
-\section{Pictures}
+\unnumberedSection{Glossary Test}
 
+This part introduces the key concepts of the Layout Control System and explains the major components that form the foundation of the system. The following summarizes the terminology and concepts used throughout this part of the book. It is intended as a quick reference and may safely be skipped on a first reading.
 
-% example for the protocol chapter... instead of the tables....
+The LCS architecture is based on a distributed system where all nodes communicate via the layout control bus. All nodes receive broadcast messages and decide independently whether a message is relevant to them. Request/reply mechanisms are used where confirmation of an operation is required.
 
-\subsection{Protocol boxes}
+\begin{tsDefinition}
 
-A bit cumbersome and we would need to have text at defined locations. Perhaps keep the simple table in the protocol chapter.
+\tsDef{Node}
+      {An addressable hardware module connected to the LCS bus.}
 
-\begin{center}
-\begin{tikzpicture}[scale=0.9, transform shape]
+\tsDef{Node UID}
+      {A globally unique hardware identifier assigned to a node.}
 
-    \draw[help lines, gray!50, dashed] (0,0) grid( 16,8);
+\tsDef{Port}
+      {A functional unit within a node providing a specific capability.}
 
-    \node[  draw, 
-            tsRoundedRectangle, 
-            minimum width=6cm, 
-            minimum height=4cm, 
-            text height=1cm, 
-            align=left] (A) at (4, 4) 
-            { };
+\tsDef{Channel}
+      {An optional subdivision of a port providing multiple independent functions.}
 
-    \node[  draw, 
-            tsRoundedRectangle, 
-            minimum width=6cm, 
-            minimum height=4cm, 
-            text height=1cm, 
-            align=left] (B) at (12, 4) 
-            { };
+\tsDef{Base Station}
+      {The central coordinator responsible for managing locomotive sessions and system functions.}
 
-    \draw[->] (A.north east) ++(0, -1) -- ($(B.west) + (0, 1 )$);
-    \draw[->] (B.south west) ++(0,  1) -- ($(A.east) + (0, -1)$);
+\tsDef{Cab Handheld}
+      {A user interface used by an operator to control locomotives.}
 
-    \node at ( 4,  6.25 ) {\textbf{Node A}};
-    \node at ( 12, 6.25 ) {\textbf{Node B}};
+\tsDef{Locomotive Session}
+      {A temporary association between a locomotive and the base station while the locomotive is under control.}
 
-    \node at ( 2.25,  5 ) {\textbf{LCS\_TOF}};
-    \node at ( 10.25, 3 ) {\textbf{LCS\_TOF}};
+\tsDef{Event}
+      {A broadcast notification used for communication between nodes.}
 
-\end{tikzpicture}
-\end{center}
+\tsDef{Attribute}
+      {Configuration or status information belonging to a node or port.}
 
+\tsDef{Node Identifier}
+      {The logical address used to identify a node within the layout.}
 
-\subsection{Block Node boxes}
+\tsDef{Port Identifier}
+      {The identifier of a port within a node.}
 
+\tsDef{Channel Identifier}
+      {The identifier of a channel within a port.}
 
-% Command: \rectwithports{west count}{east count}{width}{rectID}{x}{y}
-\newcommand{\rectwithports}[6]{%
-    % #1 = west count, #2 = east count
-    % #3 = width, #4 = rectID, #5 = x pos, #6 = y pos
-    \pgfmathsetmacro{\nports}{max(#1,#2)}
-    \pgfmathsetmacro{\h}{\nports*0.4} % rectangle height
+\tsDef{\texttt{npId}}
+      {The combined node, port, and channel identifier.}
 
-    % Rectangle
-    \node[draw, rectangle, minimum width=#3, minimum height=\h cm] (rect#4) at (#5,#6) {};
+\tsDef{\texttt{cabId}}
+      {The logical identifier of a locomotive.}
 
-    % West ports
-    \foreach \i in {1,...,#1} {
-        \node[circle, draw, fill=green, inner sep=0pt, minimum size=6pt]
-            (W#4\i) at ($(rect#4.west) + (0,{(#1-2*\i+1)*0.5*0.4})$) {};
-    }
+\tsDef{\texttt{sId}}
+      {The identifier of a locomotive session.}
 
-    % East ports
-    \foreach \i in {1,...,#2} {
-        \node[circle, draw, fill=green, inner sep=0pt, minimum size=6pt]
-            (E#4\i) at ($(rect#4.east) + (0,{(#2-2*\i+1)*0.5*0.4})$) {};
-    }
-}
+\tsDef{\texttt{eventId}}
+      {The unique identifier assigned to an event.}
 
-% Command: \connectports[<TikZ options>]{srcRectID}{srcSide}{srcPort}{dstRectID}{dstSide}{dstPort}
-\newcommand{\connectports}[7][]{%
-    % Build node names
-    \edef\srcnode{#3#2#4}
-    \edef\dstnode{#6#5#7}
+\end{tsDefinition}
 
-    % Determine start and end coordinates
-    \coordinate (start) at (\srcnode.center);
-    \coordinate (end) at (\dstnode.center);
+The following chapters introduce these concepts in more detail and explain how they are implemented in hardware, firmware, and software.
 
-    % Adjust start/end to the correct side of the port
-    \ifthenelse{\equal{#2}{E}}{\coordinate (start) at (\srcnode.west);}{\coordinate (start) at (\srcnode.east);}
-    \ifthenelse{\equal{#5}{E}}{\coordinate (end) at (\dstnode.east);}{\coordinate (end) at (\dstnode.west);}
-
-    % Draw orthogonal line (Manhattan style)
-    \draw[-, #1] (start) -- (end);
-}
-
-
-
-\begin{tikzpicture}
-  % Draw rectangles
-  \rectwithports{2}{2}{2cm}{1}{0}{0}    % rectID=1 at (0,0)
-  \rectwithports{3}{1}{4cm}{2}{6}{0}    % rectID=2 at (6,0)
-  \rectwithports{3}{1}{4cm}{3}{12}{0}   % rectID=3 at (12,0)
-
-  % Connect ports
-  \connectports[->, red, thick]{1}{E}{1}{2}{W}{2}   % rect 1 E1 -> rect 2 W2
-  \connectports[->, blue, thick]{2}{E}{1}{3}{W}{1}  % rect 2 E1 -> rect 3 W1
-\end{tikzpicture}
-
+%--------------------------------------------------------------------------------
