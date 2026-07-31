@@ -348,3 +348,21 @@
     linewidth=\dimexpr0.95\textwidth\relax,
     floatplacement=H,                      
 }
+
+
+%--------------------------------------------------------------------------------
+% Style for key concepts and keywords.
+%
+%--------------------------------------------------------------------------------
+\newenvironment{tsDefinition}
+{%
+    \begin{tabular}{@{}p{5cm}p{\dimexpr\linewidth-5cm\relax}@{}}
+}
+{%
+    \end{tabular}
+}
+
+\newcommand{\tsDef}[2]{%
+
+	\textbf{#1} & #2\\[0.6ex]
+}
