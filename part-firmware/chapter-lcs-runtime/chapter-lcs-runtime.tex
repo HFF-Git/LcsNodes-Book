@@ -1,12 +1,13 @@
-%-------------------------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------------
 %
-%-------------------------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------------
 \unnumberedChapter{LCS Runtime}
 
-Now that we have established the overall architecture and the underlying concepts, we can turn our attention to the software that runs on every LCS node. Every LCS node, whether it is a base station, handheld, booster, sensor module or block controller, shares a considerable amount of common functionality. Every node must communicate over the LCS bus, manage attributes, process messages and participate in the common event model. Rather than implementing these services repeatedly, they are collected in the LCS Runtime. As a result, new firmware projects can concentrate almost entirely on the behavior specific to the hardware module being developed.
+Now that we have established the overall architecture and general concepts, we can turn our attention to the software foundation that runs on every LCS node. Every LCS node, whether it is a base station, handheld, booster, sensor module or block controller, shares a considerable amount of common functionality. Every node must communicate over the LCS bus, manage attributes, process messages and participate in the common event model. Rather than implementing these services repeatedly, they are collected in the LCS Runtime. As a result, new firmware projects can concentrate almost entirely on the behavior specific to the hardware module being developed.
 
 This part of the book introduces the design of the LCS Runtime and explains how firmware is structured. Firmware for an LCS node consists of two major parts: the application firmware written for a particular hardware module and the LCS Runtime, which provides the common services shared by all nodes.
 
+%--------------------------------------------------------------------------------
 \unnumberedSection{Concepts}
 
 The fundamental idea behind the LCS Runtime is that the firmware designer should spend time implementing application functionality rather than infrastructure. Tasks such as message passing, managing volatile and non-volatile data structures, scheduling background activities, and accessing low-level hardware are handled by the runtime library.
@@ -25,28 +26,28 @@ The figure below illustrates software architecture of an LCS node. The applicati
                 minimum height=2.5cm,
                 text width=12cm,
                 text centered,
-                fill=yellow!40] (fl) at (8,10.5) {Firmware Layer};
+                fill=yellow!20] (fl) at (8,10.5) {Firmware Layer};
 
         \node[  tsRoundedRectangle, 
                 minimum width=12cm,
                 minimum height=2.5cm,
                 text width=6cm,
                 text centered,
-                fill=green!40] (rl) at (10,7) {LCS Runtime Library};
+                fill=green!20] (rl) at (10,7) {LCS Runtime Library};
 
         \node[  tsRoundedRectangle, 
                 minimum width=14cm,
                 minimum height=1.5cm,
                 text width=8cm,
                 text centered,
-                fill=green!40] (cdc) at (9,4) {Controller dependent code};
+                fill=green!20] (cdc) at (9,4) {Controller dependent code};
 
         \node[  tsRoundedRectangle, 
                 minimum width=16cm,
                 minimum height=2cm,
                 text width=6cm,
                 text centered,
-                fill=red!40] (mh) at (8,1) {Module Hardware};
+                fill=red!20] (mh) at (8,1) {Module Hardware};
                 
         \node at (4, 8.75) {direct call};
 
@@ -60,17 +61,18 @@ The figure below illustrates software architecture of an LCS node. The applicati
         \draw[<-, ultra thick, line cap=round] (11, 5.75) -- (11,4.8) node [midway, right] {callback};
         \draw[<-, ultra thick, line cap=round] (11,9.25) -- (11,8.25) node [midway, right] {callback};
 
-
     \end{tikzpicture}
 \end{center}
 \FloatBarrier
 
+%--------------------------------------------------------------------------------
 \unnumberedSection{Runtime Library}
 
-Virtually all services provided by the LCS Runtime are message based. For example, retrieving a data item from another node is implemented by sending a message to that node and processing the reply. Waiting for a reply would unnecessarily stall the firmware and prevent other activities from running, runtime functions return immediately. When the requested operation completes, the result is delivered through one of the predefined callback functions.
+Virtually all services provided by the LCS Runtime are available as function calls on the node itself and also messages that can be send from another node. For example, accessing an attribute is accomplished via a local call to the runt time library. Retrieving an attribute from another node is implemented by sending a message to that node and processing the reply. Waiting for a reply would unnecessarily stall the firmware and prevent other activities from running, runtime functions return immediately. When the requested operation completes, the result is delivered through one of the predefined callback functions. Handling such remote requests is processed transparently to the upper layer firmware by the runtime time library.
 
 This asynchronous programming model is perhaps the single most important concept to understand when developing firmware for LCS nodes. Once understood, it becomes a natural and efficient way of structuring firmware that remains responsive even while multiple operations are in progress.
 
+%--------------------------------------------------------------------------------
 \unnumberedSection{Controller Dependent Code}
 
 The hardware chapters present a variety of boards based on different controller families. Each board has its own hardware resources and peripheral assignments. Rather than cluttering the runtime library with large numbers of conditional compilation directives, the hardware configuration is described by a static descriptor structure, with one descriptor defined for each supported hardware platform. The runtime therefore never needs to know whether it is running on an AVR, an RP2040 or another controller family. It simply consults the descriptor and invokes the CDC interface.

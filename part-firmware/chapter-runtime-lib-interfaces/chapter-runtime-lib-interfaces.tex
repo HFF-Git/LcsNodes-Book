@@ -1,0 +1,393 @@
+%--------------------------------------------------------------------------------
+%
+%--------------------------------------------------------------------------------
+\unnumberedChapter{Runtime Library Overview}
+
+The previous chapters introduced the architecture of the runtime library and the underlying programming model. This chapter provides an overview of the programming interfaces offered by RtLib.
+
+The runtime library contains a large number of functions. To make the library easier to understand, the interfaces are grouped according to their purpose. This chapter introduces the individual interface groups and presents the corresponding function signatures.
+
+The goal of this chapter is not to provide a detailed function reference. Instead, it provides a map of the available interfaces and shows how the different parts of the runtime library relate to each other. A detailed description of each function, including parameters, return values and usage examples, is provided later in the \textit{Runtime Library Reference}.
+
+Most node firmware uses only a subset of these interfaces. A typical application initializes the runtime, registers the required callbacks, performs hardware-specific initialization, and finally starts the runtime. After startup, interaction with the runtime is mainly performed through callback functions and selected library calls.
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Interface Groups}
+
+The RtLib interfaces are organized into the following functional groups.
+
+\begin{longtable}{|p{0.35\linewidth}|p{0.55\linewidth}|}
+\hline
+\textbf{Interface Group} & \textbf{Purpose} \\
+\hline
+Initialization & Initialize and start the runtime library.\\
+\hline
+Callback Registration & Register application callback functions.\\
+\hline
+Local Node Access & Access local node and port data through GET, SET and REQ operations.\\
+\hline
+Node Management & Control node state and Layout Control Bus operation.\\
+\hline
+Node Configuration & Node commissioning and Node ID management.\\
+\hline
+Remote Node Access & Access data and services on other nodes.\\
+\hline
+Event Management & Generate Layout Control Bus events.\\
+\hline
+Track Management & Control track power and emergency stop.\\
+\hline
+Locomotive Control & Operate locomotives and consists.\\
+\hline
+Decoder Programming & Configure DCC decoders.\\
+\hline
+Accessory Control & Control stationary DCC accessories.\\
+\hline
+Raw DCC Packets & Send arbitrary DCC packets.\\
+\hline
+Firmware Update & Transfer firmware images to nodes.\\
+\hline
+Raw CAN Messages & Access the underlying CAN communication layer.\\
+\hline
+\end{longtable}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Initialization}
+
+The runtime library is initialized before any other RtLib function is used. After successful initialization, the application firmware can register callback functions and perform any additional hardware-specific setup. The final step is starting the runtime. The start function enters the runtime processing loop and does not return to the caller.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t initRuntime( CdcResourceDescMap *dMap, 
+                     uint16_t startOptions = 0,
+                     uint16_t debugMask = 0 );
+
+uint8_t startRuntime( );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Callback Registration}
+
+The runtime library owns the main execution loop. Communication between the runtime and application firmware is therefore implemented through callback functions.
+
+Callbacks are used for events, incoming messages, console commands, periodic tasks and application-defined requests.
+
+The callback concept and the different callback types are described in the following chapter.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t registerInitCallback( LcsInitCallback handler,
+                              void *uData = nullptr );
+
+uint8_t registerPfailCallback( LcsPfailCallback handler,
+                               void *uData = nullptr );
+
+uint8_t registerLcsMsgCallback( LcsMsgCallback handler,
+                                void *uData = nullptr );
+
+uint8_t registerDccMsgCallback( LcsMsgCallback handler,
+                                void *uData = nullptr );
+
+uint8_t registerCmdCallback( LcsCmdCallback handler,
+                             void *uData = nullptr );
+
+uint8_t registerTaskCallback( LcsTaskCallback handler,
+                              uint32_t interval = 0,
+                              void *uData = nullptr );
+
+uint8_t registerEventCallback( LcsEventCallback handler,
+                               uint16_t portMask = 0xFFFF,
+                               void *uData = nullptr );
+
+uint8_t registerReqCallback( LcsReqCallback handler,
+                             uint16_t portMask = 0xFFFF,
+                             void *uData = nullptr );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Local Node Access}
+
+Local node access provides firmware access to the attributes and services of the local node. The three operations correspond to the Item ID programming model introduced earlier.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t nodeGet( uint16_t npId, uint16_t item, uint16_t *arg );
+uint8_t nodeSet( uint16_t npId, uint16_t item, uint16_t arg );
+
+uint8_t nodeReq( uint16_t npId,
+                 uint16_t item,
+                 uint16_t *arg1 = nullptr,
+                 uint16_t *arg2 = nullptr );
+\end{lstlisting}
+
+%%---------------------------------------------------------------------------------
+\unnumberedSection{Node Management}
+
+Node management functions control the general operating state of the Layout Control Bus and individual nodes.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t sendReset( uint16_t targetNpId );
+uint8_t sendBusOn( );
+uint8_t sendBusOff( );
+
+uint8_t sendCfg( uint16_t targetNpId );
+uint8_t sendOps( uint16_t targetNpId );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Node Configuration}
+
+Node configuration functions are used during commissioning. They support assigning Node IDs and detecting Node ID conflicts.
+
+\begin{lstlisting}[style=api-interface]
+int8_t sendReqNodeId( uint16_t sendingNpId,
+                      uint32_t nodeUID,
+                      uint8_t flags );
+
+uint8_t sendRepNodeId( uint16_t targetNpId,
+                       uint32_t nodeUID,
+                       uint8_t flags );
+
+uint8_t sendSetNodeId( uint16_t sendingNpId,
+                       uint16_t targetNpId,
+                       uint32_t nodeUID,
+                       uint8_t flags );
+
+uint8_t sendNodeIdCollision( uint16_t sendingNpId,
+                             uint32_t nodeUID );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Remote Node Access}
+
+Remote node access provides the distributed equivalent of the local GET, SET and REQ interfaces.
+
+Instead of operating on the local node, the request is transmitted to another node over the Layout Control Bus. Replies are returned asynchronously through the registered reply callback.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t sendAck( uint16_t sendingNpId,
+                 uint16_t targetNpId,
+                 uint8_t rStat = LCS_OK );
+
+uint8_t sendGetNode( uint16_t sendingNpId,
+                     uint16_t targetNpId,
+                     uint16_t item,
+                     LcsRepCallback rep,
+                     void *uData = nullptr );
+
+uint8_t sendSetNode( uint16_t sendingNpId,
+                     uint16_t targetNpId,
+                     uint16_t item,
+                     uint16_t arg,
+                     LcsRepCallback rep,
+                     void *uData = nullptr );
+
+uint8_t sendRepNode( uint16_t sendingNpId,
+                     uint16_t targetNpId,
+                     uint16_t item,
+                     uint16_t val1 );
+
+uint8_t sendFuncReqNode( uint16_t sendingNpId,
+                         uint16_t targetNpId,
+                         uint16_t item,
+                         uint16_t val1,
+                         uint16_t val2,
+                         LcsRepCallback rep,
+                         void *uData = nullptr );
+
+uint8_t sendFuncRepNode( uint16_t sendingNpId,
+                         uint16_t targetNpId,
+                         uint16_t item,
+                         uint16_t val1,
+                         uint16_t val2 );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Event Management}
+
+The event management interface is used to generate Layout Control Bus events. Events are the primary mechanism for distributing changes of state between nodes. Events can represent simple ON/OFF states or generic events with associated data. Nodes interested in events receive them through their registered event callback.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t sendEventOn( uint16_t sendingNpId, uint16_t eventId );
+uint8_t sendEventOff( uint16_t sendingNpId, uint16_t eventId );
+uint8_t sendEvent( uint16_t sendingNpId, uint16_t eventId, uint16_t arg );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Track Management}
+
+The track management interface provides the basic commands required for controlling the track power system. These functions are typically used by command stations or higher-level control applications.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t sendTrackOn( );
+uint8_t sendTrackOff( );
+uint8_t sendEstop( );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Locomotive Control}
+
+The locomotive control interface implements the LCS messages required to operate locomotives.
+
+The interface supports locomotive acquisition, release, speed and direction control, function control, and consist management.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t sendReqLoc( uint16_t cabId,
+                    uint8_t flags );
+
+uint8_t sendRelLoc( uint16_t cabId );
+
+uint8_t sendRepLoc( uint16_t cabId,
+                    uint8_t spDir,
+                    uint8_t fn1 = 0,
+                    uint8_t fn2 = 0,
+                    uint8_t fn3 = 0 );
+
+uint8_t sendLocConsist( uint16_t cabId,
+                        uint8_t consId,
+                        uint8_t flags );
+
+uint8_t sendQueryLoc( uint16_t cabId );
+
+uint8_t sendKeepLoc( uint16_t cabId );
+
+uint8_t sendSetLocSpDir( uint16_t cabId,
+                         uint8_t spDir );
+
+uint8_t sendSetLocMode( uint16_t cabId,
+                        uint8_t mode );
+
+uint8_t sendSetLocFuncOn( uint16_t cabId,
+                          uint8_t fNum );
+
+uint8_t sendSetLocFuncOff( uint16_t cabId,
+                           uint8_t fNum );
+
+uint8_t sendSetLocFgroup( uint16_t cabId,
+                          uint8_t fGroup,
+                          uint8_t data );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Decoder Programming}
+
+The decoder programming interface provides access to DCC decoder configuration functions.
+
+It supports both service mode programming and Programming on Main (POM).
+
+\begin{lstlisting}[style=api-interface]
+uint8_t sendSetLocCvMain( uint16_t cabId,
+                          uint16_t cvId,
+                          uint8_t mode,
+                          uint8_t val );
+
+uint8_t sendSetLocCvProg( uint16_t cvId, uint8_t mode, uint8_t val );
+uint8_t sendReqLocCvProg( uint16_t cvId, uint8_t mode );
+uint8_t sendRepLocCvProg( uint16_t cvId, uint8_t val );
+
+uint8_t sendSetMPOM( uint16_t accAdr,
+                     uint8_t ctrl,
+                     uint32_t arg );
+
+uint8_t sendReqMPOM( uint16_t accAdr,
+                     uint8_t ctrl,
+                     uint32_t arg );
+
+uint8_t sendRepMPOM( uint16_t accAdr,
+                     uint8_t ctrl,
+                     uint32_t arg );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Accessory Control}
+
+The accessory control interface provides functions for operating stationary DCC accessories such as turnouts, signals and other layout devices.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t sendSetBacc( uint16_t accAdr, uint8_t flags );
+uint8_t sendSetEacc( uint16_t accAdr, uint8_t val );
+
+uint8_t sendSetAPOM( uint16_t accAdr, uint8_t ctrl, uint32_t arg );
+uint8_t sendReqAPOM( uint16_t accAdr, uint8_t ctrl, uint32_t arg );
+uint8_t sendRepAPOM( uint16_t accAdr, uint8_t ctrl, uint32_t arg );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Raw DCC Packets}
+
+For specialized applications, RtLib provides direct access to DCC packet generation. This interface allows applications to send DCC packets that are not covered by the higher-level locomotive and accessory interfaces.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t sendDccPacket( uint8_t arg1,
+                       uint8_t arg2,
+                       uint8_t arg3 );
+
+uint8_t sendDccPacket( uint8_t arg1,
+                       uint8_t arg2,
+                       uint8_t arg3,
+                       uint8_t arg4 );
+
+uint8_t sendDccPacket( uint8_t arg1,
+                       uint8_t arg2,
+                       uint8_t arg3,
+                       uint8_t arg4,
+                       uint8_t arg5 );
+
+uint8_t sendDccPacket( uint8_t arg1,
+                       uint8_t arg2,
+                       uint8_t arg3,
+                       uint8_t arg4,
+                       uint8_t arg5,
+                       uint8_t arg6 );
+\end{lstlisting}
+
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Firmware Update}
+
+The firmware update interface supports transferring firmware images to LCS nodes.
+
+The interface is designed for block-based transmission of larger data sets. Although primarily intended for firmware updates, the same mechanism can also be used for transferring other types of structured data.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t sendStartLoad( uint16_t npId, uint8_t cmd, uint32_t size );
+uint8_t sendStartBlock( uint16_t npId, uint8_t cmd, uint16_t blockId );
+uint8_t sendBlockData( uint16_t npId, uint8_t cmd, uint32_t data );
+
+uint8_t sendEndBlock( uint16_t npId,
+                      uint8_t cmd,
+                      uint16_t blockId,
+                      uint16_t checkSum );
+
+uint8_t sendEndLoad( uint16_t npId, uint8_t cmd, uint32_t checkSum );
+\end{lstlisting}
+
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Raw CAN Messages}
+
+The lowest-level communication interface provides direct access to the CAN message layer. This interface is intended for diagnostics, debugging and specialized applications that need to bypass the higher-level LCS message interfaces.
+
+\begin{lstlisting}[style=api-interface]
+uint8_t sendRawMsg( uint8_t *msgBuf );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Summary}
+
+The Runtime Library provides the interface between application firmware and the LCS
+runtime layer. Although the library contains a large number of functions, they follow a
+small number of common concepts.
+
+Local node data is accessed through the item-based GET, SET and REQ mechanisms.
+Communication with other nodes uses the corresponding message-based interfaces. Higher
+level functions, such as locomotive control, accessory operation and firmware update,
+are built on top of the same communication principles.
+
+Most of the complexity of the Layout Control Bus is handled transparently by the runtime
+library. The firmware programmer does not need to manage message timing, protocol
+details or internal runtime structures. Instead, the application uses a defined set of
+functions to request services.
+
+Function calls describe the information flow from application firmware into the runtime.
+The opposite direction, where the runtime needs to notify the application firmware,
+is handled through callback functions.
+
+The next chapter introduces the callback model and explains how application firmware
+interacts with a runtime that owns the main execution loop.

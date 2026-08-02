@@ -1,27 +1,141 @@
-%-------------------------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------------
+%
+%--------------------------------------------------------------------------------
 \unnumberedChapter{RtLib Command Interface}
 
-???  explain the general concept ... why it is so useful ...
+The Runtime Library provides two different ways to interact with an LCS node. During
+normal operation, communication takes place through LCS messages exchanged over the
+layout control bus. For firmware development, configuration and service purposes, the
+runtime also provides a command interface.
+
+The command interface exposes many of the internal runtime functions through a simple
+text-based console. Any module providing a serial interface, for example through an USB
+connector, can provide access to this console. A terminal program running on a computer
+is sufficient to interact with the node.
+
+The command interface is particularly useful during the development of new hardware and
+firmware. It allows the programmer to inspect internal data structures, change
+configuration values, simulate events and send messages without requiring additional
+firmware code.
+
+The command interface is not intended to replace the LCS message protocol. Instead, it
+provides a local service interface to the runtime library.
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Serial Interface Overview}
+
+The primary communication mechanism of the Layout Control System is the exchange of
+LCS messages over the layout control bus. However, during development, configuration
+and service operations, direct access to a node is extremely valuable.
+
+The Runtime Library therefore provides a serial interface which can be accessed, for
+example, through an USB connector on a hardware module. A standard terminal program is
+sufficient to communicate with the node.
+
+The serial interface provides two related but distinct functions:
+
+\begin{smallGapItemize}
+    \item a command interface for interacting with the runtime library,
+    \item an ASCII representation of LCS messages for tools and communication gateways.
+\end{smallGapItemize}
+
+The command interface allows a user to inspect and modify node data, test event
+processing and execute runtime functions. It is primarily intended for firmware
+development, commissioning and troubleshooting.
+
+The ASCII message representation provides a simple way to exchange LCS messages with
+external tools. It can be used, for example, by a computer application or a gateway
+which transports LCS messages over another communication medium such as Ethernet.
+
+Neither interface replaces the normal LCS bus communication. Instead, both provide
+additional access paths to the runtime and are especially useful during development and
+service.
 
 
+%--------------------------------------------------------------------------------
+\unnumberedSection{ASCII Representation of LCS Messages}
 
-The primary communication method of the layout control system are LCS messages sent via the bus. In addition, the runtime library offers a command interface. Each module that offers an USB connector, implements the serial command console interface. The interface is intended for testing and tracing purposes. LCS console commands are entered through the hardware module serial interface. 
+In addition to processing command strings, the runtime library can convert LCS messages
+between their binary representation and a simple ASCII text representation.
 
-Perhaps the most important command is the help command, which lists all available command and  their basic syntax.
+This format is useful for test programs, debugging tools and communication gateways.
+A binary LCS message can be represented as a sequence of hexadecimal byte values
+enclosed by the \texttt{<} and \texttt{>} delimiters.
 
-\lstset{style=codesnippetstyle}
+\lstset{style=codesnippet-nobox}
 \begin{lstlisting}
-
-show a node startup message then type "?" and show the list...
-
-
+< data-byte-1 ... data-byte-n >
 \end{lstlisting}
 
-Any command not recognized is passed to an optionally registered command line handler. This way, the command interface allows to implement node specific commands.
+Each byte is represented by a hexadecimal value in the form \texttt{0xdd}, where
+\texttt{d} represents a hexadecimal digit. A complete message therefore consists of
+the opening delimiter, the individual message bytes and the closing delimiter.
 
+For example:
+
+\lstset{style=codesnippet-nobox}
+\begin{lstlisting}
+< 0x01 0x24 0x80 0x05 >
+\end{lstlisting}
+
+The Runtime Library provides helper functions to convert between the binary message
+format used internally and the ASCII representation.
+
+\lstset{style=api-interface}
+\begin{lstlisting}
+int lcsMsgToStr( char *msgStr,
+                 uint8_t *dataBuf,
+                 uint8_t dataBufLen );
+
+int strToLcsMsg( uint8_t *dataBuf,
+                 uint8_t dataBufLen,
+                 char *msgStr );
+\end{lstlisting}
+
+The ASCII representation is deliberately simple. It is not intended as a replacement
+for the LCS protocol, but as a convenient interchange format for software tools and
+diagnostic applications.
+
+\unnumberedSection{Command Processing}
+
+When the runtime receives a command line, it first checks whether the command is
+implemented by the core runtime library. The runtime provides commands for accessing
+node data, managing configuration, inspecting internal state and testing message
+processing.
+
+Commands that are not recognized by the runtime are passed to an optional firmware
+defined command callback. This allows a module designer to extend the command interface
+with hardware or application specific commands.
+
+The command interface therefore follows the same extension principle as the runtime
+library itself:
+
+\begin{itemize}
+    \item the core runtime provides common functionality for all nodes,
+    \item the firmware programmer can add application specific functionality.
+\end{itemize}
+
+The most important command when starting a session is the help command. It displays all
+available commands together with their basic syntax.
+
+\lstset{style=codesnippet-nobox}
+\begin{lstlisting}
+??? show example startup message
+then type:
+
+?
+
+and display command list
+\end{lstlisting}
+
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{Configuration Mode Commands}
 
-The configuration mode commands will place a node into either operations or configuration mode.
+Many runtime operations modify persistent node data. To prevent accidental changes
+during normal operation, these operations are restricted to configuration mode.
+
+The following commands switch between configuration and operational mode.
 
 \begin{table}[ht!]
     \begin{center}
@@ -30,23 +144,45 @@ The configuration mode commands will place a node into either operations or conf
             \hline
             \textbf{Command} & \textbf{Arguments}  & \textbf{Operation} \\
             \hline
-            c & - & switches node to configuration mode\\
+            C & - & switches node to configuration mode\\
             \hline
-            o & - & switches node to operations mode\\
+            O & - & switches node to operations mode\\
             \hline
         \end{tabularx}
     \end{center}
 \end{table}
 \FloatBarrier
 
-// ??? prompt changes...
+
+When configuration mode is active, the command prompt indicates the current mode.
+
+\lstset{style=codesnippet-nobox}
+\begin{lstlisting}
+C>          configuration mode
+O>          operational mode
+\end{lstlisting}
+
+??? show prompt changes
 
 
-\unnumberedSection{Node Map and Attributes Commands}
+%--------------------------------------------------------------------------------
+\unnumberedSection{Accessing Node Data}
 
-The node map and attribute map will examine and modify these maps.
+The command interface provides direct access to node and port data using the same
+item-based concept introduced earlier in this book.
 
-// ??? explain nodeId... 
+The commands correspond closely to the runtime library functions:
+
+\begin{center}
+\begin{tabular}{ll}
+g & nodeGet() \\
+p & nodeSet() \\
+r & nodeReq()
+\end{tabular}
+\end{center}
+
+The item number identifies the attribute or runtime function to access. This provides
+a simple way to inspect and modify node data without writing dedicated firmware.
 
 \begin{table}[ht!]
     \begin{center}
@@ -66,11 +202,22 @@ The node map and attribute map will examine and modify these maps.
 \end{table}
 \FloatBarrier
 
-// ?? show return values ...
 
-\unnumberedSection{Event Commands}
 
-Event commands work with the event map. They add and remove an event, search the map for an event/port pair, or locally send an event to the node itself to test the event handling and so on.
+%--------------------------------------------------------------------------------
+\unnumberedSection{Event Testing}
+
+Events are a central concept in the LCS system. The command interface provides tools to
+inspect and test event handling without requiring another node to generate the event.
+
+Events can be locally generated, allowing the programmer to verify:
+
+\begin{itemize}
+    \item event configuration,
+    \item event map entries,
+    \item port reactions,
+    \item callback execution.
+\end{itemize}
 
 \begin{table}[ht!]
     \begin{center}
@@ -86,12 +233,19 @@ Event commands work with the event map. They add and remove an event, search the
 \end{table}
 \FloatBarrier
 
-// ??? adding, removing is done via request functions...
+
+Adding and removing event map entries is performed through runtime request functions
+and therefore follows the same access rules as other persistent configuration data.
 
 
-\unnumberedSection{Send a raw Message}
+%--------------------------------------------------------------------------------
+\unnumberedSection{Sending Raw LCS Messages}
 
-For testing the message send mechanism, a command is available to send a raw data packet via the LCS bus.
+For protocol development and debugging, the command interface provides a mechanism to
+send raw messages directly onto the LCS bus.
+
+This command intentionally bypasses the higher level runtime functions. It is useful
+when developing new message types or verifying communication with other nodes.
 
 \begin{table}[ht!]
     \begin{center}
@@ -108,9 +262,23 @@ For testing the message send mechanism, a command is available to send a raw dat
 \FloatBarrier
 
 
-\unnumberedSection{List node status}
 
-The "s" command will list a great detail of node data. When debugging a node problem, this is perhaps the most useful command to see what is stored locally. 
+%--------------------------------------------------------------------------------
+\unnumberedSection{Runtime Diagnostics}
+
+One of the most useful features of the command interface is the ability to inspect the
+internal state of a node.
+
+The \texttt{s} command provides formatted views of runtime data structures. This is
+particularly valuable when debugging a node that does not behave as expected.
+
+The command can display information from:
+
+\begin{itemize}
+    \item volatile memory (MEM),
+    \item non-volatile storage (NVM),
+    \item formatted runtime views.
+\end{itemize}
 
 \begin{table}[ht!]
     \begin{center}
@@ -160,31 +328,70 @@ The \texttt{s} command accepts a numeric parameter which indicates what status i
 \end{table}
 \FloatBarrier
 
-// ??? this deserves some examples, ....
 
 
-\unnumberedSection{LCS message text format}
+The formatted views are intended for human inspection, while the MEM and NVM views are
+useful when investigating storage or configuration problems.
 
-Just like the LCS core library accepts simple ASCII command strings, the LCS messages can also be transmitted as an ASCII text line. This is very useful for building communication gateways that transmit the message via another medium, such as an ethernet channel. There is a simple scheme for the ASCII representation of the message:
+% ??? examples
 
-\lstset{style=codesnippetstyle}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Text Representation of LCS Messages}
+
+In addition to commands, the serial interface can also be used to represent LCS messages
+as ASCII text.
+
+This representation is useful for communication gateways where messages need to be
+transported through another medium, such as Ethernet. It also provides a convenient way
+to create simple test tools.
+
+The message is enclosed by the \texttt{<} and \texttt{>} delimiters and contains the
+individual message bytes.
+
+\lstset{style=codesnippet-nobox}
 \begin{lstlisting}
-< data-byte-1 ... data-byte-n >
+
+< 0x01 0x02 0x03 >
+
 \end{lstlisting}
 
 
-The message is enclosed in the \texttt{<}  and \texttt{>} delimiters and the first character is the "xxx" sign. Up to 8 hexadecimal values written as "0xdd" follow, where "d" is a hexadecimal digit.
+The runtime library provides helper functions to convert between the binary message
+representation and the ASCII format.
 
-\lstset{style=codesnippetstyle}
+\lstset{style=api-interface}
 \begin{lstlisting}
-int lcsMsgToStr( char *msgStr, uint8_t *dataBuf, uint8_t dataBufLen );
 
-int strToLcsMsg( uint8_t *dataBuf, uint8_t dataBufLen, char *msgStr );
+int lcsMsgToStr( char *msgStr,
+                 uint8_t *dataBuf,
+                 uint8_t dataBufLen );
+
+int strToLcsMsg( uint8_t *dataBuf,
+                 uint8_t dataBufLen,
+                 char *msgStr );
+
 \end{lstlisting}
 
 
-Note: to be implemented. Perhaps to simple library routines to create an ASCII version of a LCS message and convert an ASCII string to an LCS message.
-
+%--------------------------------------------------------------------------------
 \unnumberedSection{Summary}
 
-The command line interface provides an easy way to interact with a node at the command line level. This is very useful for initial testing new hardware and software debugging. All that is needed is a USB interface and a computer. Besides that, this interface is normally not used during regular operations.
+The command interface provides a direct way to interact with an LCS node without
+requiring additional firmware changes.
+
+It exposes the same concepts used by the Runtime Library: item based data access,
+runtime requests, event handling and message processing. This makes it a valuable tool
+during firmware development, hardware bring-up and service operations.
+
+A simple USB connection and a terminal program are sufficient to inspect a node, modify
+configuration data and test communication.
+
+The command interface is therefore not part of the normal operational communication
+path. Instead, it provides a powerful service and diagnostic interface for developers
+and users configuring an LCS system.
+
+
+
+
+

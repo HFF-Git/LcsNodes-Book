@@ -1,0 +1,304 @@
+%--------------------------------------------------------------------------------
+%
+%--------------------------------------------------------------------------------
+\unnumberedChapter{The Callback Model}
+
+The LCS runtime library controls the main execution loop of a node. After the call to
+\textbf{startRuntime}, the runtime continuously processes incoming Layout Control Bus
+messages, handles internal timers, manages ports and executes background services.
+
+Application firmware does not repeatedly call the runtime. Instead, the runtime invokes
+application code whenever interaction with the node firmware is required. This mechanism
+is implemented through callback functions.
+
+Callbacks are therefore the primary interface between the runtime library and
+application-specific firmware.
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{The Runtime Execution Model}
+
+A typical LCS node firmware follows a simple initialization sequence:
+
+\begin{smallGapItemize}
+    \item Initialize the runtime library.
+    \item Register the required callback functions.
+    \item Initialize hardware-specific components.
+    \item Start the runtime.
+\end{smallGapItemize}
+
+After the runtime has been started, the application firmware no longer executes a
+traditional main loop. The runtime remains in control and invokes registered callbacks
+when required.
+
+The runtime loop performs all internal processing and invokes application callbacks
+whenever an external event requires application-specific handling.
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Callback Registration}
+
+Callbacks are registered during the initialization phase. Each callback consists of a
+function pointer and an optional user data pointer.
+
+The user data pointer allows the firmware programmer to associate application-specific
+context information with a callback. The runtime stores this pointer and passes it back
+whenever the callback is invoked.
+
+This mechanism allows the same callback implementation to be reused for different
+objects or ports without requiring global variables.
+
+The callback registration functions are:
+
+\begin{lstlisting}[language=RtLib, style=api-interface]
+
+uint8_t registerInitCallback( LcsInitCallback handler,
+                              void *uData = nullptr );
+
+uint8_t registerPfailCallback( LcsPfailCallback handler,
+                               void *uData = nullptr );
+
+uint8_t registerLcsMsgCallback( LcsMsgCallback handler,
+                                void *uData = nullptr );
+
+uint8_t registerDccMsgCallback( LcsMsgCallback handler,
+                                void *uData = nullptr );
+
+uint8_t registerCmdCallback( LcsCmdCallback handler,
+                             void *uData = nullptr );
+
+uint8_t registerTaskCallback( LcsTaskCallback handler,
+                              uint32_t interval = 0,
+                              void *uData = nullptr );
+
+uint8_t registerEventCallback( LcsEventCallback handler,
+                               uint16_t portMask = 0xFFFF,
+                               void *uData = nullptr );
+
+uint8_t registerReqCallback( LcsReqCallback handler,
+                             uint16_t portMask = 0xFFFF,
+                             void *uData = nullptr );
+
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Initialization Callback}
+
+The initialization callback is invoked by the runtime after the internal runtime
+initialization has completed.
+
+It provides the application firmware with a well-defined point in time where the
+runtime data structures are available and the node is ready for application-specific
+initialization.
+
+Typical tasks performed in the initialization callback include initializing hardware
+devices, configuring ports, setting initial output states and restoring application
+specific runtime state.
+
+The initialization callback is invoked during startup and whenever a node reset command
+causes the node and its ports to be reinitialized.
+
+The callback is defined as:
+
+\begin{lstlisting}[style=api-interface]
+typedef uint8_t (*LcsInitCallback)(
+        uint16_t npId,
+        void *uData );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Power Failure Callback}
+
+The power failure callback allows the application firmware to react to an imminent loss
+of power condition.
+
+Depending on the hardware implementation, the runtime can receive an early warning from
+a power monitoring circuit before the supply voltage becomes invalid. The callback gives
+the application an opportunity to store volatile information or place hardware into a
+safe state.
+
+The amount of available time is hardware dependent. The callback should therefore
+perform only essential operations and must return as quickly as possible.
+
+The callback is defined as:
+
+\begin{lstlisting}[language=RtLib, style=api-interface]
+typedef uint8_t (*LcsPfailCallback)( uint16_t npId, void *uData );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Layout Control Bus Message Callback}
+
+The LCS message callback provides access to messages received from the Layout Control
+Bus that are not handled transparently by the runtime.
+
+Most standard LCS messages are processed internally by RtLib. Only messages requiring
+application-specific handling are forwarded to this callback.
+
+Typical applications include implementing specialized node-to-node communication or
+supporting additional protocol extensions.
+
+The callback receives the complete message buffer.
+
+The callback is defined as:
+
+\begin{lstlisting}[style=api-interface]
+typedef uint8_t (*LcsMsgCallback)(
+        uint8_t *msg,
+        void *uData );
+\end{lstlisting}
+
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{DCC Message Callback}
+
+The DCC message callback is invoked when a DCC-related LCS message is received that
+requires application firmware processing.
+
+This interface is primarily used by nodes participating in the DCC subsystem, such as
+command stations, boosters or specialized DCC devices.
+
+The callback receives the original message buffer and can interpret the message
+according to the DCC subsystem definition.
+
+The callback uses the same function type as the general LCS message callback.
+
+\begin{lstlisting}[style=api-interface]
+typedef uint8_t (*LcsMsgCallback)(
+        uint8_t *msg,
+        void *uData );
+\end{lstlisting}
+
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Console Command Callback}
+
+The runtime library implements a basic console command interface for diagnostics and
+configuration.
+
+Commands recognized by the runtime itself are processed internally. Commands that are
+not known to the runtime are forwarded to the application command callback.
+
+This allows application firmware to provide additional diagnostic commands, setup
+functions or device-specific control interfaces.
+
+The callback receives the complete command line.
+
+The callback is defined as:
+
+\begin{lstlisting}[style=api-interface]
+typedef uint8_t (*LcsCmdCallback)(
+        char *cmdLine,
+        void *uData );
+\end{lstlisting}
+
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Periodic Task Callback}
+
+The periodic task callback provides a simple scheduling mechanism for application
+firmware.
+
+Instead of implementing its own timing loop, the application registers a callback
+together with an execution interval. The runtime invokes the callback whenever the
+specified interval has elapsed.
+
+Typical applications include monitoring sensors, updating displays, supervising
+hardware state or performing regular housekeeping tasks.
+
+The requested interval defines the earliest possible execution time. Actual execution
+may occur later if another callback or internal runtime operation requires more time.
+
+The callback is defined as:
+
+\begin{lstlisting}[style=api-interface]
+typedef uint8_t (*LcsTaskCallback)(
+        void *uData );
+\end{lstlisting}
+
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Event Callback}
+
+The event callback is invoked when an incoming Layout Control Bus event matches an
+entry in the node Event Map.
+
+The runtime first determines whether any configured port is interested in the event.
+For every matching port, the runtime invokes the event callback with the event
+information.
+
+The callback receives the affected node or port identifier, the event identifier, the
+event action and optional event data.
+
+Multiple ports reacting to the same event are processed in ascending port ID order.
+
+The callback is defined as:
+
+\begin{lstlisting}[style=api-interface]
+typedef uint8_t (*LcsEventCallback)(
+        uint16_t npId,
+        uint16_t eId,
+        uint8_t eAction,
+        uint16_t eData,
+        void *uData );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Request Callback}
+
+The request callback extends the Item ID programming model into application firmware. Whenever a REQ operation references an application-defined Item ID, the runtime invokes the registered request callback. This allows firmware programmers to implement custom functions without modifying the runtime library.
+
+For example, an application may define an Item ID representing a signal control operation. A remote node can then issue a REQ operation, which is translated by the runtime into a callback invocation at the target node. The callback receives the Item ID together with two optional arguments. The callback is defined as:
+
+\begin{lstlisting}[style=api-interface]
+typedef uint8_t (*LcsReqCallback)(
+        uint16_t npId,
+        uint16_t item,
+        uint16_t *arg1,
+        uint16_t *arg2,
+        void *uData );
+\end{lstlisting}
+
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Asynchronous Reply Callback}
+
+The reply callback is used for asynchronous responses to remote requests. Unlike the other callbacks, the reply callback is not registered globally. It is supplied with each request that expects a response.
+
+Operations such as remote GET, SET or REQ calls cannot return their result immediately, because the response travels over the Layout Control Bus. Instead, the runtime invokes the registered reply callback when the response message arrives. The callback receives the original Item ID together with the returned values and status information. The callback is defined as:
+
+\begin{lstlisting}[style=api-interface]
+typedef uint8_t (*LcsRepCallback)(
+        uint16_t npId,
+        uint16_t item,
+        uint16_t arg1,
+        uint16_t arg2,
+        uint8_t ret,
+        void *uData );
+\end{lstlisting}
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Summary}
+
+The callback mechanism is the second fundamental part of the Runtime Library programming
+model.
+
+The runtime library owns the main execution loop of an LCS node. Instead of implementing
+its own loop, application firmware registers callback functions that are invoked by the
+runtime whenever application-specific processing is required.
+
+Different callback types handle different aspects of node operation. Initialization
+callbacks allow hardware and application state to be prepared. Event callbacks react to
+layout events. Request callbacks extend the item model with application-defined
+functions. Periodic task callbacks provide simple scheduling support, while message and
+command callbacks allow firmware-specific communication.
+
+Callbacks are executed synchronously by the runtime. They should therefore be short,
+non-blocking and avoid lengthy processing. The runtime remains responsible for all
+time-critical internal activities and invokes application code only at defined
+interaction points.
+
+Together, library functions and callbacks form the complete programming model of an LCS
+node. Firmware uses library calls to request services and callbacks to receive
+notifications.
+
+The next chapter demonstrates this model with a complete example of an LCS node firmware
+implementation.

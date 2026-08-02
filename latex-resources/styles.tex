@@ -117,6 +117,31 @@
   \begin{itemize}[itemsep=4pt, parsep=0pt, topsep=2pt, partopsep=0pt]
 }{\end{itemize}}
 
+
+
+\lstdefinelanguage{RtLib}{
+    language=C++,
+    morekeywords={
+        initRuntime,
+        startRuntime,
+        registerInitCallback,
+        registerPfailCallback,
+        registerLcsMsgCallback,
+        registerDccMsgCallback,
+        registerCmdCallback,
+        registerTaskCallback,
+        registerEventCallback,
+        registerReqCallback,
+        nodeGet,
+        nodeSet,
+        nodeReq,
+        sendReset,
+        sendBusOn,
+        sendBusOff
+    },
+    keywordstyle=\bfseries\color{black}
+}
+
 %--------------------------------------------------------------------------------
 % Listing style for showing code snippets. This style is used for showing 
 % short code sequences.
@@ -125,7 +150,7 @@
 \lstdefinestyle{codesnippetstyle}{
     backgroundcolor=\color{gray!5},
     basicstyle={\ttfamily\small}, % Try \relsize{-2} if this is still too large
-    keywordstyle=\color{magenta},
+    keywordstyle=\color{black},
     identifierstyle={\ttfamily\color{gray}},
     numberstyle={\ttfamily\footnotesize\color{gray}},
     commentstyle={\ttfamily\color{teal}},
@@ -145,11 +170,25 @@
 }
 
 \lstdefinestyle{codesnippet-nobox}{
-    style=codesnippetstyle,   % inherit all other settings
-    frame=none,               % remove the frame
-    backgroundcolor=,         % remove background
-    xleftmargin=0pt,          % optional: remove left margin offset
-    linewidth=\textwidth      % optional: use full width
+    style=codesnippetstyle,
+    frame=none,
+    numbers=none,
+    backgroundcolor=,
+    xleftmargin=2em,
+    linewidth=\dimexpr\textwidth-2em\relax,
+    aboveskip=1em,
+    belowskip=1em
+}
+
+\lstdefinestyle{api-interface}{
+    style=codesnippetstyle,
+    frame=none,
+    numbers=none,
+    backgroundcolor=,
+    xleftmargin=2em,
+    linewidth=\dimexpr\textwidth-2em\relax,
+    keywordstyle=\bfseries\color{black},
+    identifierstyle=\ttfamily\color{black}
 }
 
 %--------------------------------------------------------------------------------

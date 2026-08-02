@@ -1,641 +1,281 @@
-%-------------------------------------------------------------------------------------------------------
-%-------------------------------------------------------------------------------------------------------
-\unnumberedChapter{The Runtime Library RtLib}
+%--------------------------------------------------------------------------------
+%
+%--------------------------------------------------------------------------------
+\unnumberedChapter{The Runtime Library (RtLib)}
 
-// ??? this lib is at the heart of a module....
+The Runtime Library (\texttt{RtLib}) is the software foundation of every LCS node. It forms the interface between the application firmware and the underlying hardware module and provides the common services required by every node.
 
-Intended for the node firmware programmer, the LCS runtime library is the main interface to the hardware module. The library has methods for node and port configuration, event processing and layout control bus management. Most of the LCS bus management, node, port and port data management is performed transparently to the node firmware programmer. The library also provides convenience methods to send messages to other nodes and allows for a rich set of callback functions to be registered to act on messages and events.
+Rather than manipulating hardware directly, application firmware interacts almost exclusively with the runtime library. RtLib manages node configuration, communication on the Layout Control Bus, event processing, port management, and the storage of persistent configuration data. The library also provides convenient methods for sending messages to other nodes and allows the application firmware to register callback functions that react to messages, events, and timer expirations.
 
-\unnumberedSection{Runtime Structure}
+One of the primary design goals of RtLib is to shield the firmware programmer from the internal implementation of the runtime. Instead of directly accessing internal data structures, firmware interacts with the node through a well-defined set of library functions. This approach keeps application firmware independent of the runtime implementation while allowing the library to transparently manage synchronization, validation, communication, and persistent storage.
 
-All LCS node data is kept in volatile \texttt{(MEM)} and non-volatile \texttt{(NVM)}. The data is structured into several data areas which we call \textbf{map}s. A map is a memory area which can be found in MEM and NVM or only in MEM. The key idea is that a map in MEM is initialized from its NVM counterpart at runtime start. Changes in a MEM map can be synced with its NVM map counterpart. There are also maps that do not have a NVM counterpart. These maps are initialized with default values at node startup. 
+The following sections introduce the runtime data model before describing how application firmware accesses node data and services.
 
-// ??? work on it .. show create to initial NVM, from NVM to MEM, from access from MEM
+%--------------------------------------------------------------------------------
+\unnumberedSection{Runtime Data Model}
+
+The runtime organizes all node information into several memory areas called \textbf{maps}. Each map groups together a particular category of runtime data, such as node configuration, port information, event subscriptions, or user data.
+
+Some maps exist only in volatile memory, referred to as \texttt{MEM}, while others have both a volatile and a non-volatile representation. The non-volatile storage, referred to as \texttt{NVM}, preserves configuration information across power cycles.
+
+During node startup, every persistent map is initialized by copying its contents from the corresponding NVM map into MEM. Once initialization has completed, the runtime operates exclusively on the MEM version for maximum performance. Whenever persistent changes are required, the runtime synchronizes the modified data back to the corresponding NVM map.
+
+Maps without an NVM counterpart contain purely transient runtime information. They are initialized from default values compiled into the runtime library whenever the node starts.
 
 \begin{center}
-	\begin{tikzpicture} [scale=0.9, transform shape]
-        \draw[help lines, gray!50, dashed] (0,0) grid(16,14);
-        
-         % Rectangles
+\begin{tikzpicture}[scale=0.9, transform shape]
 
-     % Rectangles
+     % flow
+     \node at (4,10.4) {\textbf{format}};
+     \draw[->, ultra thick, gray, line cap=round] (3,10) -- (5,10);
 
-    \draw[rounded corners=2pt, fill=yellow!10] (0,0) rectangle (3,3);
+     \node at (10,10.4) {\textbf{load}};
+     \draw[->, ultra thick, gray, line cap=round] (9,10) -- (11,10);
 
-    \draw[rounded corners=2pt, fill=yellow!10] (5,0) rectangle (9,8);
+     % rectangles
+     \draw[rounded corners=2pt, fill=gray!10] (0,0) rectangle (3,3);
+     \draw[rounded corners=2pt, fill=yellow!10] (5,0) rectangle (9,7);
+     \draw[rounded corners=2pt, fill=green!10] (11,0) rectangle (15,9);
 
-    \draw[rounded corners=2pt, fill=yellow!10] (11,0) rectangle (15,12);
+     % code
+     \node at (1.5,3.5) {\textbf{CODE}};
+     \node at (1.5,1.5) {Default Values};
 
-    % Labels
+     % NVM
+     \node at (7,7.5) {\textbf{NVM}};
+     \node at (7,0.5) {Node Map};
+     \draw (5,1)--(9,1);
 
-    \node at (1.5,1.5) {Defaults};
-    
-    \node at (7,8.5) {NVM};
-    \node at (7,1) {Node Map};
-    \draw (5,2) -- (9,2);
-	\node at (7,3) {Attribute Data};
-	\draw (5,4) -- (9,4);
-    \node at (7,5) {Event Map};
-    \draw (5,6) -- (9,6);
-    \node at (7,7) {User Data};
-    
- 
-    \node at (13,12.5) {MEM};     
-    \node at (13,1) {Node Map};
-    \draw (11,2) -- (15,2);
-	\node at (13,3) {Attribute Data};
-	\draw (11,4) -- (15,4);
-    \node at (13,5) {Event Map};
-    \draw (11,6) -- (15,6);
-    \node at (13,7) {User Data};
-    \draw (11,8) -- (15,8);       
-    \node at (13,9) {Port Map};
-    \draw (11,10) -- (15,10);
-    \node at (13,11) {Task Map};           
-              
-  	\end{tikzpicture}
+     \node at (7,2) {Attribute Data};
+     \draw (5,3)--(9,3);
+
+     \node at (7,4) {Event Map};
+     \draw (5,5)--(9,5);
+
+     \node at (7,6) {User Data};
+
+     % MEM
+     \node at (13,9.5) {\textbf{MEM}};
+     \node at (13,0.5) {Node Map};
+     \draw (11,1)--(15,1);
+
+     \node at (13,2) {Attribute Data};
+     \draw (11,3)--(15,3);
+
+     \node at (13,4) {Event Map};
+     \draw (11,5)--(15,5);
+
+     \node at (13,6) {User Data};
+     \draw (11,7)--(15,7);
+
+     \node at (13,7.5) {Port Map};
+     \draw (11,8)--(15,8);
+
+     \node at (13,8.5) {Task Map};
+
+\end{tikzpicture}
 \end{center}
 \FloatBarrier
 
-Maps do of course have a size. For example, a port map for example will have a number of entries, one for each port. The design choice was whether all map sizes are configurable or rather a fixed size. The current design features a fixed size scheme. There are a few key reasons for this decision. First, there is no configuration need when initializing a node. Second, the total size even when generously sizing the maps is rather small compared to what the hardware can do. A node with 128 node attributes, 8 ports each of which also have 128 port attributes, an event map of 1024 events to manage and space for some miscellaneous data items will be around 9 Kbytes of data. A node with a 32K NVM chip still has plenty of space for user data. A Raspberry Pi PICO based on the really Rp2040 chip has 264Kbytes of MEM, so also not an issue. Finally, with a fixed map layout, the NVM data can be copied in one swoop to a memory area on runtime start or reset. 
+The separation between MEM and NVM serves two important purposes. First, it allows the runtime to operate entirely from RAM, providing efficient access to frequently used data structures. Second, it avoids unnecessary writes to non-volatile memory, whose write endurance is limited compared to RAM. Only data that must survive a restart is synchronized back to NVM.
 
+%--------------------------------------------------------------------------------
+\unnumberedSubSection{Fixed Map Sizes}
 
-\unnumberedSubSection{NodeMap}
+Each runtime map has a predefined size. For example, the Port Map always contains one entry for every physical port supported by the node, while the Event Map reserves space for a fixed maximum number of event subscriptions.
 
-The node map is a node private data structure only accessible to the library firmware. It contains the information about the other configured maps, node options, nodeId, canId and other data such as the library version. When a node is initially created the configuration descriptor contains all the required information to set up a node map. Nodes need volatile and non-volatile storage. Our design implements a mirroring scheme. For the LCS storage there is a memory and an EEPROM version with the same layout. When a node is running the memory version is the storage to use for performance reasons. Also, it can be expected that the memory contents changes very often during operation. EEPROMs do have a limited number of writes in their lifetime and are not that performant for a write cycle. On the other the other hand the data is stored non-volatile. Information that needs to be changed and available across a restart is therefore synced from MEM to NVM. On restart, the NVM data is just copied to MEM. We always start with a defined state. The following figure shows the nodeMap data structure.
+An alternative design would have allowed each node to configure the size of its individual maps. RtLib deliberately avoids this approach in favor of a fixed memory layout.
 
-Most of the data items deal with the location and entry sizes of the key maps. In addition, there are the nodeId, the node name, creation options, actual status flags and the set of node map attributes. Finally, the software version of the node version is kept here. For the firmware programmer there are methods to read from and write an item to the node. The library the \textbf{nodeGet}, \textbf{nodePut} and \textbf{nodeReq} routines offer a controlled access to the node map and other node data for node firmware programmers. They both use an item / value concept. Each routine passed an item Id for the data of interest and the data value. We will see an example later in this chapter. There are also three LCS messages, \texttt{(QRY-NODE)}, \texttt{(REP-NODE)} and \texttt{(SET-NODE)} which allow for access from another node. Since these messages come from another node, there is also the option to register a callback for access control checks to node data before the operation is performed.
+There are several reasons for this design decision.
 
+First, node initialization requires no memory configuration. Every node shares the same internal memory layout, simplifying both firmware development and maintenance.
 
-\unnumberedSubSection{PortMap}
+Second, the required memory is modest compared to the resources available on modern controller hardware. A generously configured node supporting 128 node attributes, eight ports each with 128 port attributes, an event table containing 1024 entries, and additional runtime data requires only about 9~KBytes of storage. Even a modest 32~KByte EEPROM therefore leaves considerable room for application-specific user data, while controllers such as the RP2040 provide more than enough RAM for the runtime structures.
 
-The port map is an array of port map entries. 
+Finally, a fixed layout greatly simplifies runtime initialization. Persistent maps can be restored directly from NVM without reconstructing variable-sized data structures or performing dynamic memory allocation. This keeps startup deterministic and avoids unnecessary implementation complexity.
 
-The port map entry contains flags that describe the port configuration options and the current operational setting. The event handling fields hold for an inbound port the current event received, the action and value as well as the a possible time delay before invoking the callback. 
+The result is a runtime system with a simple, predictable memory layout that requires no configuration while consuming only a small fraction of the available hardware resources.
 
-During runtime there is a non-volatile and a memory version of this map. On node startup or reset, the non volatile port map entries are copied to their memory counterpart.
+%--------------------------------------------------------------------------------
+\unnumberedSection{Runtime Maps}
 
-The library \textbf{nodeGet}, \textbf{nodePut} and \textbf{nodeReq} routines presented before, offer a controlled access to the port map entry. The item and portId passed determine whether a node or port item is requested. Depending on the item, a portId of 0 will refer to all ports on the node or the node itself.
+The runtime maintains several maps, each serving a specific purpose. Together they describe the complete operational state of an LCS node.
 
-\unnumberedSubSection{Items}
+Although these maps are internal runtime data structures, they are not manipulated directly by application firmware. Instead, the runtime library provides controlled access through its programming interface. This allows the library to maintain consistency, synchronize persistent data, and perform internal bookkeeping transparently to the firmware programmer.
 
-The term "item" came up numerous times by now. Nodes and ports features to access their attributes through an \textbf{item Id}. An item Id is just a number in the range from 1 to 255. The runtime library includes file contains the item numbers for the reserved node and port items.
+The following sections briefly introduce each runtime map.
 
-\begin{table}[!ht]
-    \begin{center}
-        
-        \begin{tabularx}{0.9\textwidth}{|l|l|X|}
-            \hline
-            \textbf{Low} & \textbf{High} & \textbf{Purpose} \\
-            \hline
-            0 & & NIL Item \\
-            \hline
-            1 & 63 & Reserved items for node and ports. For the Get and SET access the item refers to an attribute variable. For the REQ access the item refers to a user defined function to be invoked via a callback. \\
-            \hline
-            64 & 127 & Reserved items for channel items. GET, SET and REQ items are passed to the channel. \\
-            \hline
-            128 & 255 & Node or Port Attributes, accessed via GET and PUT calls. For the REQ access the item refers to a user defined function to be invoked via a callback. \\
-            \hline
-            255 & NVM\_MAX & User Attributes, accessed via GET and PUT calls. \\
-            \hline
-        \end{tabularx}
-    \end{center}
-    \caption{Item ranges}
-\end{table}
-\FloatBarrier
+%--------------------------------------------------------------------------------
+\unnumberedSubSection{Node Map}
 
-The item range numbers  1 to 63 are reserved by the core library itself for node and port items that are standardized across all nodes. There are attributes, typically taken from the node and port map data structures as well as functions that invoke a LCS library function.
+The Node Map contains the internal configuration and status information of the node itself. It is the central runtime data structure from which the library obtains all information required to manage the remaining maps.
 
+Typical information stored in the Node Map includes the Node ID, CAN ID, library version, runtime options, pointers to the remaining runtime maps, and additional internal state information required by the library.
 
-The item 64 to 127 represent the channel item range.
+The Node Map exists both in MEM and in NVM. During startup, the runtime initializes the MEM version from the corresponding NVM map. Once the node is operational, all accesses are performed on the MEM copy. Whenever persistent configuration changes are required, the modified data is synchronized back to NVM.
 
-The item range 128 to 255 describes the set of node or port attributes and user defined functions. A read or write from these attributes using the GET and SET calls will always refer to the MEM storage. There is a synchronization control item to either load again from non-volatile memory or to write the memory value to non-volatile storage. 
+Application firmware never accesses the Node Map directly. Instead, the runtime exposes selected information through the standard GET and SET interface described later in this chapter. This keeps the internal implementation independent from the external programming interface and allows the runtime to evolve without affecting application firmware.
 
-// ??? also REQ calls....
+%--------------------------------------------------------------------------------
+\unnumberedSubSection{Port Map}
 
-The same item range is also used for the REQ call, which just result in a callback invocation. Note that a callback can do anything. For example, turning a signal on or off could be an item Id of let's say 72 and sending a node control message with the item 72 and the value of 1 in the first argument would result in invoking a callback which implements how to turn the signal on. In short, a node supports variable access, comparable to the CV concept in DCC, and also a function call concept which allows a great flexibility for the firmware programmer.
+The Port Map contains the current runtime state of every physical port supported by the node. It consists of one Port Map entry for each port.
 
-// ??? CFG vs OPS behavior....
+Each entry stores information describing both the configuration and the current operating state of the corresponding port. This includes configuration flags, the current event being processed, pending actions, delayed event execution, callback information, and other runtime state required by the event dispatcher.
 
-// ??? anything after 255 to NVM\_MAX is user defined land ... on GET /SET.
+Unlike the Node Map, the Port Map is purely a runtime data structure and therefore exists only in MEM. It is recreated whenever the node starts and does not require persistent storage.
 
+The runtime continuously updates the Port Map while processing incoming events and executing application callbacks. For this reason, application firmware should regard the Port Map as runtime-owned data and use the provided library functions whenever port information needs to be queried or modified.
 
-\unnumberedSubSection{EventMap}
+%--------------------------------------------------------------------------------
+\unnumberedSubSection{Event Map}
 
-The event map is an array of event map entries, each containing the eventId that node is interested in and the port Id to inform when the event is encountered. The maximum number of event map entries is set through the node configuration descriptor values set by the firmware programmer. When a new node is configured, this value is used to construct the empty event map. Any change of this value results in a node re-initialization of the node, rebuilding the event map with all non-volatile event map data lost.
+The Event Map defines the set of Layout Control Bus events that are of interest to the node.
 
-Like all other maps, the event map is stored in two places. The non-volatile version of the eventMap is an array of event map entries. Whenever a new entry is added, a free entry is used to store this information. The memory version of the event map is a sorted version of all used non-volatile entries. There is a synchronization control item to write the map to non-volatile storage or re-initialize the memory map from that storage.
+Each Event Map entry contains an Event ID together with a port mask identifying the ports that should receive this event whenever it is observed on the Layout Control Bus.
 
-In addition to the search function, event map entries can be added and deleted by specifying the eventId and portId. EventMap entries can also be accessed by their position in the event map. This is necessary to read out the event map for example through a configuration tool. While reading an event map entry from the event map is supported in both node configuration and operation mode, deleting or adding an entry is only supported in node configuration mode.
+The runtime maintains two different representations of the Event Map.
 
+The persistent representation stored in NVM consists of a simple array of Event Map entries. This representation is compact and well suited for configuration tools that sequentially read or update the event database.
+
+During startup, the runtime constructs a second representation in MEM. This runtime representation is organized as a hash table, allowing very fast lookup of incoming Event IDs during normal operation.
+
+The separation between persistent storage and runtime representation allows the event dispatcher to perform efficient lookups without compromising the simplicity of the on-chip storage format.
+
+The maximum number of Event Map entries is fixed at compile time. The current runtime library supports up to 512 event subscriptions.
+
+Whenever the Event Map is modified, dedicated runtime services synchronize the MEM and NVM representations. Reading the Event Map is supported both during normal operation and while the node is in configuration mode. Creating or deleting Event Map entries, however, is only permitted while the node is operating in configuration mode.
+
+%--------------------------------------------------------------------------------
 \unnumberedSubSection{Periodic Task Map}
 
-// ??? fill in ...
+Most embedded applications perform recurring activities. Typical examples include polling sensors, updating displays, generating flashing patterns, supervising communication timeouts, or performing regular housekeeping functions.
+
+Rather than requiring every application to implement its own timing loop, RtLib provides a simple periodic task scheduler.
+
+Application firmware registers a callback function together with the desired execution interval. The runtime stores this information in the Periodic Task Map and invokes the callback whenever the requested interval has elapsed.
+
+This approach considerably simplifies firmware development while allowing the runtime to retain complete control over the main execution loop. Internal runtime services and application callbacks therefore share the same scheduling mechanism, ensuring deterministic execution without requiring the application to manage timers explicitly.
+
+The Periodic Task Map contains only transient runtime information and therefore exists exclusively in MEM.
 
 
-\unnumberedSection{Library Interfaces}
+%--------------------------------------------------------------------------------
+\unnumberedSection{Attributes and Item IDs}
 
-// list the main groups ...
+Besides its internal runtime maps, every LCS node exposes a configurable set of attributes. These attributes represent the configuration and application data of the node and can be accessed both by the local application firmware and remotely through Layout Control Bus messages.
 
+Conceptually, node attributes are similar to the Configuration Variables (CVs) used in DCC systems. However, RtLib considerably extends this concept. In addition to configurable attributes, the same programming interface also provides access to runtime variables and callable functions.
 
-\begin{longtable}{@{}|p{0.3\linewidth}|p{0.4\linewidth}|@{}}
-    \caption{Library Routines} \\
-    \toprule
-    \textbf{Interface} & \textbf{Purpose} \\
-    \midrule
-    \endfirsthead
-    \toprule
-    \textbf{Interface} & \textbf{Purpose} \\
-    \midrule
-    \endhead
-    \midrule
-    \multicolumn{2}{r}{\textit{Continued on next page}} \\
-    \midrule
-    \endfoot
-    \bottomrule
-    \endlastfoot
-    initRuntime & ... \\
-    \midrule
-    startRuntime & ... \\
-    \midrule
-  	... & ... \\
-\end{longtable}  
+RtLib distinguishes between three categories of attributes.
 
+\begin{itemize}
+    \item \textbf{Node Attributes} describe properties of the node as a whole.
+    \item \textbf{Port Attributes} belong to an individual port and typically describe its behaviour or configuration.
+    \item \textbf{Global User Data} provides a large application-defined storage area whose size depends solely on the available non-volatile memory.
+\end{itemize}
 
-\unnumberedSubSection{Setup and Start}
+Node and port attributes are stored in NVM and copied into MEM during node startup. During normal operation, all accesses are performed on the MEM copy. Persistent storage is updated explicitly by synchronization requests or automatically while the node operates in configuration mode.
 
-The LCS runtime is initialized with the \textbf{initRuntime} routine. After successful runtime initialization, the firmware programmer can perform the registration of the callback functions needed, as well as doing other node specific initialization steps. This also includes the setup of the particular hardware. The subject of hardware setup will be discussed in a later chapter, "controller dependent code". 
+The Global User Data area occupies the remaining NVM after the runtime maps have been allocated. Consequently, its size depends on the storage available on the hardware module. For example, a node equipped with a 64~KByte EEPROM provides approximately 28,000 user-accessible data items after the runtime data has been reserved.
 
-While there are many library functions to call, the only way for the library to communicate back to the module firmware when a message is received are the callbacks registered for. Callbacks will be described in the next chapter. A key task therefore is to register call back functions for all events and messages the node is interested. The following code fragment illustrates the basic library initialization.
+%--------------------------------------------------------------------------------
+\unnumberedSubSection{Item IDs}
 
+All information managed by RtLib is accessed through an \textbf{Item ID}. An Item ID is simply an integer that identifies either a runtime variable, an attribute, or a callable function.
 
-The final library call is a call to \textbf{startRuntime}. The function processes the incoming LCS messages, manages the port event handling, reacts to console commands and finally invokes user defined callback functions. Being a loop, it will not return to the caller, but rather invoke the registered callback functions to interact with the node specific code. Before talking about the callback routines, let's have a look at the local functions available to the  programmer to call functions in the core library.
+Using a single addressing mechanism greatly simplifies both the runtime implementation and the programming interface. Rather than requiring different APIs for configuration data, runtime services, hardware channels, and application callbacks, RtLib uses Item IDs throughout.
 
+The same Item ID may therefore represent different objects depending on the operation being performed.
 
+\begin{itemize}
+    \item For \textbf{GET} operations, an Item ID identifies a readable variable or attribute.
+    \item For \textbf{SET} operations, an Item ID identifies a writable variable or attribute.
+    \item For \textbf{REQ} operations, an Item ID invokes either a runtime service or an application-defined callback.
+\end{itemize}
 
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-uint8_t     initRuntime( CdcResourceDescMap *dMap, 
-                         uint16_t           startOptions = 0,
-                         uint16_t           debugMask    = 0 );
+To simplify dispatching, the Item ID space is divided into several reserved ranges.
 
-uint8_t     startRuntime( );
+\begin{table}[!ht]
+\begin{center}
+\begin{tabularx}{0.9\textwidth}{|c|c|X|}
+\hline
+\textbf{Low} & \textbf{High} & \textbf{Purpose} \\
+\hline
+0 & 0 &
+Reserved NIL Item.\\
+\hline
+1 & 63 &
+Standard runtime items. Depending on the operation, these Item IDs either access standardized node and port variables or invoke built-in runtime services.\\
+\hline
+64 & 127 &
+Channel Item IDs. GET, SET and REQ operations are dispatched directly to the corresponding hardware channel.\\
+\hline
+128 & 255 &
+Application Item IDs. GET and SET operations access node or port attributes, while REQ operations invoke application-defined callback functions.\\
+\hline
+256 & NVM\_MAX &
+Global User Data stored in the application-defined NVM area.\\
+\hline
+\end{tabularx}
+\end{center}
+\caption{Item ID ranges.}
+\end{table}
 
-
-\end{lstlisting}
 \FloatBarrier
 
-\unnumberedSubSection{Defining Callbacks}
+The first range is reserved entirely for the runtime library. These Item IDs provide standardized access to node information that is common to every LCS node, such as node properties, port status, and built-in runtime services.
 
-The LCS runtime library is the foundation for any module firmware written. The library presents to the firmware programer a set of routines to configure, manage the LCS node and use LCS functions, such as sending a message. This chapter will present the key functions used. We will look at library initialization, obtaining node information, controlling a node aspect, reacting to an event and sending message to other nodes.
+The second range is dedicated to hardware channels. This allows the runtime to forward GET, SET and REQ operations directly to the responsible channel implementation without additional interpretation. The channel architecture is described in detail later in this book.
 
-One key idea in LCS library message processing is the idea of a callback method to interact with the node firmware. The library inner loop function will continuously check for incoming messages, command line inputs and other periodic work to do. Most of this work is handled by the core library code itself transparently to the node firmware. For example, reading a port attribute from another node is done without any user written firmware interaction. There are other messages though that require the node firmware interaction. As an example, consider an incoming event. We check that there is port interested and if so, invoke a callback with the message and port information to handle the event. The same applies to the console command line handler and the generic loop callback. Since the library has complete control over the processing loop, the callbacks are essential to invoke other periodic work. Depending on the callback type, it is invoked before the action is taken or afterwards. For example, switching from configuration mode to operations mode, will first perform the switch and then invoke the bus management callback routine if there was one defined.
+The third range is reserved for application firmware. GET and SET operations access the application's node and port attributes, whereas REQ operations invoke application-defined callback functions.
 
-// ??? show the general sequence of init register and start ?
+Finally, all Item IDs above 255 address the Global User Data area. This storage is entirely application-defined and can be used for arbitrary persistent information.
 
+%--------------------------------------------------------------------------------
+\unnumberedSubSection{Why Item IDs?}
 
+The Item ID concept is one of the central architectural elements of RtLib.
 
+First, it provides a uniform programming model. Application firmware, configuration tools, and remote nodes all use exactly the same addressing mechanism, regardless of whether they access a runtime variable, an attribute, a hardware channel, or an application-defined function.
 
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
+Second, dispatching requests is extremely efficient. The runtime determines the destination of a request through a few simple range comparisons, avoiding complex lookup tables or dynamic registration mechanisms.
 
-    extern "C" {
+Third, the dedicated Channel Item range cleanly separates hardware-specific functionality from the core runtime library. New channel types can therefore be added without modifying the runtime itself.
 
-    typedef uint8_t ( *LcsInitCallback ) ( uint16_t npId, 
-    									   void *uData );
-    									   
-    typedef uint8_t ( *LcsPfailCallback ) ( uint16_t npId, void *uData );
-    typedef uint8_t ( *LcsMsgCallback ) ( uint8_t *msg, void *uData );
-    typedef uint8_t ( *LcsCmdCallback ) ( char *cmdLine, void *uData );
-    typedef uint8_t ( *LcsTaskCallback ) ( void *uData );
+Finally, the architecture remains highly extensible. While the lower Item ID ranges are standardized by RtLib, the application firmware is free to define its own attributes, callback functions, and persistent user data without conflicting with the runtime library.
 
-    typedef uint8_t ( *LcsEventCallback ) ( uint16_t npId, 
-                                            uint16_t eId, 
-                                            uint8_t eAction,
-                                            uint16_t eData, 
-                                            void *uData );
-    
-    typedef uint8_t ( *LcsReqCallback ) ( uint16_t npId,
-                                          uint16_t item, 
-                                          uint16_t *arg1, 
-                                          uint16_t *arg2,
-                                          void *uData );
+The result is a compact, efficient, and flexible programming interface that remains consistent across all LCS nodes.
 
-    typedef uint8_t ( *LcsRepCallback ) ( uint16_t npId, 
-                                          uint16_t item, 
-                                          uint16_t arg1, 
-                                          uint16_t arg2, 
-                                          uint8_t ret, 
-                                          void *uData );
-}
-\end{lstlisting}
-\FloatBarrier
-
-
-Node and port attributes can be queried from other nodes. The reply from sending a (QRY-NODE) command to the target node, the (REP-NODE) message, is passed back to the requesting firmware through the node request callback.
-
-
-
-\unnumberedSubSection{Register Callbacks}
-
-
-Once the library is initialized the various handlers can be registered and all other firmware specific initialization can be done. The last step is the call to the \textbf{run} method, which will never return. The very first thing the **run** method does after some internal setup is to invoke the node and port initialization callback if registered. The callbacks are also invoked whenever a node is restarted with the (RES-NODE) command or the (RESET) command for nodes and ports. The following code snippet shows how to register such a callback.
-
-
-
-
-
-All the callback routines return a status code. When the item is not found or the arguments are not valid, the callback should return an error code. Any other status than \texttt{ALL\_OK} is passed back to the caller as the result of the nodeInfo or nodeControl method.
-
-
-The event callback function is invoked when an event was received and the node has an inbound port that is interested in the event. The eventId / portId was previously configured in the event map. A port reaction to the incoming event can be configured to have a delay between the receipt of the event and the actual invocation of the port event callback routine. The callback function is passed the actual event information.
-
-If there is more than one port configured to react on the the incoming event, they are invoked in ascending order of portIds. The ***eAction*** parameter specifies whether the event is a simple ON/OFF event or a generic event with optional associated data. Note that only ports can react to events.
-
-
-The LCS library implements a console command interface. Although not typically used during normal operations, it is very handy for tracking down firmware problems during development. Furthermore, troubleshooting in a layout is a good reason for having such an interface. As we will see in the hardware section, a simple serial data line or even an USB connector can be part of the module hardware. Simply connecting a computer to the node allows to query and control the node. Note, that this is also to some degree possible using the LCS bus messages.
-
-In addition to the serial commands defined for the LCS  core library, the firmware programmer can implement an additional command interface. Any command not recognizes by the library is passed to the registered command line callback. The callback itself returns a status code about the successful command execution. Any status other than ALL-OK will result in an error message listed to the serial command device connected.
-
-
-Why implementing a serial command handler on top of the core library serial commands? The key reason is that a firmware programmer can add additional commands for firmware specific commands. Other than further debug and status commands, nodes such as the base station can implement an entire set of their own commands. A good example is our base station, which implements most of the \texttt{DCC++} serial command set. Configuring a DCC locomotive decoder can then be handled with decoder programming software such as the JMRI DecoderPro tool, which in turn issues \texttt{DCC++} commands as one option.
-
-
-The LCS Library defines a set of DCC related LCS messages to configure and operate the running equipment and track. These messages are typically used by cab handhelds and the base station, which is in charge to produce the DCC signals for the tracks. The DCC message callbacks are used to communicate these messages to the node firmware. The callback routines are all passed the message buffer. The following code snippet shows the declaration for a DCC type callback.
-
-RailCom is a concept for the DCC decoders to communicate back. DCC is inherently a broadcast protocol just like a radio station. There was no way to communicate back.  RailCom was design to allow for a decoder to send back data when the DCC channel is told to "pause". The chapter on the DCC subsystem will explain DCC and RailCom in greater detail. The RailCom Message callback is the function callback that will be invoked when a RailCom Messages is received.
-
-The LCS core library attempts to handle as much as possible of message and event processing transparent to the user developed firmware. The core library ***run*** method, called last in the firmware setup sequence, will do the internal housekeeping and periodically scan for messages and serial commands. In addition, the run loop will also handle periodic activities outside the library. For example, a booster needs to periodically monitor the current consumption. The library therefore offers a callback registration function for periodic tasks. The example shown below registers a task to be executed every 1000 milliseconds.
-
-
-
-The runtime library start routine never returns. All interaction between the library is done through previously registered callbacks and calls to the library from within those callbacks. It is also important to realize that a callback runs to completion. In other words, the library inner working is put on hold when executing a callback. For example, no further LCS messages are processed during callback execution. The same is true for the periodic tasks. It also means that one cannot rely on exact timing. Specifying for example a 1000 milliseconds time interval, could mean that the task is invoked later because of other tasks running for a longer period. A periodic task would however not run earlier than the specific interval. In summary, callback routines should therefore be short, quick and mist of all non-blocking.
-
-Putting the library inner working on hold is however not true for functions that react on hardware interrupts. If there are interrupt routines for let's say a hardware timer, they will of course continue to take place. As we will see in the DCC track signal generation part of the base station, the interrupt driven signal generation is not impacted. Nevertheless, a firmware programmer needs to be aware that the order of callback invocation is fixed and that a callback runs to completion.
-
-
-
-
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-
-uint8_t     registerInitCallback( LcsInitCallback handler, 
-                                  void *uData = nullptr );
-
-uint8_t     registerPfailCallback( LcsPfailCallback handler,
-                                   void *uData = nullptr );
-
-uint8_t     registerLcsMsgCallback( LcsMsgCallback handler, 
-                                    void *uData = nullptr );
-
-uint8_t     registerDccMsgCallback( LcsMsgCallback handler, 
-                                    void *uData = nullptr );
-
-uint8_t     registerCmdCallback( LcsCmdCallback handler,
-                                 void *uData = nullptr );
-
-uint8_t     registerTaskCallback( LcsTaskCallback handler, 
-                                  uint32_t interval = 0, 
-                                  void *uData = nullptr );
-
-uint8_t     registerEventCallback( LcsEventCallback handler, 
-                                   uint16_t portMask = 0xFFFF,
-                                   void *uData = nullptr );
-
-uint8_t     registerReqCallback( LcsReqCallback handler, 
-                                 uint16_t portMask = 0xFFFF,
-                                 void *uData = nullptr );
-
-
-\end{lstlisting}
-\FloatBarrier
-
-// list what they are for... 
-
-// explain the Udata stuff...
-
-
-
-\unnumberedSubSection{Managing Attributes}
-
-Obtaining node or port information is an interface to query basic information about the node or port. A portID or \texttt{NIL\_PORT\_ID} will refer to the node, any other portID to a specific port on that node. The data is largely coming from the nodeMap and portMap data structures. The LCS library defines a set of data items that can be retrieved. 
-
-The return result is stored in one or two 16-bit variables and is request item specific. The nodeInfo and nodeControl routines allow for local access, the \texttt{(QRY-NODE)} and \texttt{(REP-NODE)} messages allow for remote access. The following example shows how the number of configured ports is retrieved from the nodeMap
-
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-
-uint8_t     nodeGet( uint16_t npId, uint16_t item, uint16_t *arg );
-uint8_t     nodeSet( uint16_t npId, uint16_t item, uint16_t arg );
-
-uint8_t     nodeReq( uint16_t npId, 
-                     uint16_t item, 
-                     uint16_t *arg1 = nullptr, 
-                     uint16_t *arg2 = nullptr );
-
-\end{lstlisting}
-\FloatBarrier
-
-// reply is done via callbacks...
-
-
-\unnumberedSubSection{Sending LCS Messages}
-
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-
-uint8_t     sendCfg( uint16_t targetNpId );
-uint8_t     sendOps( uint16_t targetNpId );
-uint8_t     sendReset( uint16_t targetNpId );
-uint8_t     sendBusOn( );
-uint8_t     sendBusOff( );
-
-
-\end{lstlisting}
-\FloatBarrier
-
-\unnumberedSubSection{Node Setup}
-
-
- A node has the the option to request a node from a central
-station database. The key is the unique never changing node UID. If two node
-detects a node Id collision, it will send a collision message with its own UID 
-and stop, waiting for external correction. 
-
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-
-int8_t     sendReqNodeId( uint16_t sendingNpId,
-                           uint32_t nodeUID, 
-                           uint8_t flags );
-
-uint8_t     sendRepNodeId( uint16_t targetNpId,
-                           uint32_t nodeUID, 
-                           uint8_t flags );
-
-uint8_t     sendSetNodeId( uint16_t sendingNpId,
-                           uint16_t targetNpId,
-                           uint32_t nodeUID, 
-                           uint8_t flags );
-
-uint8_t     sendNodeIdCollision( uint16_t sendingNpId,
-                                 uint32_t nodeUID );
-
-
-\end{lstlisting}
-\FloatBarrier
-
-\unnumberedSubSection{Managing Attributes}
-
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-
-uint8_t     sendAck( uint16_t sendingNpId,
-                     uint16_t targetNpId,
-                     uint8_t  rStat = LCS_OK );
-
-uint8_t     sendGetNode( uint16_t sendingNpId, 
-                         uint16_t targetNpId,           
-                         uint16_t item, 
-                         LcsRepCallback rep,
-                         void *uData = nullptr );
-
-uint8_t     sendSetNode( uint16_t sendingNpId, 
-                         uint16_t targetNpId,           
-                         uint16_t item, 
-                         uint16_t arg,
-                         LcsRepCallback rep,
-                         void *uData = nullptr );
-                         
-uint8_t     sendRepNode( uint16_t sendingNpId, 
-                         uint16_t targetNpId,
-                         uint16_t item, 
-                         uint16_t val1 );
-
-
-\end{lstlisting}
-\FloatBarrier
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-
-uint8_t     sendFuncReqNode( uint16_t sendingNpId,  
-                             uint16_t targetNpId,
-                             uint16_t item,    
-                             uint16_t val1, 
-                             uint16_t val2,
-                             LcsRepCallback rep,
-                             void *uData = nullptr  );
-
-uint8_t     sendFuncRepNode( uint16_t sendingNpId,  
-                             uint16_t targetNpId,
-                             uint16_t item,    
-                             uint16_t val1, 
-                             uint16_t val2  );
-
-
-\end{lstlisting}
-\FloatBarrier
-
-\unnumberedSubSection{Managing Events}
-
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-uint8_t     sendEventOn( uint16_t sendingNpId, 
-                         uint16_t eventId );
-
-uint8_t     sendEventOff( uint16_t sendingNpId, 
-                          uint16_t eventId );
-
-uint8_t     sendEvent( uint16_t sendingNpId,
-                       uint16_t eventId, 
-                       uint16_t arg );
-
-\end{lstlisting}
-\FloatBarrier
-
-\unnumberedSubSection{Managing Tracks}
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-
-uint8_t     sendTrackOn( );
-uint8_t     sendTrackOff( );
-uint8_t     sendEstop( );
-
-
-\end{lstlisting}
-\FloatBarrier
-
-\unnumberedSubSection{Managing Locomotives}
-
-// ??? explain who uses them ...
-
-// ??? explain common parameters and their meaning ...
-
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-
-uint8_t     sendReqLoc( uint16_t cabId, 
-                        uint8_t flags  );
-
-uint8_t     sendRelLoc( uint16_t cabId  );
-
-uint8_t     sendRepLoc( uint16_t cabId, 
-                        uint8_t spDir, 
-                        uint8_t fn1 = 0, 
-                        uint8_t fn2 = 0, 
-                        uint8_t fn3 = 0 );
-
-uint8_t     sendLocConsist( uint16_t cabId,
-                            uint8_t consId, 
-                            uint8_t flags );
-
-uint8_t     sendQueryLoc( uint16_t cabId );
-
-uint8_t     sendKeepLoc( uint16_t cabId );
-
-uint8_t     sendSetLocSpDir( uint16_t cabId,
-                             uint8_t spDir );
-
-uint8_t     sendSetLocMode( uint16_t cabId,
-                            uint8_t mode );
-
-uint8_t     sendSetLocFuncOn( uint16_t cabId, 
-                              uint8_t fNum );
-
-uint8_t     sendSetLocFuncOff( uint16_t cabId, 
-                               uint8_t fNum );
-
-uint8_t     sendSetLocFgroup( uint16_t cabId, 
-                              uint8_t fGroup, 
-                              uint8_t data );
-
-uint8_t     sendSetLocCvMain( uint16_t cabId, 
-                              uint16_t cvId, 
-                              uint8_t mode, 
-                              uint8_t val );
-
-uint8_t     sendSetLocCvProg( uint16_t cvId, 
-                              uint8_t mode, 
-                              uint8_t val );
-
-uint8_t     sendReqLocCvProg( uint16_t cvId, 
-                              uint8_t mode );
-
-uint8_t     sendRepLocCvProg( uint16_t cvId, 
-                              uint8_t val );
-
-uint8_t     sendSetBacc( uint16_t accAdr, 
-                         uint8_t flags  );
-
-uint8_t     sendSetEacc( uint16_t accAdr, 
-                         uint8_t val  );
-
-uint8_t     sendDccPacket( uint8_t arg1, 
-                           uint8_t arg2, 
-                           uint8_t arg3 );
-
-uint8_t     sendDccPacket( uint8_t arg1, 
-                           uint8_t arg2, 
-                           uint8_t arg3, 
-                           uint8_t arg4 );
-
-uint8_t     sendDccPacket( uint8_t arg1,
-                           uint8_t arg2, 
-                           uint8_t arg3, 
-                           uint8_t arg4, 
-                           uint8_t arg5 );
-
-uint8_t     sendDccPacket( uint8_t arg1, 
-                           uint8_t arg2, 
-                           uint8_t arg3, 
-                           uint8_t arg4, 
-                           uint8_t arg5, 
-                           uint8_t arg6 );
-
-uint8_t     sendDccAck( );
-
-uint8_t     sendDccErr( int8_t errCode, 
-                        uint8_t arg1 = 0, 
-                        uint8_t arg2 = 0 );
-
-
-\end{lstlisting}
-\FloatBarrier
-
-\unnumberedSubSection{Managing Firmware Update}
-
-// ??? purpose, idea of two images in a controller...
-
-// ??? general organization of transmitting lots of data
-
-// ??? perhaps also usable for config data ?
-
-// ??? under construction....
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-
-uint8_t sendStartLoad( uint16_t npId, 
-                       uint8_t  cmd,
-                       uint32_t size );
-
-uint8_t sendStartBlock( uint16_t npId,
-                        uint8_t cmd,
-                        uint16_t blockId );
-
-uint8_t sendBlockData( uint16_t npId,
-                       uint8_t cmd,
-                       uint32_t data );
-
-uint8_t sendEndBlock( uint16_t npId,
-                      uint8_t cmd,
-                      uint16_t blockId,
-                      uint16_t checkSum );
-
-uint8_t sendEndLoad( uint16_t npId,
-                     uint8_t cmd,
-                     uint32_t checkSum );
-
-
-\end{lstlisting}
-\FloatBarrier
-
-\unnumberedSubSection{Sending a CAN bus message}
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-
-uint8_t     sendRawMsg( uint8_t *msgBuf );
-
-
-\end{lstlisting}
-\FloatBarrier
-
-
+%--------------------------------------------------------------------------------
 \unnumberedSection{Summary}
 
-??? explain again why this NVM is key and thus important...
+The runtime library organizes all persistent and runtime node data using maps. The
+separation between non-volatile memory and memory storage is a fundamental design
+concept.
 
-To summarize, node storage is organized in maps. 
+At startup, the runtime initializes the memory representation of the node from the
+non-volatile storage area. During normal operation, all access is performed through the
+memory representation. Changes are synchronized back to non-volatile storage only when
+required. This provides fast access during operation while avoiding unnecessary writes
+to limited-lifetime non-volatile memory.
 
-There is the node map, which is the global place for locating all other areas in the node. The port map contains the data for the configured ports. The event map is the mapping mechanism for events to ports. During node startup, the non-volatile data is copied to a newly allocated memory area. After initialization the node will only work from the memory area. All read and write operations use the memory storage area. When setting a value in any map, the flush option allows for setting its non-volatile counter part as well, so that we have a new initial value for the next restart.
+The main data structures introduced in this chapter are the node map, the port map and
+the event map. The node map provides the central information about the node and its
+associated data areas. The port map contains the configuration and operational data of
+the node ports. The event map provides the association between incoming events and the
+ports that react to them.
 
-Any change to the structure of the maps, for example changing the number of entries in a map, but also a different size of a data structure caused by a new library version, will result in a rebuilding of the non-volatile memory area with all previous data lost. The layout configuration data, such as the mapping of events to the node and port needs to be stored for example in a computer system so that can be reloaded once a node is re-created. A node has no way of keeping stored data across structural changes to its map layout.
+The non-volatile storage layout is tied to the runtime data structures. Changes to the
+map organization, such as different numbers of entries or incompatible data structure
+changes, require rebuilding the non-volatile area. Existing configuration data cannot be
+automatically preserved across such structural changes and must be restored from an
+external configuration source.
 
-A key part of the runtime library is the setup and manipulation of node and port data. A small comprehensive function set was presented in this chapter. That is all there is to invoke the core library functions. There are a few more functions that will be described in the chapters that deal with their purpose. For the other direction of information flow, i.e. the core library sends information back to the firmware layer, callback functions are used, presented in the following chapter.
+The runtime library provides a controlled access mechanism to this data through the
+item-based programming model. Items provide a uniform way to access attributes,
+runtime services and application-defined functionality.
 
-LCS callbacks are a fundamental concept in the core library. A firmware designer will write code that uses the core library functions to access the lower layers and callback functions that are invoked by the library to communicate back. Well, that is all there is a the core layer. We will see a complete example in a later chapter. 
-
-Other than functions and callbacks, how can you access the library ? Wouldn't it be nice to have a simple interface to access the node data, set some options and simply test new hardware ? That is the subject of the next chapter.
-
-
-
+The following chapter introduces the Runtime Library interfaces. It presents the
+available functions and shows how firmware accesses the services provided by the
+runtime layer.
