@@ -1,0 +1,228 @@
+%--------------------------------------------------------------------------------
+%
+%--------------------------------------------------------------------------------
+\unnumberedChapter{Screens}
+
+The UI Elements library introduced in the previous chapter provides the
+individual building blocks required for implementing a user interface. Buttons,
+LEDs, rotary encoders and displays each encapsulate a particular aspect of the
+interaction between the user and the hardware. While these elements are useful
+individually, larger applications require a mechanism to organize them into a
+coherent user interface.
+
+Most embedded devices present their functionality through a sequence of screens.
+Only a limited amount of information can be displayed at any one time, while the
+available input devices are usually restricted to only a few buttons and perhaps
+a rotary encoder. Consequently, user interfaces are commonly organized as a
+hierarchy of screens between which the user navigates.
+
+The purpose of the \textbf{UI Screen} library is to provide a lightweight
+framework for implementing such user interfaces. Instead of managing button
+events, display updates and menu navigation throughout the application, these
+tasks are centralized in a simple screen hierarchy. Applications merely define
+their individual screens and implement the functionality associated with them.
+
+The library deliberately avoids imposing a particular visual appearance. It
+provides the navigation framework and event dispatching while leaving the
+presentation of each screen entirely to the application.
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Concept}
+
+A user interface consists of a number of individual screens. At any given time,
+exactly one screen is active and receives all user interaction events. Buttons,
+rotary encoders and other UI elements therefore do not communicate directly with
+the application. Instead, their events are forwarded to the currently active
+screen.
+
+Each screen is implemented as an object derived from the \texttt{UIScreen} base
+class. The base class defines a set of virtual callback methods that are invoked
+whenever user interaction occurs. Applications implement the behaviour of a
+screen by overriding the callbacks relevant for the particular application.
+
+A screen represents a display context. It controls the information presented on
+the display and reacts to user input while it is active. Screens can be arranged
+in a hierarchical structure. With the exception of the root screen, every screen
+has a parent screen and may contain a list of child screens. This allows complex
+user interfaces to be constructed from simple individual screens.
+
+The navigation concept is intentionally simple. Two buttons are reserved as the
+default navigation controls: \textbf{MENU} and \textbf{SELECT}. The MENU button
+is normally used to move through the list of child screens. The list is
+organized as a circular list, meaning that after the last child screen the next
+MENU action returns to the first child screen.
+
+The SELECT button activates the currently selected screen and therefore enters
+its child hierarchy. When a new screen becomes active, the leaving screen
+receives an \texttt{exit()} callback and the entering screen receives an
+\texttt{enter()} callback. The exit callback can be used to store modified data
+or release temporary resources, while the enter callback is typically used to
+initialize the display contents and prepare the screen for user interaction.
+
+A long press of the MENU button provides a convenient escape mechanism. It
+returns the user to the first child of the root screen regardless of the current
+position in the screen hierarchy.
+
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
+a conceptual picture of a screen hierarchy ?
+
+MENU -> MENU -> MENU -> MENU -> MENU -> back to first menu
+  |
+  v
+SUB-MENU
+   |
+   v
+SUB-MENU
+   |
+   v
+SUB-MENU
+  |
+  v
+  back to first sub menu
+\end{lstlisting}
+\FloatBarrier
+
+The default meaning of the MENU and SELECT buttons is a convention rather than
+a restriction imposed by the framework. Individual screens may override the
+corresponding event handlers and assign a different meaning whenever required.
+
+All other UI elements are application defined. For example, a screen displaying
+a value adjusted by a rotary encoder can override the encoder callback and react
+to position changes directly. Likewise, additional buttons can be assigned
+application-specific functions.
+
+The connection between UI Elements and screens is established through the event
+callback mechanism introduced in the previous chapter. UI Elements detect user
+actions and forward the resulting events to the active screen. The screen then
+decides how these events affect the application state.
+
+The following section introduces the \texttt{UIScreen} object. It provides the
+framework required to create application specific screens while connecting the
+screen hierarchy to the underlying UI Elements. The actual implementation of
+screens and complete user interfaces is discussed in the later chapter
+\textbf{Programming with Screens}.
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{The Screen Object}
+
+The \texttt{UIScreen} object is the foundation for implementing application
+specific screens. It combines two different responsibilities.
+
+First, it manages the screen hierarchy. Each screen can have a parent screen and
+a list of child screens. The base class provides the methods required to insert
+screens into this hierarchy, enable or disable screens and determine the current
+navigation position.
+
+Second, it provides the connection between the UI Element library and the screen
+application. UI Elements such as buttons and rotary encoders operate
+independently of the screen hierarchy. During setup, the screen subsystem
+registers callback functions with the required UI Elements. These static
+callback functions receive the events generated by the UI Elements and forward
+them to the currently active screen.
+
+This separation is important because UI Elements represent the physical user
+interface components, while screens represent the logical application behavior.
+A button does not know which screen uses it, and a screen does not know whether
+a button is connected directly to a controller pin or through another hardware
+interface.
+
+The \texttt{UIScreen} base class provides a number of virtual methods that are
+intended to be overridden by application specific screens. These methods
+implement the actual behavior of a screen, such as preparing the display when
+entering a screen, reacting to button events or processing rotary encoder
+movements.
+
+The following listing shows the main structure of the \texttt{UIScreen} class.
+The complete use of these methods is demonstrated in the chapter
+\textbf{Programming with Screens}.
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
+struct UIScreen {
+
+  public:
+
+    UIScreen( );
+
+    void            append( UIScreen *screen );
+
+    virtual void    enterScreen( bool init );
+    virtual void    exitScreen( );
+
+    virtual void    menuButtonClick( UIButton *buttonId );
+    virtual void    menuButtonLongPress( UIButton *buttonId );
+    virtual void    selectButtonClick( UIButton *buttonId );
+    virtual void    upButtonClick( UIButton *buttonId );
+    virtual void    downButtonClick( UIButton *buttonId );
+
+    virtual void    buttonClick( UIButton *buttonId );
+    virtual void    buttonLongPressStart( UIButton *buttonId );
+    virtual void    buttonLongPressStop( UIButton *buttonId );
+    virtual void    encoderPosChange( UIEncoder *encoderObj );
+
+    UIScreen        *getParentScreen( );
+    UIScreen        *getChildScreen( );
+    void            enableScreen( );
+    void            disableScreen( );
+    bool            isEnabled( );
+
+    static void     menuButtonClickHandler( UIButton *buttonObj );
+    static void     menuButtonLongPressHandler( UIButton *buttonObj );
+    static void     selectButtonClickHandler( UIButton *buttonObj );
+    static void     upButtonClickHandler( UIButton *buttonObj );
+    static void     downButtonClickHandler( UIButton *buttonObj );
+
+    static void     buttonClickHandler( UIButton *buttonObj );
+    static void     buttonLongPressStartHandler( UIButton *buttonObj );
+    static void     buttonLongPressStopHandler( UIButton *buttonObj );
+    static void     encoderPosChangeHandler( UIEncoder *encoderObj );
+
+    static bool     setup( );
+    static UIScreen *getRootScreen( );
+    static UIScreen *getCurrentScreen( );
+    static UIScreen *setCurrentScreen( UIScreen *screen, bool init = true );
+};
+
+\end{lstlisting}
+\FloatBarrier
+
+The static callback methods at the end of the class definition form the bridge
+between the UI Element library and the screen hierarchy. They are not
+application callbacks. Their purpose is to receive hardware related UI events
+and dispatch them to the active screen object.
+
+The virtual methods, in contrast, define the application interface. A derived
+screen class overrides only the methods relevant for its particular behavior.
+For example, a screen displaying a value controlled by a rotary encoder would
+typically override the \texttt{encoderPosChange()} method, while a configuration
+screen may override button click handlers.
+
+This design keeps the UI framework independent of individual applications while
+allowing each application screen to implement exactly the required behavior.
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Summary}
+
+The UI Screen library builds upon the UI Elements library by organizing
+individual interface elements into complete operator interfaces. Rather than
+processing button and encoder events throughout the application, user
+interaction is concentrated in a hierarchy of screens that communicate through a
+well-defined callback mechanism.
+
+The \texttt{UIScreen} object provides the framework required to build these
+interfaces. Static callback functions connect the screen subsystem to the UI
+Elements, while virtual methods allow application specific screens to implement
+their own behavior.
+
+By separating navigation, event dispatching and application logic, the framework
+encourages a consistent user interface while remaining sufficiently flexible for
+specialized interaction patterns. Since screens operate exclusively on the
+abstract UI elements introduced in the previous chapter, complete user
+interfaces remain independent of the underlying controller hardware and display
+technology.
+
+Together, the UI Elements and UI Screen libraries provide the complete software
+foundation for implementing portable and reusable operator interfaces across
+the various LCS hardware modules. The practical implementation of screens and
+complete user interfaces is presented in the following chapter
+\textbf{Programming with Screens}.

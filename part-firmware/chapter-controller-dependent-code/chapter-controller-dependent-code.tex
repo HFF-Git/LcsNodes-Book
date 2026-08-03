@@ -1,134 +1,460 @@
-
+%--------------------------------------------------------------------------------
+%
+%--------------------------------------------------------------------------------
 \unnumberedChapter{Controller Dependent Code}
 
-A main controller board features the controller itself, the CAN bus interface, the non-volatile memory and the extension connector with several IO pins of the controller assigned to it. During board initialization the controller hardware needs to be mapped to the actual board. It can be easily seen that different controller and board versions would place a great configuration and perhaps conditional compile burden on the LCS core library. To address this problem, there is a hardware layer library at the very bottom of the architecture that isolates the controller dependencies.
+The LCS runtime library already shields the firmware programmer from many of the 
+details of the underlying communication protocol. Firmware no longer needs to deal
+ with CAN frame formats, node addressing, message dispatching or event handling. 
+ However, another source of complexity still remains: the hardware platform itself.
 
+Every hardware module combines a particular controller family with a specific board
+design. Besides the processor itself, a typical module contains a CAN bus interface,
+non-volatile memory and an extension connector exposing a number of controller 
+pins to the outside world. Even when two boards perform the same task, they 
+often differ in their pin assignments or make use of different controller 
+peripherals. Supporting several board revisions or even different controller 
+families would quickly lead to a large amount of controller specific code and 
+conditional compilation throughout the firmware.
+
+The \textbf{Controller Dependent Code (CDC)} library addresses this problem by 
+concentrating all controller and board specific knowledge into one dedicated 
+software layer. The runtime library and the application firmware no longer
+access controller peripherals directly. Instead, they operate on abstract hardware
+resources that are configured once during system initialization.
+
+The CDC layer deliberately provides only a thin abstraction. It hides the details
+that would otherwise clutter the firmware, while still allowing direct access to
+the underlying controller whenever this is required. In this way the common 
+firmware remains portable without preventing applications from taking advantage
+ of controller specific features.
+
+This chapter introduces the concepts behind the CDC library, the resource based
+configuration mechanism and the services that are provided to the upper software 
+layers.
+
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{Concept}
 
+The CDC library is based on two simple ideas.
 
-Concept: there are resource numbers which are the index into a descriptor array that describes a resource, such as a GPIO pin or UART.
+The first idea is to separate the description of the hardware from its actual
+configuration. Every supported board is described by a constant
+\textbf{resource descriptor map}. This description specifies the board type,
+board version and the hardware resources available on that board together with
+their pin assignments and configuration parameters. Since these descriptions are
+constant data structures, adding support for a new board revision normally
+requires little more than defining another descriptor map.
 
-A program needs such a descriptor at startup. These descriptors can be constant structures, one for each board / version in production. 
+During initialization the descriptor map is processed by the CDC library. The
+library validates the hardware description, checks that the requested controller
+functions are available on the selected pins and creates the internal
+\textbf{resource map}. This runtime data structure contains the information
+required for efficient access to the configured hardware resources.
 
-The runtime init library accepts this structures and executes the data. Ideally, nothing more needs to be done for configuration. Still, the configure routines are also available to override this initial setting.
+The second idea is that firmware should no longer access controller pins or SDK
+objects directly. Instead, every configured hardware function is assigned a
+\textbf{resource number}. From this point onwards the firmware refers only to
+this resource number, independent of the actual controller family or PCB
+revision.
 
-It is essential that the init and configure routines cab be called many tines. One could init CDC and later call initRuntime which would also call CDC init. 
+This concept is comparable to the use of file handles in an operating system.
+Once a file has been opened, applications no longer access the physical storage
+device directly but use the file handle returned by the operating system.
+Similarly, the CDC library returns resource numbers that uniquely identify the
+configured hardware resources.
 
-We also keep some upper level data in the overall config structure. E.g. canID, nvmSize.
+The resource abstraction is intentionally not limited to simple controller
+peripherals such as GPIO pins, timers or serial interfaces. Higher level
+resources can also be introduced whenever they simplify firmware development.
+For example, a DCC output, an encoder with push button or an H-bridge driver can
+be represented as individual resources although internally they consist of
+several controller peripherals.
 
-Some resource numbers are fixed assignments, for a controller family. E.g. LED pin, etc.
+\begin{center}
+\begin{tikzpicture}[scale=0.9, transform shape]
 
-There is a START resource number from where on the firmware defines its numbers.
-NOTE: the resource numbers are indices. The order of descriptors in the descriptor array matters! 
+     % flow
+     \node at (8.5,8.4) {\textbf{create}};
+     \draw[->, ultra thick, gray, line cap=round] (7,8) -- (10,8);
 
-We are free to invent resources that map our requirements. E.g a encoder button resource and so on. Even logical resources, such as a DCC output resource to control the H-Bridge. To gather experience first.
+     % rectangles
+     \draw[rounded corners=2pt, fill=yellow!10] (2,0) rectangle (7,7);
+     \draw[rounded corners=2pt, fill=green!10] (10,0) rectangle (15,7);
 
-The mapping from resource number to instance needs to be really quick, low overhead. This is given by the simple indexing into an array.
+     % Descriptors
+     \node at (4,7.5) {\textbf{Descriptors}};
+     \node at (4,0.5) {Board Type};
+     \draw (2,1)--(7,1);
 
+     \node at (4,1.5) {Board Version};
+     \draw (2,2)--(7,2);
 
-!!!!! the text needs to be worked quite a bit.
+     \node at (4,4) {Descriptor Map};
 
+     % Resources
+     \node at (12,7.5) {\textbf{Resources}};
+     \node at (12.5,0.5) {Board Descriptor};
+     \draw (10,1)--(15,1);
 
+     \node at (12.5,2) {Controller Family Data};
+     \draw (10,3)--(15,3);
 
-Using the CDC layer does not mean that access to the bare bones controller chip is not possible. Any controller HW function can be accessed directly at the expense of that the code will most likely not be portable between different controller families. Still, here may be good reasons for the direct path. The following sections describe will now what the CDC library is offering across all controller platforms.
+     \node at (12.5,5) {Resource Map};
+   
+\end{tikzpicture}
+\end{center}
+\FloatBarrier
 
+During system initialization the resource descriptor map is passed to the CDC
+library. The library creates all configured hardware resources and performs the
+necessary controller specific initialization. Once this process has completed,
+both the runtime library and the application firmware access the hardware
+exclusively through the assigned resource numbers.
+
+Using the CDC library does not prevent direct access to the controller hardware.
+Whenever an application requires functionality that is not covered by the CDC
+abstraction, controller specific SDK routines can still be used directly.
+However, such code is naturally less portable between different controller
+families.
+
+\paragraph{Why resources instead of pins?}
+
+Traditional embedded software is often written around controller pins and
+peripherals. As a consequence, changing the controller family or introducing a
+new PCB revision frequently requires modifications throughout the application.
+The CDC library reverses this dependency. Applications describe the hardware
+resources they require, while the controller specific implementation determines
+how these resources are realized on the selected hardware. This approach keeps
+the upper software layers almost completely independent of pin assignments,
+controller specific SDKs and board revisions.
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{CDC Resource Descriptor Map}
 
-The CDC library is rather low level hardware abstraction to give access to the pins of the Raspberry PI Pico and perhaps over time other controllers as well. The key identifier to access a hardware input/output is the pin number. Using the correct pin numbers according to the hardware developed is therefore very important. At the same time the upper layer code should not deal with these details. There needs to be a mapping of actual pin numbers and functions to the controller family and the hardware developed.
+The \textbf{Resource Descriptor Map} is the central configuration data structure
+of the CDC library. It provides a declarative description of the hardware
+available on a particular board. Each supported board type and board revision
+has its own descriptor map, which is normally implemented as a constant data
+structure residing in program memory.
 
-Each project therefore needs to define a structure containing some constants and pin number assignments that are used through the node firmware. For this purpose, the CDC library defines a structure with all the pin names and a sensible default setting for a particular controller. Think of the structure a the superset of all pins and HW functions that can be configured for any controller. Using the structure, all the firmware programmer has to do is to set the controller pin numbers of the particular hardware module design to the names predefined in that structure. The upper layer code then just uses these names. The following figure shows the CDC configuration structure.
+The descriptor map does not contain any runtime information. Instead, it merely
+describes the hardware resources offered by the board. During library
+initialization this description is interpreted by the CDC library, which creates
+the corresponding runtime resources.
+
+The descriptor map contains three kinds of information:
+
+\begin{itemize}
+\item the board type,
+\item the board version, and
+\item a list of resource descriptors.
+\end{itemize}
+
+Each resource descriptor defines one hardware capability together with the
+parameters required to configure it. Depending on the resource type, these
+parameters may include controller pin assignments, baud rates, timer periods,
+PWM frequencies or other controller specific settings.
+
+The descriptor map therefore becomes the \emph{single source of truth} for the
+hardware configuration of a particular board. Whenever the board layout changes,
+only the corresponding descriptor map needs to be updated. The runtime library
+and the application firmware remain completely unchanged.
+
+The descriptor map itself is defined as follows.
 
 \lstset{language=c++, style=codesnippetstyle}
 \begin{lstlisting}
-   
-    ConfigInfo ...
-    
+struct CdcResourceDescMap {
+
+    uint16_t            boardType;
+    uint16_t            boardVersion;
+    CdcResourceDesc     map[ MAX_RES_DESC_ENTRIES ];
+};
 \end{lstlisting}
 \FloatBarrier
 
-While the whole idea of the CDC is isolating the firmware programmer from the controller layer and board revisions, the pin assignments cannot be chosen arbitrarily on all supported processor families. An application uses the default configuration routine to obtain an initialized configuration structure with controller specific values set. The application will then fill in the assigned pins and other configuration values. Note that the default configuration setting only fills in what are the controller limitations and leaves all else undefined. An application takes this initial structure and fills in what are board version specific. Throughout the life of the application, this structure is the "single source of truth" for pins. Under their defined name all upper layers refer to the configured IO capabilities. Once all is set, the \textbf{init} configuration routine, described later, does the sanity check for the given controller family hardware. For example, on the Atmega the UART pins numbers are fixed if used. On the PICO the pin numbers can be assigned to a couple of different slots. Whatever can be checked is checked. There is however no absolute guarantee that the configuration structure is valid in any cases.
+Each entry of the descriptor array represents one hardware resource. The exact
+contents depend on the resource type being described. Since different hardware
+resources require different configuration parameters, the resource descriptor
+contains a union of resource specific data structures.
 
-Most CDC routines use pins as one of their input argument. These arguments are not checked again at the level of the configuration validation. For performance reasons, just some quick sanity checks are performed.
+For example, a simple GPIO resource only needs to describe the controller pin
+assignment together with its operating mode.
 
-For each part of the CDC library, there is a configuration routine. For example, the digital IO configuration will set a particular pin to be an input or output pin and so on. During this configuration only basic checking what a controller can support on that pin will be done. The Atmega is far more restrictive with respect to the IO pins used than the Raspberry. The CDC library will do whatever it can to do such checking. During actual usage of such a pin, i.e. the digital read or write in the example above, no further checking will take place. During initialization, the configuration structure is checked against what the controller is capable. This also includes the pins assigned to UART or I2C pins.
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
+struct {
 
+            uint8_t     pinA;
+            uint8_t     pinB;
+            uint8_t     pinMode;
 
+        } gpio;
+\end{lstlisting}
+\FloatBarrier
 
+Higher level resources combine pin assignments and settings in one resource. 
+As an example here is the I2C  resource descriptor:
 
+\lstset{language=c++, style=codesnippetstyle}
+\begin{lstlisting}
+struct {
 
+            uint8_t     sclPin;
+            uint8_t     sdaPin;
+            uint32_t    baudRate;
+            uint32_t    i2cTimeoutMs; 
 
+        } i2c;
+\end{lstlisting}
+\FloatBarrier
+
+For each board and version there is a resource map, describing the actual hardware.
+ During configuration this data is used to build the \textbf{Resource Map}. 
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{CDC Resource Map}
+
+While the Resource Descriptor Map is a static description of the hardware, the
+\textbf{Resource Map} contains the runtime representation created by the CDC
+library during initialization.
+
+For every descriptor contained in the descriptor map, the corresponding
+configuration routine validates the requested hardware configuration, initializes
+the controller peripheral and creates an internal resource entry. These runtime
+entries are subsequently used by all CDC service routines.
+
+The Resource Map therefore represents the configured hardware rather than its
+description.
+
+A key concept is that every configured resource receives a unique
+\textbf{Resource Number}. This number serves as the handle by which the resource
+is referenced throughout the lifetime of the application.
+
+The concept closely resembles the use of file descriptors in an operating
+system. After opening a file, an application no longer refers to the underlying
+storage device but simply uses the returned file descriptor. Likewise, firmware
+never accesses controller pins directly after initialization. Instead, all CDC
+functions operate on Resource Numbers.
+
+Since Resource Numbers are implemented as simple indices into the internal
+Resource Map, resource lookup requires only a single array access and therefore
+adds virtually no runtime overhead.
+
+\lstset{language=c++, style=api-interface}
+\begin{lstlisting}
+enum CdcResourceIdNum : uint8_t {
+
+    CDC_RN_ACTIVITY_LED     = 0,
+    CDC_RN_PFAIL            = 1,
+    CDC_RN_CAN_BUS          = 2,
+    CDC_RN_NVM              = 3,
+    CDC_RN_EXT_NVM          = 4,
+    CDC_RN_RESERVED_1       = 5,
+    CDC_RN_RESERVED_2       = 6,
+    CDC_RN_RESERVED_3       = 7,
+    CDC_RN_FIRST_USER_RN    = 8, 
+
+    CDC_RN_UNDEFINED        = 255
+};
+\end{lstlisting}
+\FloatBarrier
+
+The first Resource Numbers are reserved for the runtime library itself. They
+identify resources that are required by every LCS node, such as the activity
+LED, the CAN interface or the non-volatile memory.
+
+Application specific resources begin at
+\texttt{CDC\_RN\_FIRST\_USER\_RN}. From this point onwards the firmware designer
+is free to define resources that best describe the application rather than the
+underlying controller peripherals.
+
+Typical examples include encoder interfaces, DCC outputs, H-bridge controllers,
+servo drivers or complete occupancy detector channels. Such logical resources
+may internally combine several controller peripherals while still presenting a
+single, easy-to-use interface to the application firmware.
+
+\paragraph{Configuration Validation}
+
+Besides configuring the controller peripherals, the CDC library performs a
+number of consistency checks during initialization. These checks detect many
+hardware configuration errors before the application starts executing.
+
+Typical validation includes verifying that the selected controller pins support
+the requested peripheral function, ensuring that no hardware resource is
+allocated more than once and checking that all required controller capabilities
+are available on the selected processor family.
+
+Detecting such problems during system initialization considerably simplifies
+debugging and avoids a large class of runtime errors that would otherwise only
+be discovered after deployment.
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{CDC Library setup}
 
-To the firmware programmer, the library is a set of functions in the name space CDC. A call to any of the routines typically has the form "CDC::xxx". Of course, the name space can be declared upfront so the prefix is not needed. The example shown below will just show the fully qualified signature. The very first thing a node firmware should do is to set up the controller dependent library. If for some reason access to the lower layer is required before the LCS library is initialized, the calls can be made directly from the node firmware. There is also a convenience routine to print the content of the configuration structure.
-
-\lstset{language=c++, style=codesnippetstyle}
+\lstset{language=c++, style=api-interface}
 \begin{lstlisting}
-   
-    Declaration part...
-    
+uint8_t         cdcInit( CdcResourceDescMap *dMap, 
+                         uint16_t           options = 0, 
+                         uint16_t           debugMask = 0 );
+
+CdcResourceDesc *lookupResourceDesc( uint8_t rNum, uint8_t type );
+void            printResourceDescMap( CdcResourceDescMap *dMap );
+void            printResourceMap( );
+
+uint32_t        getVersion( );
+uint32_t        getPatchLevel( );
+
+void            fatalError( uint8_t errNum, 
+                            char    *str  = nullptr,  
+                            uint8_t rStat = NO_ERR );
+
+uint16_t        getDebugMask( );
+void            setDebugMask( uint16_t mask );
 \end{lstlisting}
 \FloatBarrier
 
-\unnumberedSection{General Controller Attributes and Functions}
+%--------------------------------------------------------------------------------
+\unnumberedSection{General Utility Functions}
 
-The CDC layer provides a set of common low level functions. There is a function that creates a unique ID for the controller board. It is primarily used when a node needs a hardware module unique identifier. The controller internal memory and any internal EEPROM sizes return the hardware capabilities of processor and installed NVM. The NVM select pin is used for the VNVM memory SPI addressing. Finally, the CANBus controller needs to know the SPI bus select pin and the mode, i.e. baud rate and controller frequency. The library also offers the timestamp routines for milliseconds and microseconds since start.
+The CDC library provides a number of utility functions that are independent of
+any particular hardware resource. These routines expose general controller
+services that are required throughout the LCS software stack.
 
-\lstset{language=c++, style=codesnippetstyle}
+The timing functions return the elapsed milliseconds or microseconds since
+system startup and provide simple delay routines. They are primarily intended
+for initialization and low-level timing tasks.
+
+Every controller also provides a unique hardware identifier from which the CDC
+library derives a compact serial number or unique node identifier. This
+identifier can be used whenever an LCS node requires a hardware unique address
+or serial number.
+
+\lstset{language=c++, style=api-interface}
 \begin{lstlisting}
-   
-    Declaration part...
-    
+uint32_t        getMillis( );
+uint32_t        getMicros( );
+void            sleepMillis( uint32_t val );
+void            sleepMicros( uint32_t val );
+uint64_t        getSerialNum( );
+uint32_t        createUid( );
 \end{lstlisting}
 \FloatBarrier
 
-Some of the routines can also be found in the Arduino IDE and its libraries for the Arduino. As this project perhaps may also be implemented in an non-Arduino environment, this dependency is also hidden behind the CDC layer.
+%--------------------------------------------------------------------------------
+\unnumberedSection{Console IO}
 
-\unnumberedSection{Power Fail detect}
+During development and debugging, console output is one of the most valuable
+tools. The CDC library therefore offers a simple console interface that shields
+the firmware from the underlying USB implementation.
 
-The main controller board features optional power failure detection. The power supply provides a signal line to the controller which goes low when power drops. The power fail input pin is set in the configuration structure and just passed as an input to the configure routine. 
+The interface intentionally resembles the familiar \texttt{printf()} model. On
+controllers supporting multiple USB communication channels, individual channels
+can be selected independently. Applications can also determine whether a host
+terminal is currently connected before attempting to transmit debug messages.
 
-
-// ??? has changed...
-
-
-\unnumberedSection{Status LEDs}
-
-The main controller board features one LED. This is the activity LED, accessed via the \textbf{writeDio} routine. The LCS core library will use this LED to indicate that the node is ready and that there are library activities such as receiving a LCS message. The following just shows an example how to control the LEDs.
-
-??? this is done via nodeControl calls ...
-
-\unnumberedSection{Watchdog}
-
-??? watch dog facility
-
-
-\unnumberedSection{Timer}
-
-Although the LCS core library itself does not make use of a timer, having a general timer with a callback routine interface is an essential component. The DCC signal generation for example makes intensive use of timers to generate that signal. The timer is a repeating timer and accepts a timer value measured in microseconds. In addition, the timer already starts again counting in parallel to the timer interrupt handler code. Finally, the timer limit, i.e. the timer when the next interrupt would occur, can be set without disturbing the already active count.
-
-\lstset{language=c++, style=codesnippetstyle}
+\lstset{language=c++, style=api-interface}
 \begin{lstlisting}
-   
-    Declaration part...
-    
+uint8_t         configureUsbIO( );
+bool            usbIsConnected( );
+char            usbIoGetChar( int chan, uint32_t timeoutVal = 0 );            
+int             usbIoPrintf( int chan, const char *fmt, ... );
 \end{lstlisting}
 \FloatBarrier
 
-Timers work slightly different on Atmega and PICO. Nevertheless, both versions allow to set the new limit, i.e. the timer value when the next interrupt would occur, while already counting toward the limit. Care needs to be taken however to set the new limit while the counter is below this limit. If the new limit value is below the timer counter value, we have passed the limit point already and the counter would simply continue to count and wrap around before hitting the new limit. Any carefully designed timer signal is gone. Again, better be quick in the interrupt handler.
+%--------------------------------------------------------------------------------
+\unnumberedSection{Controller Family}
 
+Although the CDC library hides most controller specific details, applications
+occasionally need to obtain information about the underlying hardware. This
+group of functions provides access to controller capabilities such as processor
+family, memory sizes and CPU frequency.
+
+The watchdog interface is likewise implemented in a controller independent
+manner. Applications can therefore enable, update and query the watchdog
+without depending on the vendor specific SDK.
+
+\lstset{language=c++, style=api-interface}
+\begin{lstlisting}
+uint8_t         getBoardId( uint16_t *bId );
+uint8_t         getControllerFamily( uint16_t *family );
+uint8_t         getControllerChip( uint16_t *chip );
+uint8_t         getChipMemSize( uint32_t *size );
+uint8_t         getChipNvmSize( uint32_t *size );
+uint8_t         getChipCpuFrequency( uint32_t *frequency );
+
+uint8_t         watchDogEnable( bool enable );
+uint8_t         watchDogUpdate( );
+uint8_t         watchDogCausedReboot( bool *reboot );
+\end{lstlisting}
+\FloatBarrier
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Timer Management}
+
+The runtime library itself does not require a general purpose timer. However,
+timers are indispensable for many hardware related applications. DCC signal
+generation, software PWM and protocol timing are typical examples.
+
+The CDC timer interface provides repeating timers with callback functions. A
+timer period is specified in microseconds and automatically restarts after each
+expiration. In addition, the timer period can be modified while the timer is
+running without disturbing the current timing cycle. This allows applications to
+generate precisely timed signals with very little software overhead.
+
+\lstset{language=c++, style=api-interface}
+\begin{lstlisting}
+uint8_t         configureTimer( uint8_t rNum, 
+                                TimerCallback functionId, 
+                                bool highPri = false );
+
+uint8_t         startRepeatingTimer( uint8_t rNum, uint32_t val );
+uint8_t         stopRepeatingTimer( uint8_t rNum );
+uint8_t         setRepeatingTimerLimit( uint8_t rNum, uint32_t val );
+uint8_t         getRepeatingTimerLimit( uint8_t rNum, uint32_t *val );
+\end{lstlisting}
+\FloatBarrier
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Analog Input}
+
+Analog input resources configure controller pins for analog-to-digital
+conversion. Once configured, applications simply reference the corresponding
+resource number to obtain the current conversion result.
+
+The CDC interface deliberately hides controller specific ADC numbering and pin
+assignment rules, allowing applications to remain independent of the underlying
+processor family.
+
+\lstset{language=c++, style=api-interface}
+\begin{lstlisting}
+uint8_t         configureAdc( uint8_t rNum );
+uint8_t         configureAdc( uint8_t rNum, uint8_t adcPin, uint8_t adcNum );
+uint8_t         readAdc( uint8_t rNum, uint16_t *val );
+\end{lstlisting}
+\FloatBarrier
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{Digital IO}
 
-The digital IO routines offer an interface to plain digital input and output operations. If it is an input channel, the input can be set to active low or high input. Also, there is an option to enable the controller internal input pull-up resistor. For configured output pins, two pins can be set in pairs if supported by the actual hardware configuration, i.e. the two IO pins are on the same controller output port. This feature enables the simultaneous setting the two pins. A typical use case is the DCC signal where the two signal levels are set in one call.
 
-// ??? add the interrupt stuff...
+The digital IO routines offer an interface to plain digital input and output 
+operations. If it is an input channel, the input can be set to active low or high
+input. Also, there is an option to enable the controller internal input pull-up 
+resistor. For configured output pins, two pins can be set in pairs if supported 
+by the actual hardware configuration, i.e. the two IO pins are on the same 
+controller output port. This feature enables the simultaneous setting the two
+pins. A typical use case is the DCC signal where the two signal levels are set in
+one call.
 
-The CDC library offers a set of routines for handling an external interrupt. While a controller typically allows for interrupts on almost any IO pin, there are one some controllers dedicated IO pins which offer an interrupt input with flexible setting and high resolution timing. A callback needs to be registered for this interrupt.
+Once configured, digital inputs and outputs are accessed exclusively through
+their Resource Number. Firmware therefore remains independent of the actual pin
+assignment used by the selected hardware module.
 
-// ??? has changed ...
-
-\lstset{language=c++, style=codesnippetstyle}
+\lstset{language=c++, style=api-interface}
 \begin{lstlisting}
-   
 uint8_t         configureDio( uint8_t rNum );
 uint8_t         configureDio(   uint8_t rNum, 
                                 uint8_t pinA, 
@@ -144,84 +470,163 @@ uint8_t         unregisterDioCallback( uint8_t rNum );
 
 uint8_t         getGpioPinA( uint8_t rNum) ;
 uint8_t         getGpioPinB( uint8_t rNum );
-    
 \end{lstlisting}
 \FloatBarrier
 
-
-
-
-\unnumberedSection{Analog Input}
-
-Analog input configures the respective controller input ports for reading an analog value. The read method offers an asynchronous way in just starting the analog input conversion process and a hardware interrupt when the conversion completes. The registered call back is then passed the value of the conversion process. The \textbf{adcRead} function is a blocking ADC measurement call.
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-   
-uint8_t         configureAdc( uint8_t rNum );
-uint8_t         configureAdc( uint8_t rNum, uint8_t adcPin, uint8_t adcNum );
-uint8_t         readAdc( uint8_t rNum, uint16_t *val );
-    
-\end{lstlisting}
-\FloatBarrier
-
-The analog to digital converter system for the Raspberry PI PICO is compared to the Atmega really fast. A typical 12-bit conversion takes about 2 microseconds. The PICO ADC unit resolution will be scaled down to 1024 to match the Atmega resolution.
-
+%--------------------------------------------------------------------------------
 \unnumberedSection{PWM Output}
 
-... text
+Pulse Width Modulation (PWM) is commonly used to control LED brightness, motor
+speed or other analog-like output signals. Most controller families provide
+hardware PWM units, although their programming models often differ considerably.
 
-\lstset{language=c++, style=codesnippetstyle}
+The CDC library exposes a uniform PWM interface that hides these controller
+specific details. During configuration the appropriate controller resources are
+allocated and initialized. Applications subsequently only specify the desired
+frequency and duty cycle through the corresponding Resource Number.
+
+Where supported by the controller hardware, paired PWM outputs can be updated
+synchronously to avoid unwanted timing skew between the two channels.
+
+\lstset{language=c++, style=api-interface}
 \begin{lstlisting}
-   
-    Declaration part...
-    
+uint8_t         configurePwm( uint8_t rNum );
+uint8_t         configurePwm(   uint8_t rNum, 
+                                uint8_t pinA, 
+                                uint8_t pinB, 
+                                uint32_t frequency );
+                                
+uint8_t         setPwmFrequency( uint8_t rNum, uint32_t frequency );
+
+uint8_t         writePwm( uint8_t rNum,
+                          uint8_t dutyCycleA, 
+                          uint8_t dutyCycleB = 0 ); 
+
+uint8_t         syncPwm( uint8_t rNum );
 \end{lstlisting}
 \FloatBarrier
 
-The pre-scale options for the Atmega are limited to what the particular timer allows. In other words, the frequency can only be set to the nearest value of what the pre-scale option will allow. The PICO is again far more flexible allowing for a true frequency setting.
+%--------------------------------------------------------------------------------
+\unnumberedSection{Serial IO}
 
-\unnumberedSection{I2C}
+The UART resource provides asynchronous serial communication. Within the LCS
+project it is primarily used for RailCom communication, although the interface
+is suitable for any asynchronous serial data stream.
 
-Controller offers a serial wire IO block. The I2C will need two pins for clock and data. There is one I2C port on the Atmega1284, and two hardware blocks on the Raspberry Pi Pico. The CDC layer offers an interface to read and write a byte.
+Currently the CDC implementation focuses on buffered receive operation, which is
+sufficient for the intended applications. The interface has deliberately been
+designed so that additional transmit functionality can be added later without
+changing the overall programming model.
 
-\lstset{language=c++, style=codesnippetstyle}
+\lstset{language=c++, style=api-interface}
 \begin{lstlisting}
-   
-    Declaration part...
-    
+uint8_t         configureUart( uint8_t rNum );
+uint8_t         configureUart(  uint8_t rNum, 
+                                uint8_t rxPin, 
+                                uint8_t txPin, 
+                                uint32_t baudRate );
+uint8_t         startUartRead( uint8_t rNum );
+uint8_t         stopUartRead( uint8_t rNum );
+uint8_t         getUartBuffer( uint8_t rNum, uint8_t *buf, uint8_t bufLen );
 \end{lstlisting}
 \FloatBarrier
 
+%--------------------------------------------------------------------------------
+\unnumberedSection{I2C Interface}
 
-\unnumberedSection{UART Interface}
+The I\textsuperscript{2}C resource encapsulates the complete controller specific
+initialization of an I\textsuperscript{2}C bus. Besides configuring the hardware
+pins and baud rate, the CDC library also performs validation of the selected pin
+assignment where required by the controller family.
 
-The UART interface is used to offer a serial communication channel. This is required for the RailCom feature. Currently this interface implements only an asynchronous read into a local data buffer. However, the configuration routine allows to set more parameters that are needed for the current usage. One day, even a write capability may be needed.
+Read and write operations are performed through the configured Resource Number,
+allowing the application to remain independent of the actual controller
+instance. Additional utility functions support bus recovery and automatic device
+scanning during development.
 
-\lstset{language=c++, style=codesnippetstyle}
+\lstset{language=c++, style=api-interface}
 \begin{lstlisting}
-   
-    Declaration part...
-    
+uint8_t         configureI2C( uint8_t rNum );
+uint8_t         configureI2C( uint8_t rNum, 
+                              uint8_t sclPin, 
+                              uint8_t sdaPin, 
+                              uint32_t baudRate, 
+                              uint32_t timeOut );
+
+uint8_t         i2cBusreset( uint8_t rNum );
+
+uint8_t         i2cWrite( uint8_t  rNum, 
+                          uint8_t  i2cAdr, 
+                          uint8_t  *buf, 
+                          uint16_t len, 
+                          bool     stopBit );
+
+uint8_t         i2cRead( uint8_t  rNum,
+                         uint8_t  i2cAdr, 
+                         uint8_t  *buf, 
+                         uint16_t len, 
+                         bool     stopBit = false );
+
+uint8_t         i2cGetSclPin( uint8_t rNum );
+uint8_t         i2cGetSdaPin( uint8_t rNum );
+uint8_t         i2cGetBaudrate( uint8_t rNUm );
+uint8_t         scanI2CBus( uint8_t rNum );
 \end{lstlisting}
 \FloatBarrier
 
-... rework text ... 
+%--------------------------------------------------------------------------------
+\unnumberedSection{CAN Interface}
 
-The Raspberry PI Pico offers to implement the UART channel on one of the PIO state machines. This allows for more than the two UART blocks of the controller. The \textbf{UartMode} parameter selects what kind of UART HW is actually used.
+The CAN resource provides the communication channel used by the LCS runtime
+library. Depending on the controller family, the implementation may either use a
+dedicated CAN controller or emulate CAN functionality using programmable
+hardware such as the Raspberry Pi Pico PIO state machines.
 
+This flexibility allows the upper software layers to remain completely unaware
+of the underlying CAN implementation while still benefiting from the available
+controller capabilities.
 
+\lstset{language=c++, style=api-interface}
+\begin{lstlisting}
+uint8_t         configureCanBus( uint8_t rNum );
+uint8_t         configureCanBus( uint8_t rNum, 
+                                 uint8_t rxPin, 
+                                 uint8_t xPin, 
+                                 uint32_t baudRate, 
+                                 bool twoCores = false );
+uint8_t         canGetRxPin( uint8_t rNum );
+uint8_t         canGetTxPin( uint8_t rNum );
+uint32_t        canGetBaudrate( uint8_t rNum );
+bool            canGetTwoCores( uint8_t rNum );
+\end{lstlisting}
+\FloatBarrier
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{Programmable State Machines}
 
-... explain ...
+Some controller families provide programmable hardware engines that execute
+simple instruction sequences independently of the CPU. The Raspberry Pi Pico,
+for example, offers Programmable I/O (PIO) state machines that are particularly
+well suited for communication protocols and precise signal generation.
+
+The CDC library treats these programmable state machines as another hardware
+resource. Applications configure and use them through the same resource based
+programming model employed throughout the library.
+
+Within the current LCS firmware, PIO state machines are used for several
+purposes. They provide the foundation for the software CAN implementation via
+the \texttt{can2040} library, are used to control H-bridge outputs in the block
+controller and are expected to support future DCC signal generation. Additional
+applications can easily be integrated without changing the overall CDC
+architecture.
 
 \unnumberedSubSection{CAN Bus}
 
-... can2040 library, saves us HW.
+... can2040 library, saves us dedicated CAN bus HW chips.
 
-\unnumberedSubSection{RailCom Datagram Receiver}
+\unnumberedSubSection{H-Bridge Control}
 
-... needed for quad block controller
+... used for quad block controller
 
 \unnumberedSubSection{DCC Signal Generation}
 
@@ -229,12 +634,42 @@ The Raspberry PI Pico offers to implement the UART channel on one of the PIO sta
 
 \unnumberedSubSection{Other Uses} 
 
-... controlling H-Bridges
+... who knows ...
 
 
+%--------------------------------------------------------------------------------
 \unnumberedSection{Summary}
 
-The controller dependent code library is the lowest layer in the LCS node software stack. Its purpose is to shield the firmware programmer from the underlying pin assignments and some of the intricacies of the particular controller. At the same time, the layer needs to be rather thin so that it adds very little to the overall path length for performance critical signal management. For special cases, there is always the possibility to access the underlying hardware directly. However, this coding may not be that portable then.
+The Controller Dependent Code library forms the lowest software layer of an LCS
+node. Its purpose is to isolate the runtime library and the application firmware
+from the details of the underlying controller family and the particular board
+revision.
 
-.. does not completely shield us, and it is not desired anyway...
+Rather than configuring hardware throughout the application, the available
+hardware resources are described once by means of a \emph{Resource Descriptor
+Map}. During system initialization this description is validated and translated
+into the internal Resource Map. From this point onwards the firmware refers only
+to Resource Numbers, without any knowledge of the actual controller pins or
+peripheral instances.
 
+This resource based approach greatly simplifies firmware development. Changes to
+pin assignments or even the migration to a different controller family are
+largely confined to the CDC implementation and the corresponding descriptor map.
+The runtime library and the application firmware remain essentially unchanged.
+At the same time, the CDC library performs extensive validation during
+configuration, allowing many hardware configuration errors to be detected before
+the application starts executing.
+
+The CDC library intentionally provides only a lightweight abstraction. It
+encapsulates the controller functionality commonly required by LCS nodes while
+adding very little runtime overhead. Whenever an application needs to exploit a
+controller specific feature that is not covered by the CDC interface, direct
+access to the vendor SDK remains possible. Such code naturally sacrifices some
+portability, but the decision remains entirely with the firmware designer.
+
+Together with the LCS Runtime library described in the previous chapter, the CDC
+layer completes the software foundation for portable LCS node firmware. The
+runtime library abstracts the communication and node behaviour, while the CDC
+library abstracts the underlying hardware platform. Application firmware can
+therefore concentrate almost entirely on implementing the intended functionality
+of the hardware module.

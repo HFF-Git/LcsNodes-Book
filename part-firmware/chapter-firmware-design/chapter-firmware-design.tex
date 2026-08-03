@@ -1,109 +1,300 @@
+%--------------------------------------------------------------------------------
+%
+%--------------------------------------------------------------------------------
 \unnumberedChapter{LCS Node Firmware Design}
 
-The previous chapters introduced the overall Layout Control System architecture, the communication concepts and how an LCS node is typically implemented. We are about to embark on designing specific LCS nodes such as a base station or a block controller. Before we do that, this chapter will outline how in general one does write firmware for the layout control system. This chapter will not focus on the how to technically use the library. Instead it will rather focus on how you go about designing a firmware for a node and give guidelines and recommendations.
+The previous chapters introduced the overall Layout Control System architecture,
+the communication concepts and the software layers used to implement an LCS
+node. The following chapters will present complete node implementations such as
+the base station, block controller and other hardware modules.
 
-\unnumberedSection{Nodes, Ports, Channels and Events}
+Before designing individual nodes, this chapter describes the general approach
+to writing firmware for an LCS node. The focus is not on the technical details of
+using the individual libraries. These topics were already covered in the
+previous chapters. Instead, this chapter provides guidelines for the firmware
+designer and describes how the different concepts of the LCS architecture are
+combined when creating a new node.
 
-It is the general philosophy of any software system to find a good balance between what is coded or written in firmware and what is done with setting configuration values. Without a concept how to enter configuration values, even a simple change would result in downloading the firmware with the changed data. Clearly, we need a better way. The idea should be to update the firmware only when there are new features, fixes to bugs, and new installations of hardware capabilities of the node. This first of all means that each hardware capability is accessible through user defined port and node control and info items. That was a key reason why there is a range of user definable items for these attributes. A configuration system can query and set defined attributes and also execute functions mapped behind a node or port item.
+An LCS node is more than a controller connected to hardware. It represents a
+logical function within the layout control system. Good firmware design
+therefore starts by defining what the node represents, which capabilities it
+offers and which parts of its behavior should be implemented in firmware and
+which parts should be controlled through configuration.
 
-Just using the ability to send messages to a node and port allows already for a very capable control system. Similar to the DCC CV variables, nodes and ports have a set of variables that can be queried and modified form any node. The addition of callbacks in the path of accessing such a variable, allows to implement for example querying a hardware resource and return the result via the variable associated with it. In addition, the firmware designer can define custom items that will invoke a callback function. This function now can do all kind of things. It is completely up to the firmware designer what this function will do on that node. Just using the node and port item concept, a control system could be implemented with a central station containing buttons, switches and status LEDs that send these messages to node which then set the turnout direction acknowledgement, which in turn set the LED. This way we know the turnout direction setting. A central concept, but with few wires. Only the bus lines go across the layout. But that alone would just mean a more economic wiring approach. And the central bus load would perhaps be considerable for larger layouts. A CAN bus frame is between 58 and 114 bits. With a baud rate of 500Kbits and an assumed average packet length of 6 bytes, roughly 5000 frames per second are the limit.
+The overall design process can be summarized as follows:
 
-The addition of an eventing system allows for all nodes to react on events broadcasted by any other node. A setting of a turnout, for example, could result in broadcasting an event for all other nodes to see. The central station mentioned before could use this event to set an LED light on the control panel to show the turnout setting. Instead of periodically polling the turnout setting, we now just process the respective event. Furthermore, since all nodes can see all events, many nodes can react to an event sent. All that needs to be done is to configure the port to react on the given event though invoking a callback. Events provide a great flexibility on top of the query and set scheme outlined before.
+\begin{smallGapItemize}
+    \item Define the purpose of the node.
+    \item Identify the logical functions represented by ports.
+    \item Define configurable values and attributes.
+    \item Define events produced and consumed by the node.
+    \item Map the logical functions to hardware resources.
+    \item Implement the required callbacks and node specific behavior.
+\end{smallGapItemize}
 
-Let's take the common example of setting a route. This would involve a node where there is some button or other way to broadcast the "set route" event. Each node that has a turnout belonging to the route was configured to act on this event and the port representing the turnout would then take action via the callback. A simple "event delay" capability allows to set one turnout after the other and not all at once. The nice thing about the event driven approach is that the ports need not be on the same node. And, more importantly, the callback functions are just controlling a piece of hardware and the need for updating the node firmware would only be needed for entire new capabilities, firmware update or bug correction. In short, there is a fine line with what the firmware should do and what is delegated to configuring ports and events.
+Following these steps results in firmware that is reusable, configurable and
+independent from unnecessary hardware details.
 
-It would be tempting to also offer a kind of macro capability to execute a macro instead of actual code. Upon receiving an event, the macro would be executed. And going this route we are just about to invent yet another language. Right now, the jury is out whether this is really required. The whole philosophy of the Layout Control system is that events are produced and visible for all nodes and each port on a node can act on this event. Node local processing just concerns the sensors and actors belonging to that node. If on a node more than one port is registered for an event the ports are triggered in ascending order. It really depends what the callback functions associated with the port are executing.
+%--------------------------------------------------------------------------------
+\unnumberedSection{Designing the Node Concept}
 
-\unnumberedSection{Software layers}
+The first step in developing firmware is defining the role of the node within
+the layout. A node should represent a logical function rather than simply a
+collection of hardware pins.
 
-The layout control system will over time contain many hardware and software components. The software therefore needs to be structured in a way that the firmware designer just will focus on the tasks at hand and all else is being taken care of by the core library. Well, almost. The great variety of hardware requires a slightly more detailed picture.
+For example, a block controller is not defined by the number of input and output
+pins it contains. It is defined by the fact that it manages one or more block
+sections of the layout. Likewise, a turnout controller is defined by the
+turnouts it controls.
 
-\begin{center}
-    \begin{tikzpicture}[scale=0.9, transform shape]
-        
-        \draw[help lines, gray!50, dashed] (0,0) grid(16,8);
-        \node at (8,4) {Runtime Lib refined};
-    \end{tikzpicture}
-\end{center}
+The firmware designer should therefore first identify the objects that are
+managed by the node. These objects are represented by ports. A port provides a
+logical endpoint that can be addressed, configured and controlled independently
+from the physical hardware implementation.
 
-Besides whatever the node is designed for, there are the common firmware layers. It all starts with the \textbf{controller dependent code}, that shields the actual controller family from the rest of the library. This does not mean that any special hardware feature of the controller is not available it just means that the common capabilities to be found across the implementations are available via a common layer. Examples are the routines to mange a digital I/O pin, the analog input, hardware timers and so on. The \textbf{non-volatile memory} CDC library part implements a simple memory that is used by the node firmware but also the firmware designer. Some controllers do have a non volatile memory area, often an EEPROM, others don't. The library offers a simple abstraction for storing non volatile data. The \textbf{ CAN Bus} CDC library part is responsible for implementing the CAN bus interface, which is either implemented as a separate hardware chip or implemented in software using the controller special capabilities, such as the Raspberry Pi Pico programmable IO blocks.
+Typical questions when designing a new node are:
 
-At the heart of all node specific firmware is the \textbf{LCS node library}. It itself uses the aforementioned CDC libraries where needed. The LCS library actually implements the event loop where events and message are handled and manages the node data. Any firmware written for a node sits on top of this library, but still has access to the underlaying hardware. 
+\begin{smallGapItemize}
+    \item What function does this node provide in the layout?
+    \item Which independent functions should become ports?
+    \item Which values should be configurable?
+    \item Which conditions should generate events?
+    \item Which external events should this node react to?
+\end{smallGapItemize}
 
-Extension boards need their own piece of software to manage whatever the extension board implements. We will call this a \textbf{extension driver}. A driver is access using a defined set of routines available through the node library. Firmware programmers think of such a board as a peripheral device that is access though a set of control, info, read and write functions. The core library contains a set of functions to manage the driver subsystem. Examples are extension board discovery and address mapping.
+A well-designed node exposes meaningful functions instead of exposing its
+internal hardware implementation.
 
-... mapped to ports....
+%--------------------------------------------------------------------------------
+\unnumberedSection{Configuration versus Firmware}
 
-Finally, there is the \textbf{node specific firmware}. This part is written by the firmware designer, i.e. you. It communicates with the lower layers through the set of defined APIs and the set of defined callbacks. In fact, a great deal of firmware specific code development is just writing the callback handlers for the core library and calls to the respective extension driver API.  The main routine of a node just consists of call to initialize the library, registers the callbacks and let the library loop do its work. Throughout the chapters that implement specific nodes, you will see this basic structure.
+A fundamental design goal of the LCS architecture is to separate fixed firmware
+functionality from configurable behavior.
 
-\unnumberedSection{Node and Port Items}
+A firmware update should normally only be required when adding new capabilities,
+correcting errors or supporting new hardware. Changes such as assigning a
+different turnout address, changing event behavior or adjusting operating
+parameters should be handled through configuration.
 
-// ??? where do we list the runtime library predefined items? 
+This concept is similar to the configuration variables found in DCC decoders.
+The firmware provides the available capabilities, while configuration determines
+how these capabilities are used in a particular installation.
 
-A key idea of designing the firmware is that there is no need to update the firmware every time configuration or other parameters change. It is in a sense quite similar to a DCC decoder which offers a large set of variables that can be set with values that the decoder firmware interprets. LCS nodes have a concept of attributes that is very similar to these variables. A node variable can be queried and set from any other node.
+The separation between firmware and configuration is one of the fundamental
+design principles of the Layout Control System.
 
-Node variables are accessed via "items". An item is just a number that refers to the variable. Besides a set of fixed, i.e. reserved, items that the system itself offers, a set of items allow to access a variable in memory or NVM. Any values that you want to keep across a power cycle can be stored in these variables. The idea is that during startup the values are simply copied from NVM to memory for usage. In the opposite way, there is a set of items that when used, will store a new value in memory and NVM. So, while the memory value can change quite a bit during operation, startup always used a known fixed value.
+The firmware defines the capabilities of a node. Configuration defines how
+these capabilities are used in a particular installation. A turnout controller,
+for example, contains the capability to control a turnout, detect its state and
+generate events. Which physical turnout it represents, which event activates it,
+and which other nodes are informed about its state are configuration decisions.
 
-A node has up to 128 such variables. That is not a lot, you might say. Well, not quite. The item range has a set of 64 user definable items. These are items that when accessed will result in a callback to the node firmware. And in such a callback function, you can do anything you like, including accessing these local attributes of course. Beyond this way of using a user definable callback, these callbacks offers a very flexible to directly access firmware functions without going through kludges of writing a value to a variable that is interpreted as a functions. Since accessing local attributes is such a common scenario, you will find in the reserved item section also items that allows to directly read and write to local attributes.
+This separation allows the same firmware image to be used in many different
+applications. A firmware update is therefore only required when the capability
+of the node changes, not when the layout configuration changes.
 
-Finally, think about where these variable values would come from. There will be the day where a hardware piece breaks down and needs to be restored. It is rather easy to load the node variables and attributes from a central database, as well as to first of all store these values in such a place.
+The firmware designer should therefore resist the temptation to encode layout
+specific behavior directly into the application code. Whenever possible,
+behavior should be represented through configurable node items, port items and
+event assignments.
 
+LCS nodes provide this flexibility through node and port items. These items
+represent values that can be queried and modified by other nodes or by a
+configuration system. Values that need to survive a power cycle can be stored in
+non-volatile memory, while operational values can be maintained only in memory.
 
-Ports and channels are the higher level endpoints on a node. They too features variables accessible via the items already presented. There are just no local attributes related to a port. But what is a port actually used for? When designing a node firmware, the designer should use ports to group functions that are accessible by a combination of node and port identifiers. As seen in the concepts chapter, they together form a 16-bit value. A good example is a block controller that has four channels to manage a block on the layout. Each block, you guessed it, can be represented as a port. When talking to the block, just the node and port ID is enough to address it.
+In addition to simple data storage, items can invoke firmware callbacks. This
+allows a node to expose functions or dynamically calculated values without
+requiring special communication mechanisms.
 
-... elements are accessed via the GET/PUT/REQ items defined. 
+%--------------------------------------------------------------------------------
+\unnumberedSection{Ports and Channels}
 
-... what exactly can be accessed from other notes ?
+Ports are the logical interfaces provided by a node. While node items represent
+general node attributes, ports represent independent functions that can be
+addressed and controlled.
 
-But ports are also the endpoint for events. Remember each node can broadcast an event observable by all nodes on the system. Events are created to represent an, well, event that somebody would be interested in. For example a track power shortage. Or a block section is occupied event. Or whatever you see as a reasonable event to broadcast to the world. And again these the event map data can be queried and loaded from another node.
+A good example is a block controller with four independent block sections. Each
+block section should normally be represented by a separate port. The physical
+implementation, such as input pins, current sensors or extension modules, is an
+internal detail of the node.
 
-When configuring a node, that node can register its interest in an event by adding an event ID / port ID combo to the event map. How to do this? Well, there is a reserved item function to just do that. A matching incoming event will result in a callback registered for the port. A node offers up to 15 ports. Since they also serve as a logical grouping of physical things on the layout, having 15 ports is a good compromise between number and resources needed by a port. When designing a firmware, the first thinking should be what a node manages and what ports will mange portions controlled by that node.
+The combination of node and port identifier forms the address of the logical
+object within the LCS system. This allows other nodes to access a function
+without knowing where it is physically implemented.
 
-first four ports map to extensions, port zero to the node.
+Channels are used internally by a port to represent individual controllable or
+measurable elements. Depending on the node type, a port may provide one or more
+channels. A channel may represent, for example, an individual output, sensor
+value or controlled element belonging to a port.
 
-Attributes work from MEM, when in CFG then NVM is also used.
+The firmware designer should decide early which functions deserve their own
+port and how the internal channels are organized.
 
-when in OPS, items SYNC-MEM and SYNC-NVM are used to also update the counterpart.
+A port should represent something that has an independent meaning in the layout,
+not simply a hardware resource. A block controller with four track sections
+should therefore expose four block ports. The fact that these ports are
+implemented using current sensors, GPIO pins or extension boards is an internal
+implementation detail.
 
-\unnumberedSection{Channel Items}
+%--------------------------------------------------------------------------------
+\unnumberedSection{Event Handling}
 
-// ??? to do ....
+The Layout Control System is fundamentally an event driven system. Events allow
+nodes to react to changes without continuously polling other nodes.
 
+For example, changing a turnout position can generate an event. Other nodes,
+such as a control panel or display module, can subscribe to this event and
+update their own state. The turnout controller does not need to know which
+nodes are interested in this information.
 
-\unnumberedSection{Command Line and Display}
+When designing firmware, the designer should consider two directions:
 
-The LCS library already offers a command line interface. It provides commands for the basic commands to manage a node and access its data. This interface, while not used in regular operation, is very useful for node firmware testing and debugging. All commands are also available via LCS messages, so that troubleshooting and monitoring can be done when the node is already installed. Following this philosophy, implementing node specific commands are a good idea. Writing your own serial commands is just writing a command line callback and registering it at node startup.
+\begin{smallGapItemize}
+    \item Which local conditions should generate events?
+    \item Which external events should this node react to?
+\end{smallGapItemize}
 
-\unnumberedSection{Event handling}
+Incoming events are mapped to ports through the event configuration table. When
+a matching event is received, the callback registered for the corresponding port
+is invoked.
 
-The layout control system is an event driven system. A large part of layout configuration consist of creating an event Id, i.e. picking a number, and associating a port with the event. Upon event detection, the port callback is invoked. Configuration is therefore just entering the event/port pair in the node event table. The other direction, a situation at the node results in broadcasting an event, requires that the event ID is known. A good practice is to define port or node attributes that contain the event Id to use. This attribute can be set during node configuration. The LCS core library offers a periodic callback where the firmware designer can implement to manage the local sensor hardware data and decide to broadcast an event.
+The event mechanism is one of the most powerful configuration features of the
+LCS architecture. It allows complex layout behavior to be created by
+configuration instead of adding special cases to firmware.
 
-tbd: how are events handled when the port is driver mapped ?
+A good example is route setting. A node containing a control button can
+broadcast a ``set route'' event. All turnout ports belonging to that route can
+be configured to react to this event. Each port then performs its local action
+through its callback function. The individual turnouts do not need to know about
+the route, and the node creating the event does not need to know where the
+turnouts are located.
 
+This event driven approach avoids unnecessary dependencies between nodes and
+allows complex layout behavior to be created by configuration.
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Software Layers}
+
+The LCS software architecture is designed so that the firmware designer can
+concentrate on the unique functionality of the node while common tasks are
+handled by the lower layers.
+
+The node specific firmware communicates with the framework through defined APIs
+and callback functions. In practice, a large part of firmware development
+consists of implementing these callbacks and using the available driver
+interfaces.
+
+The main program of a node is intentionally simple:
+
+\begin{smallGapEnumerate}
+    \item Initialize the required libraries.
+    \item Register callbacks.
+    \item Perform node specific initialization.
+    \item Enter the LCS processing loop.
+\end{smallGapEnumerate}
+
+Message handling, event processing, configuration management and hardware
+abstraction are performed by the lower software layers.
+
+The following chapters explain the programming model in more detail and show how
+these concepts are applied in real firmware implementations.
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{Periodic Tasks}
 
-Since the core library implement the outer loop, tasks that need to run periodically need to be implemented as callback for the core library to invoke. As always, one can write timer code and management outside of the core library, but this comes at the expense of being dependent on a particular controller hardware. For most cases, a simple callback, it does net even have to be precise to the microsecond, is sufficient. A good example is the checking for power consumption on a track. A firmware designer would provide a callback that is invoked periodically and would make use of the driver interface to obtain the actual data. If the consumption is outside defined bounds, an event owl  due raised and the track turned ff. 
+Although the LCS architecture is event driven, some hardware functions require
+periodic processing. Examples are sensor monitoring, timeout handling or
+checking power consumption.
 
+The LCS core library provides periodic callbacks for this purpose. The firmware
+designer implements the required processing in these callbacks rather than
+creating an independent timing mechanism.
 
+For example, a block controller may periodically read the track current
+measurement. If the measured value exceeds a configured limit, the firmware can
+broadcast an event and disable track power.
+
+Direct timer programming is still possible, but should only be used when the
+application requires timing characteristics beyond the capabilities provided by
+the framework.
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{Command Line and Display}
+
+The LCS library already offers a command line interface. It provides commands
+for managing a node and accessing its data. While this interface is not used
+during normal operation, it is extremely useful during firmware development,
+testing and debugging.
+
+All commands are also available through LCS messages, allowing troubleshooting
+and monitoring even when a node is already installed in the layout.
+
+Following this philosophy, implementing node specific commands is encouraged.
+Adding a new command simply requires implementing a command callback and
+registering it during node initialization.
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{Configuration}
 
-Configuration comes in two parts. There are all the items that need to be handled of ramping the hardware actually perform, and there are the items that are at the higher level of configuring a node for its purpose. A great of how to configure the hardware was already presented in the chapter on the CDC layer. At this layer the hardware setup was place and all capabilities are setup to be used. As a firmware designer, unless you directly access hardware, you may not have to go that deep, the CDC library / Core library will have the configuration data that maps the actual hardware. 
+Configuration of an LCS node consists of two different aspects.
 
-... text ... rework ...
+The first aspect is hardware configuration. This includes mapping controller
+resources, configuring extension boards and preparing the hardware interfaces.
+This work is normally handled by the CDC and driver layers. The firmware designer
+only needs to interact with these layers when implementing functionality beyond
+the provided abstractions.
 
-What is left is from a low level perspective are the extension boards and their inner workings. These concepts will be explained in great detail in the chapter on the extension board designs. Right now it is sufficient to know that using the driver interface, some setup and configuration needs to be implemented. For example, setting an I/O pin on a GPIO extension board to be an output port, is a typical configuration task. Again, more on this later.
+The second aspect is functional configuration. This defines how the node behaves
+within the layout. The firmware designer should expose all values that may
+reasonably change during installation as node or port items.
 
-What is left is the high level configuration, which means to set node and port attributes. This task is comparable to a DCC locomotive decoder. It is has tons of variables  that can be set. The firmware designer is responsible to make all relevant items of the node firmware configurable by exporting them as node and port attributes. When w look at the first larger node example, the base station, this concept becomes clearer.
+A good rule is that firmware should implement capabilities, while configuration
+should define their use.
 
+The larger node examples presented later in this book demonstrate this approach
+in practice.
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{Main Code}
 
-The main code is just a set of firmware specific code and callback routines that do the firmware specific work. During initialization, register the necessary callbacks and then delegate control to the LCS loop. This scheme is common to all nodes. For smaller nodes, the setup code and callback routines can be all in one file, for example the "main.cpp" file. Larger node firmware will perhaps split the code into several files. The \texttt{C++} classes or structures are a good way of structuring your code. There is one caveat though. Callbacks are technically just procedure labels and need to be at either the main code, the file local portion of a separate file or a static methods in a C++ class. In other words, they cannot be object instance methods.
+The main code of an LCS node consists mainly of node specific initialization and
+callback routines. During startup the required callbacks are registered and
+control is then transferred to the LCS processing loop.
 
+For small nodes, the initialization code and callbacks may be contained in a
+single source file. Larger nodes will typically separate functionality into
+multiple files or C++ classes.
+
+One restriction of the callback mechanism should be considered when structuring
+the firmware. Callbacks are function pointers and therefore cannot directly be
+instance methods of a C++ object. They must either be standalone functions,
+file-local functions or static class methods.
+
+To support object-oriented firmware designs, callback registration provides a
+user data parameter. This parameter can contain an object instance pointer,
+allowing the callback function to forward the event to the appropriate object
+instance.
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{Summary}
 
-This chapter gave a brief overview how one would go after writing node firmware. In short it is writing functions that can be registered as callbacks to the core library and that will in turn use the core library functions for implementing their purpose. It also introduced a more detailed picture of the overall software layers. The heavy lifting of message handling, event handling, node data management, extension board management and overall processing is handled by the LCS library. All the firmware programmer has to do is to write the node and specific functions. 
+Designing LCS node firmware starts with defining the logical purpose of the
+node rather than starting with hardware details. Ports describe the capabilities
+offered by the node, items provide configurable values and events allow nodes to
+react to changes throughout the layout.
 
-The appendix contains a reference where all the hardware and software components can be found on \textbf{GitHub}. The source code contains many comments and further explanations. The chapters on our main components such as base station, cab handheld and block controller is designed using the principles and guidelines mentioned in this chapter.  Finally, there are also further references to reading material and related projects.
+The different software layers introduced throughout this part of the book allow
+the firmware designer to concentrate on the unique functionality of the node.
+The LCS runtime manages communication, configuration and event processing, while
+the CDC and driver layers isolate the hardware implementation.
 
+In practice, node firmware consists mainly of initialization code and callback
+functions that connect the node specific behavior to the LCS framework. By
+carefully separating configurable behavior from fixed firmware functionality,
+new hardware modules can be developed while maintaining a consistent software
+architecture.
 
-
+The following chapters apply these design principles to complete LCS node
+implementations, where hardware design and firmware development are presented
+together.

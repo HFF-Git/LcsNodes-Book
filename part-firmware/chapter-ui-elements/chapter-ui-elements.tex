@@ -1,108 +1,286 @@
+%--------------------------------------------------------------------------------
+%
+%--------------------------------------------------------------------------------
 \unnumberedChapter{UI Elements}
 
-// ??? motivation ...
+The Controller Dependent Code library abstracts the hardware platform, while the
+LCS Runtime library abstracts communication between nodes. Yet another layer of
+complexity remains in many embedded applications: the implementation of the user
+interface.
 
-// ??? do not show too much code, refer to the cab handheld to see how it all works ...
+Almost every controller project starts with a blinking LED and a push button.
+Soon additional buttons are added, LEDs begin to blink, rotary encoders need to
+be decoded and displays are required to present information to the user. Before
+long, every application contains its own implementation of button debouncing,
+long-press detection, display drivers and menu handling.
 
-User interfaces such as Cab Handhelds or Switch Panels offer the user control and display elements for a layout. Typically there many buttons and LEDs but also rotary encoders and displays. You start an Arduino project and the first Led is blinking, a button is pushed. Before you know it, buttons need to be debounced, short and long pressed, active high or active low. You would like to toggle a Led and remember its state. There are displays with different interfaces and capabilities. On some displays you want to control the brightness and contrast. Finally, in some projects you run out of physical pins and want to connect an array of buttons or LEDs through a shift register. The list is long. In all Arduino projects you implement it somehow directly in project just to take part of the functions to the next project and so on. UI Elements is the LCS library that implements the most common UI elements.
+Although these requirements occur in many projects, they are frequently
+implemented repeatedly from scratch. The resulting code is often tightly coupled
+to the underlying hardware and difficult to reuse in subsequent projects.
 
-\unnumberedSection{Concepts}
+The purpose of the \textbf{UI Elements} library is to provide reusable software
+components for the most common user interface elements found in LCS hardware
+modules. Instead of working with electrical signal levels or display controller
+commands, applications interact with buttons, LEDs, rotary encoders and
+character displays through a common, hardware independent interface.
 
-When building simple controller applications, a LED and a button are the most common things used in becoming familiar how to program for such a controller. Digital pins configured as an output and the LED will light up when driven by the output pin. Likewise, a HW pin configured as an input the state of a button can be read. But wait, while LEDs are electronic items, a button is something mechanical and pushing it typically will cause the value read to initially "bounce" between low and high. The first thing the UI Elements library will do is to shield the user from these mechanical issues.
+The UI Elements library intentionally focuses on the individual building blocks
+of a user interface. More sophisticated user interface concepts such as screen
+management and menu navigation are built on top of these elements and are
+described in the following chapter.
 
-Furthermore a button can be pushed once, double or for a longer period. The UI Elements library works with a state machine approach. A periodic function, "tick" is expected to be called from the outer loop of the program. For all UI Element Objects, the state machine is called and the element state is advanced. Communication back to the program is handled via previously registered callback functions.
+%--------------------------------------------------------------------------------
+\unnumberedSection{Concept}
 
-Displays come in a large variety and capabilities. UI Elements will offer an abstraction of an ASCII display with a fixed number of line and columns. LCD and OLED displays are unified with with a simple interface to set a cursor and to write a character to that position.
+The UI Elements library follows the same design philosophy as the other LCS
+libraries. Rather than exposing the underlying hardware, it presents the
+application with higher level user interface objects.
 
-Finally, buttons and LEDs can be combined to arrays. Consider a Cab Handheld with for example 10 buttons, a rotary encoder, several LEDs and a display. We will quickly run out of HW pins on the controller. An array of buttons features the same capabilities of a single button object, the values of the buttons are however read in through a shift register serial output or a PIO Extender chip, such as we used for actors and sensors before, are required.
+For example, a push button is much more than a digital input pin. Mechanical
+contacts bounce when they are pressed and released. Furthermore, applications
+are rarely interested in the electrical signal itself. Instead, they want to
+know whether the user performed a click, a double click or a long press.
 
+Likewise, an LED is more than a digital output pin. Besides switching the LED on
+and off, applications frequently require blinking patterns or status
+indications. Similarly, rotary encoders should report rotational movement rather
+than individual signal transitions, while displays should present text instead
+of exposing controller specific communication protocols.
+
+To achieve this abstraction, every UI element is implemented as an independent
+software object. Internally, these objects use small state machines to analyze
+their inputs and maintain their current state. The application periodically
+calls a common \texttt{tick()} routine, which advances the state of all active
+UI elements.
+
+Whenever a relevant event is detected, such as a button click or a change of the
+rotary encoder position, the corresponding callback function is invoked. The
+application therefore reacts to user actions instead of continuously polling
+hardware inputs.
+
+Another important design goal is the complete separation of user interface
+behavior from the underlying hardware implementation. Instead of directly
+accessing controller pins, UI elements obtain their input values or update their
+outputs through callback functions. This allows identical UI objects to operate
+equally well with direct GPIO pins, shift registers, I/O expanders or any other
+hardware interface capable of providing the required signals.
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{Buttons}
 
-A button is an object that has one input value and analyzes whether the button was clicked, double clicked or long pressed. All this is done with a state machine that manages the button state. For each action a callback function can be registered. There is also a callback function for getting the button data. Buttons are one  of the most used UI Elements. This set of methods implements the single button and an array of buttons. Each button is essentially a state machine with a set of defined callback functions. The time for debouncing, detecting a click or a long press can be set individually for each button. A switch is also just a button with a long press characteristic. For each button a button descriptor keeps the data about callback, HW pin and so on. The following brief example shows how to implement a single button and handle the click event. The following example shows a simple button clicked implementation.
+Buttons are among the most frequently used user interface elements. Although
+their hardware implementation is simple, their behavior is surprisingly
+complex. Mechanical contacts bounce, users may press a button only briefly or
+hold it down for an extended period, and many applications distinguish between
+single clicks, double clicks and long presses.
 
-// ??? rather have an abstract picture, it is early in the book ...
+The UIButton object encapsulates all these aspects in a compact state machine.
+Each button instance maintains its own timing information and generates the
+corresponding events automatically. The debounce interval as well as the timing
+for click and long-press detection can be configured individually.
 
-\lstset{language=c++, style=codesnippetstyle}
+Applications do not poll the button continuously. Instead, callback functions
+are registered for the desired events and are invoked whenever the corresponding
+user action has been detected.
+
+The following lines depict the button object. Note that only the public part of
+is shown.
+
+\lstset{language=c++, style=codesnippetstyle, numbers=none}
 \begin{lstlisting}
+struct UIButton : UIElements {
 
+    public:
 
+    UIButton( uint8_t rNum, bool activeLow = false );
+
+    void      attachClick( UIButtonCbFunction functionId );
+    void      attachDoubleClick( UIButtonCbFunction functionId );
+    void      attachLongPressStart( UIButtonCbFunction functionId ) ;
+    void      attachLongPressStop( UIButtonCbFunction functionId );
+    void      attachDuringLongPress( UIButtonCbFunction functionId );
+    void      attachGetDataFunction( UIGetDataFunction functionId );
+
+    void      setActiveLow( bool val );
+    bool      isLongPressed( );
+    uint32_t  getDurationPressedMillis( );
+    uint32_t  getPressedMillisSinceStart( );
+    uint8_t   getResId( );
+
+    void      reset( );
+    void      processTick( );
+};
 \end{lstlisting}
 \FloatBarrier
 
-Instead of implementing the button data retrieval directly in the button object, there is a callback that obtains the hardware value. This might look like an overkill in abstracting a button. But consider a button connected to a serial shift register or a button connected to an interface chip such as the MCP23017. Each of these hardware interfaces would require a special case in the button object. Abstracting the data retrieval, allows to implement very different hardware buttons. All this comfort comes with a price though. The button object has a size of roundabout 26 to 32 bytes. So, an array of 256 buttons would occupy quite some memory storage. For such applications, a dedicated special button array class would perhaps be the better choice. Note that the buttonId does not necessarily have to be a physical pin number. For example, a shift register with implementation with 64 buttons could simply assign logical numbers that the data retrieval function understands to get the correct bit from the shift register.
+The actual retrieval of the button state is itself abstracted by means of a
+callback function. While this may initially appear unnecessarily flexible, it
+allows the same button object to operate with many different hardware
+implementations.
 
+A button may be connected directly to a controller GPIO pin, be part of a serial
+shift register or reside on an external I/O expander such as the MCP23017. From
+the point of view of the button state machine, all these hardware
+implementations appear identical.
+
+The button identifier therefore does not necessarily correspond to a physical
+controller pin. It merely represents an identifier understood by the callback
+function responsible for obtaining the current button state.
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{Rotary Encoders}
 
-A rotary encoder works similar to a button. It is a type of position sensor that generates an electrical signal according to the rotational movement. The most common one has two outputs that are turned on 90 degrees out of phase from each other. Just monitoring one of the inputs allows for detecting rotary movement. However, analyzing both inputs at the same time allows for detecting the rotational direction. If the pin A changes its signal level, examining the input B allows for determining the direction. If both inputs signals are equal the rotation is clockwise, else counter clock wise. The UIEncoder element manages all these details and offers a callback to be invoked when the position of the rotary encoder changes. Just like buttons, there is a data retrieval callback function. Here is a simple example.
+Rotary encoders extend the button concept by reporting rotational movement
+instead of discrete button events. A typical incremental encoder provides two
+quadrature signals whose phase relationship determines the direction of
+rotation.
 
-// ??? rather have an abstract picture, it is early in the book ...
+The UIEncoder object continuously evaluates these signals and reports clockwise
+or counter-clockwise movement through callback functions. Just like buttons, the
+actual signal acquisition is delegated to a hardware callback, allowing rotary
+encoders connected through GPIO pins, shift registers or I/O expanders to be
+handled identically.
 
-
-\lstset{language=c++, style=codesnippetstyle}
+\lstset{language=c++, style=codesnippetstyle, numbers=none}
 \begin{lstlisting}
+struct UIEncoder : UIElements {
 
+    public:
+
+    UIEncoder(  uint8_t rNum,
+                int     lower     = INT_MIN, 
+                int     upper     = INT_MAX, 
+                bool    activeLow = false );
+
+    void        reset( );
+    void        processTick( void );
+
+    void        setLimits( int lower, int upper );
+    int         getLowerLimit( );
+    int         getUpperLimit( );
+    int         getPosition( );
+    uint8_t     getResId( );
+
+    void        setPosition( int  newPosition,
+                             bool supressCallback = false );
+                                             
+    uint32_t    getMillisBetweenRotations( );
+    void        attachPositionChanged( UIEncoderCbFunction functionId );
+    void        attachGetDataFunction( UIGetDataFunctionPair functionId );
+};
 \end{lstlisting}
 \FloatBarrier
 
+%--------------------------------------------------------------------------------
 \unnumberedSection{LEDs}
 
-When talking about buttons and switches, the LEDs built the counterpart and signal a state. A LED is an object that can be turn on and off and blink. Just like buttons a state machine manages the LED state and there is a callback for setting the data according to the hardware implementation.
+LEDs provide visual feedback to the user and therefore complement buttons and
+rotary encoders. The UILED object represents an indicator rather than a simple
+digital output.
 
+Besides switching the LED on and off, the object supports common blinking
+patterns controlled by an internal state machine. Applications therefore specify
+the desired behavior instead of periodically toggling the output pin
+themselves.
+
+\lstset{language=c++, style=codesnippetstyle, numbers=none}
+\begin{lstlisting}
+struct UILed : UIElements {
+
+    public:
+
+    UILed( uint8_t rNum );
+
+    void processTick( );
+    void attachSetDataFunction( UISetDataFunction functionId );
+
+    bool isOn( );
+    bool isOff( );
+    void setOn( );
+    void setOff( );
+    void setVal( bool val );
+    void toggle( );
+    void blink( );
+
+    static void setBlinkIntervalMillis( uint32_t val );
+};
+\end{lstlisting}
+\FloatBarrier
+
+As with all other UI elements, updating the actual hardware output is delegated
+to a callback function, making the implementation independent of the underlying
+hardware interface.
+
+%--------------------------------------------------------------------------------
 \unnumberedSection{Displays}
 
-In addition to a LED signaling light, there is the requirements to display human readable text. The UI element display is an object that represents a matrix of ASCII characters. A display has n lines with m characters. There are methods to set a cursor to a line / column position and a method to print a character. There is a variety of display hardware available. The common ones are a LCD display with 4 x 20 or 2 x 16 characters. There are also OLED displays which are graphical displays with for example 128 x 64 pixels. These display can print characters using different fonts.
+Character displays exist in many different forms. Traditional LCD modules,
+graphical OLED displays and other display technologies all differ in their
+electrical interface and controller capabilities. Nevertheless, many embedded
+applications require only a comparatively small common feature set.
 
-The display UI element provides as a common function set the methods to clear a display, set a cursor position and write a character to that position. In addition, each type of display has capabilities specific to this display. A LCD display has methods for turning on and off the backlight. There are also blinking cursors and so on. The OLED display allows for smaller or larger character fonts. While the display UI element object presents a common method set for all display types it will not shield these additional capabilities. The following shot example will show an OLED display connected via the default I2C lines.
+The UIDisplay object therefore models a display as a rectangular matrix of ASCII
+characters. Applications position a cursor, write characters and clear the
+display without any knowledge of the underlying display technology.
 
-// ??? rather have an abstract picture, it is early in the book ...
+Controller specific capabilities such as adjustable brightness, contrast,
+backlight control or multiple font sizes remain available through the respective
+display driver. The common interface intentionally covers only the operations
+shared by all supported display types.
 
-
-\lstset{language=c++, style=codesnippetstyle}
+\lstset{language=c++, style=codesnippetstyle, numbers=none}
 \begin{lstlisting}
+struct UIDisplayLcdI2C : public UIDisplay {
 
+    public:
 
-\end{lstlisting}
+    UIDisplayLcdI2C( uint8_t dType, 
+                     uint8_t rNum, 
+                     uint8_t i2cAdr = 0x27 );
+
+    void    displayOn( );
+    void    displayOff( );
+    void    setCursor( uint8_t col, uint8_t row );
+    uint8_t print( const char *s );
+    uint8_t print( char ch );
+    void    clear( );
+    void    clearLine( uint8_t row );
+
+    private: 
+
+    LcsLcdDisplay *lcd = nullptr;
+};\end{lstlisting}
 \FloatBarrier
 
-\unnumberedSection{Screens}
+The display class shown is actually the base class. On top there are inheriting 
+classes for an LCS display and an OLED display. 
 
-UI Elements such as Buttons, Knobs, LEDs and displays are the atoms of a user interface. The next level is to organize these atoms into screens. A screen is first of all a display UI element that is manipulated with the help of UI input elements such as buttons. The UI Screen is a very simple element to organize and manipulate these screens.
-
-The UIScreen object is the class for implementing a screen. Screens are a display of whatever you want to put on that display.There are virtual methods that will be called when a button event such a click is encountered. Two buttons needed for navigation. They are the MENU and SELECT button. With the exception of the root screen, a screen has a parent and a potential child list. The hierarchy is formed by appending a screen to another screen child list. The MENU button is typically used to scroll through the child list. A long press of the menu button always gets back to the root screen's first child, no matter where you are. Child lists are toggled through with the menu button in a circular fashion. From the last screen on the child list, the next toggle gets us to the first child. The SELCET button selects the current screen and triggers an action. When navigating to a screen, the exit callback is invoked for the screen to leave and the enter callback is invoked for the screen to enter. The exit callback would typically be used to clean up of store data away, the enter callback would be used to set up the data and display the initial screen content.
-
-// ??? rather have an abstract picture, it is early in the book ...
-
-
-\lstset{language=c++, style=codesnippetstyle}
-\begin{lstlisting}
-a conceptual picture of a screen hierarchy ?
-
-MENU -> MENU -> MENU -> MENU -> MENU -> back to first menu
-  |
-  v
-SUB-MENU
-   |
-   v
-SUB-MENU
-   |
-   v
-SUB-MENU
-  |
-  v
-  back to first sub menu
-\end{lstlisting}
-\FloatBarrier
-
-To keep the screen hierarchy flexible, the meaning of the MENU and SELECT button within a given screen is not fixed. But as a convention, the MENU button should be used to toggle through screens, the SELECT button is used to enter a screen child list and also as a kind of commit button. All other buttons, if any are completely user defined.
-
-The connection from UIElement events to screens is handled by registering the static callback functions defined for the UI elements. All UI Elements for which the callback set will just pass the event to the current screen. For example, the UIScreen base class has the MENU and SELECT button event handler to navigate through the screens.
-
-A screen that inherits from the UIScreen could overwrite these handlers and assign a new meaning to the MENU and SELECT button. For the other elements, i.e. the other buttons but also encoders, there are dedicated handlers that are passed the resource ID of UIElement. A screen that for example that displays the value of an encoder UIElement will build a class that inherits form UIScreen and override the encoder callback. In a similar way the MENU and SELECT button can also be override, but then it is up to the implementer to handle the navigation. That's it.
-
-// ??? rather have an abstract picture, it is early in the book ...
-
-// ??? \textbf{note} have an example ...
-
+%--------------------------------------------------------------------------------
 \unnumberedSection{Summary}
 
-This chapter presented the UI element library, which is the common UI layer for handhelds, control panels and monitor displays.
+The UI Elements library provides a collection of reusable building blocks for
+implementing user interfaces on LCS hardware modules. Rather than exposing
+controller pins or display specific communication protocols, the library
+presents the firmware with objects representing the common user interface
+elements found in embedded systems.
+
+Buttons, LEDs, rotary encoders and displays each encapsulate both the underlying
+hardware access and the behavioral aspects associated with these devices.
+Mechanical button debouncing, click detection, blinking patterns and encoder
+decoding are all handled internally by dedicated state machines. Applications
+therefore react to meaningful user events instead of low-level electrical signal
+changes.
+
+A fundamental design goal is the complete separation of user interface behaviour
+from the physical hardware implementation. All interaction with the underlying
+controller or external interface hardware is performed through callback
+functions. Consequently, identical UI objects can operate with direct GPIO pins,
+shift registers, I/O expanders or other hardware interfaces without requiring
+any modifications.
+
+The UI Elements library deliberately concentrates on the individual building
+blocks of a user interface. More advanced concepts such as screen management,
+menu navigation and complete operator interfaces are constructed from these
+elements. The next chapter introduces this additional abstraction layer and
+shows how complete user interfaces can be assembled from the UI elements
+presented here.
