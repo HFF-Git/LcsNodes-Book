@@ -1,20 +1,9 @@
 \unnumberedChapter{A Main Controller Board}
 
-??? structure: purpose in LCS, hw design, firmware design ( if any ) , config example...
+??? structure: purpose in overall LCS hardware , 
 
 The Raspberry PI Pico is a powerful controller with a dual core, generous program and memory sizes and USB also included. The Pico is a small board that can be soldered to a mother PCB or connected just like a big IC. This chapter will present our main controller board which is just the controller along to a CAN bus interface, the non-volatile memory and the level shifters to accommodate our 5V interface level standard. Although there will be more different controller boards in the chapters to come, this basic building block is the generic heart and can be used for many other projects in the LCS system.
 
-\unnumberedSection{Block Diagram}
-
-The following schematic depicts the block diagram of our main controller. All of our schematics will start with a block diagram and the one or more parts of the overall schematic.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[page=1, width=0.9\textwidth]{./part-hardware/chapter-main-controller-hardware-pico/Schematic_LcsNodes-Main-Controller-Board-B.02.10.pdf}
-    \caption{Main LCS Controller Block Diagram}
-    %\label{fig:schematic}
-\end{figure}
-\FloatBarrier
 
 \unnumberedSection{Main Controller}
 
@@ -33,7 +22,9 @@ The power-fail detector triggers early, while the supply voltage is still within
 \end{figure}
 \FloatBarrier
 
-// ??? we will see most of these parts again in later schematics... building blocks.
+??? we will see most of these parts again in later schematics... building blocks.
+
+??? explain them here in more detail 
 
 \unnumberedSection{Connectors and Level Shifters}
 
@@ -48,14 +39,18 @@ The second part depicts the connectors and the level shifters.
 \FloatBarrier
 
 
-The ADC inputs also need a divider to map the incoming voltage range of 0 to 5V to 0 to 3V3. A simple resistor divider does the job.
+??? The ADC inputs also need a divider to map the incoming voltage range of 0 to 5V to 0 to 3V3. A simple resistor divider does the job.
 
-I2C driver ...
+??? I2C driver for extension bus to isolate and drive a longer distance...
 
 
-??? talk about the mapping of PICO pins to extension connector pins. Should allow that function blocks such as SPI, UART, I2C, etc can be accessed.
+??? talk about the mapping of PICO pins to extension connector pins. 
+
+??? Should allow that function blocks such as SPI, UART, I2C, etc can be accessed.
 
 \unnumberedSection{PICO Pin Mapping}
+
+??? this is how the pins are actually mapped to the PICO HW pins ...
 
 \begin{longtable}{@{}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.2\linewidth}|@{}}
     \caption{Pico Pin Mapping} \\
