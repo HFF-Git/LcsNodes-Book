@@ -1,25 +1,577 @@
-
 %--------------------------------------------------------------------------------
 %--------------------------------------------------------------------------------
 \unnumberedChapter{Programming with RtLib}
 
+This chapter demonstrates how an application is built on top of the LCS runtime
+library. The examples are intentionally small, but they represent complete LCS
+applications. They show the basic structure every node program follows:
 
+\begin{itemize}
+\item initialize the runtime environment,
+\item register application callbacks,
+\item start the runtime and enter normal node operation.
+\end{itemize}
 
-??? place holder...
+Two examples are presented.
 
+The first example is a runtime test application. It is used during development
+to explore a node, verify runtime functions and hardware, and provide a simple
+environment for debugging. Although its purpose is testing, it already contains
+all elements of a real LCS node application.
 
+The second example introduces the LCS event model. It consists of two small
+applications: an event producer and an event consumer. The producer generates
+an event, while the consumer reacts to it. This simple example is the foundation
+for more complex distributed LCS applications.
+
+The examples will be extended throughout the following chapters as additional
+hardware and runtime features are introduced.
 
 %--------------------------------------------------------------------------------
-\unnumberedSection{Scenario}
+\unnumberedSection{Runtime Test Program}
+
+The runtime test program is a simplified version of the application actually
+used during runtime library development and hardware testing. Some details, such
+as the controller board descriptor definition, are omitted here. The complete
+version can be found in the LCS GitHub repositories.
+
+The program demonstrates the complete lifecycle of an LCS application:
+
+\begin{smallGapItemize}
+\item The runtime environment is initialized.
+\item Application callbacks are registered.
+\item The runtime is started and takes over node operation.
+\end{smallGapItemize}
+
+The callbacks form the interface between the application and the runtime
+library. Whenever a message, command, request, event, or periodic task occurs,
+the runtime invokes the corresponding application callback.
+
+The test application does not perform any useful node function. Instead, each
+callback simply prints the received information. This makes the internal
+operation of the runtime visible and provides a convenient tool during
+development and debugging. The complete program is shown below.
+
+\begin{lstlisting}[style=codesnippetstyle]
+#include "LcsMainControllerBoardDesc.h"
+#include "LcsCdcLib.h"
+#include "LcsRuntimeLib.h"
+
+using namespace LCS;
+using namespace CDC;
+
+CdcResourceDescMap dMap = LCS_MAIN_CONTROLLER_BOARD_DESC_B_02_10;
+
+uint8_t lcsMsgCallback( uint8_t *msg, void *uData ) {
+
+    printf( "MsgCallback: " );
+    for ( int i = 0; i < 8; i++ ) printf( "0x%2x ");
+    printf( "\n" );
+    return( NO_ERR );
+}
+
+uint8_t lcsCmdCallback( char *cmdLine, void *uData  ) {
+
+    printf( "Command Line Callback: %s\n", cmdLine );
+    return( NO_ERR );
+}
+
+uint8_t lcsTaskCallback1( void *uData ) {
+
+    printf( "Task Callback1...\n" );
+    return( NO_ERR );    
+}
+
+uint8_t lcsTaskCallback2( void *uData ) {
+
+    printf( "Task Callback2...\n" );
+    return( NO_ERR );    
+}
+
+uint8_t lcsInitCallback( uint16_t npId, void *uData  ) {
+
+    printf( "Init Callback: 0x%x\n", npId );
+    return( NO_ERR );
+}
+
+uint8_t lcsPfailCallback( uint16_t npId, void *uData ) {
+
+    printf( "Pfail Callback: 0x%x\n", npId );
+    return( NO_ERR );
+}
+
+uint8_t lcsReqCallback( uint16_t npId, 
+                        uint16_t item, 
+                        uint16_t *arg1, 
+                        uint16_t *arg2, 
+                        void *uData  ) {
+
+    printf( "REQ callback: npId: 0x%x, item: %d", npId, item );
+
+    if ( arg1 != nullptr )
+        printf( ", arg1: 0x%x, ", *arg1 );
+    else
+        printf( ", arg1: null" );
+
+    if ( arg2 != nullptr )
+        printf( ", arg2: 0x%x, ", *arg2 );
+    else
+        printf( ", arg2: null" );
+
+    printf( "\n" );
+    return( NO_ERR );
+}
+
+uint8_t lcsRepCallback( uint16_t npId, 
+                        uint16_t item, 
+                        uint16_t arg1, 
+                        uint16_t arg2, 
+                        uint8_t ret,
+                        void *uData ) {
+
+    printf( "REP callback: npId: 0x%x, item: %d, "
+            "arg1: %d, arg2: %d, ret: %d",
+             npId, item, arg1, arg2, ret );
+
+    return( NO_ERR );
+}
+
+uint8_t lcsEventCallback( uint16_t npId, 
+                          uint16_t eId, 
+                          uint8_t eAction, 
+                          uint16_t eData,
+                          void *uData ) {
+
+    printf( "Event: npId: 0x%x, eId: %d, "
+            "eAction: %d, eData: %d\n",
+            npId, eId, eAction, eData );
+
+    return( NO_ERR );
+}
+
+uint8_t lcsDccMsgCallback( uint8_t *msg, void *uData ) {
+
+    printf( "DCC MsgCallback: " );
+
+    for ( int i = 0; i < 8; i++ )
+        printf( "0x%2x " );
+
+    printf( "\n" );
+
+    return( NO_ERR );
+}
+
+uint8_t registerLcsCallbacks( ) {
+
+    printf( "Registering Callbacks\n" );
+
+    registerLcsMsgCallback( lcsMsgCallback );
+    registerDccMsgCallback( lcsDccMsgCallback );
+
+    registerCmdCallback( lcsCmdCallback );
+
+    registerTaskCallback( lcsTaskCallback1, 1000 );
+    registerTaskCallback( lcsTaskCallback2, 2000 );
+
+    registerInitCallback( lcsInitCallback );
+    registerPfailCallback( lcsPfailCallback );
+
+    registerReqCallback( lcsReqCallback );
+    registerEventCallback( lcsEventCallback );
+
+    return( NO_ERR );
+}
+
+int main( ) {
+
+    uint8_t rStat;
+
+    rStat = initRuntime( &dMap,
+                         ( NPO_SKIP_NODE_ID_CONFIG |
+                           NPO_DISABLE_WATCHDOG ),
+                         ( LCS_DBG_ENABLE |
+                           LCS_DBG_SETUP ));
+
+    if ( rStat == NO_ERR )
+        rStat = registerLcsCallbacks( );
+
+    if ( rStat == NO_ERR )
+        startRuntime( );
+
+    return( NO_ERR );
+}
+\end{lstlisting}
+
+The include section contains the board descriptor, the CDC library and the LCS
+runtime library. The namespace declarations reduce typing effort and make the
+example easier to read.
+
+The callback functions demonstrate the complete set of application interfaces
+provided by RtLib. During normal operation, the runtime invokes these functions
+when the corresponding activity occurs.
+
+The callback registration function collects all application interfaces in one
+place. This pattern is recommended for LCS applications because it makes the
+interaction between application code and runtime services clearly visible.
+
+Finally, the main routine follows the standard LCS application sequence:
+
+\begin{smallGapEnumerate}
+\item initialize the runtime,
+\item register callbacks,
+\item start the runtime.
+\end{smallGapEnumerate}
+
+After the call to \texttt{startRuntime()}, the runtime takes over execution and
+the application reacts through callbacks.
 
 %--------------------------------------------------------------------------------
-\unnumberedSection{Definitions}
+\unnumberedSection{Running the Test Program}
+
+When a node starts, there are two basic scenarios. If no console is connected,
+the runtime starts directly and the node enters normal operation.
+
+If a console is connected, the runtime presents a short startup dialog. This is
+especially useful during development because it allows changing the startup
+behavior without recompiling the application. Assume a console is connected:
+
+\begin{lstlisting}[style=codesnippetstyle]
+=>
+=>Setup options:
+r, R -> start the node with debug initially disabled
+d, D -> start the node with "setup" debug options enabled
+f, F -> start the node with a newly formatted runtime map
+=>
+\end{lstlisting}
+
+Selecting option ``r'' starts the node in normal mode.
+
+\begin{lstlisting}[style=codesnippetstyle]
+Starting - normal mode
+
+DebugMask: 0x3980
+Registering Callbacks
+
+Init Callback: 0x0
+Init Callback: 0x8
+Init Callback: 0x10
+Init Callback: 0x18
+Init Callback: 0x20
+Init Callback: 0x28
+Init Callback: 0x30
+Init Callback: 0x38
+
+(O)->
+\end{lstlisting}
+
+The node is now initialized and has entered operational mode. The initialization
+callbacks show the runtime processing the available node and port resources.
+At this point the developer can interact with the node using the runtime command
+interface described in the previous chapter.
+
+\begin{lstlisting}[style=codesnippetstyle]
+(O)->
+(O)->?
+
+Commands:
+
+C [ npId ]                   - enter config mode
+O [ npId ]                   - enter operations mode
+g npId item [ val1 ]         - gets a node attribute
+p npId item val1             - puts a node attribute
+r npId item [ val1 [ val2 ]] - request a node function
+e npId eventId mode [ arg ]  - simulate sending an event
+                               (mode: 0 - ON, 1 - OFF)
+
+B byte1 [ byte2 ... byte8 ]  - broadcast a raw LCS message
+
+s [ level ]                  - list status, default is summary
+
+    -   MEM  NVM  FMT   - what
+
+    -   0               - Board summary
+    -        21         - Node Header
+    -   2    22   42    - Node Map
+    -   3    23         - Node Data
+    -        24   44    - Event Map
+    -   5         45    - Port Map
+    -   6         46    - Task Map
+    -   7               - Event Hash Map
+    -   8    28         - Runtime Area
+
+    -  50               - Scan I2C Devices
+    -  51               - CDC Resource Desc Map
+    -  52               - CDC Resource Map
+
+(O)->
+\end{lstlisting}
+
+The runtime command interface provides direct access to many internal node
+functions. It allows the developer to inspect runtime data structures, test
+functions and configure attributes.
+For example, the following command displays a short node summary:
+
+\begin{lstlisting}[style=codesnippetstyle]
+(O)->s 0
+LCS Node: 100
+Library Version: 1.0, Patch Level: 0
+Git Branch: git-branch
+\end{lstlisting}
+
+The command interface is intentionally simple. It is not intended to replace a
+configuration application or user interface. Its purpose is to provide a direct
+diagnostic and development interface.
+Configuration tools will normally perform the same operations automatically by
+sending the corresponding LCS messages to the node.
+
+For example, we can manually configure an event entry. The following command
+requests that event 200 is handled for all ports:
+
+\begin{lstlisting}[style=codesnippetstyle]
+(O)->r 0 30 200 0xf
+lookupEventMapEntry, id: 200, hash: 307
+Node: 0x0, item: 30, val1: 0xc8, val2: 0xf
+(O)->
+\end{lstlisting}
+
+The command consists of a request (item 30) directed at our own node
+(\texttt{npId = 0}). The two arguments specify the event identifier and the
+event mask. In this example, event 200 is configured for all ports.
+This simple interaction already demonstrates the complete LCS programming model:
+the same runtime functions used by configuration tools are available directly
+to the developer for testing and exploration.
+
+The next example moves from manual interaction to application programming. It
+shows how two nodes can communicate using the LCS event mechanism.
 
 %--------------------------------------------------------------------------------
-\unnumberedSection{Producer}
+\unnumberedSection{Consumer - Producer Event Scenario}
+
+The second example introduces one of the central concepts of LCS: event-based
+communication.
+Assume we have two nodes. The first node has a button connected through an
+extension board. When the button is pressed, the node generates an LCS event
+message.
+
+A second node is configured as an event consumer. It is interested in this
+event. When the event arrives, the runtime invokes the application's event
+callback. This node also has an extension board with an LED connected. The
+callback then changes the LED state.
+
+The example intentionally omits the hardware-specific button and LED setup.
+Those details depend on the controller and extension hardware and are covered
+in later chapters. Here we focus only on the communication model: generating
+events and reacting to events.
+The following diagram illustrates the basic principle:
+
+\begin{center}
+    \begin{tikzpicture} [scale=0.9, transform shape]
+
+        \draw[help lines, gray!50, dashed] (0,0) grid(16,6);
+
+        % Thick horizontal line (LCS bus) with text
+        \draw[line width=1.5mm, <->, line cap=round, draw=gray, name path=lcsline] 
+        (0,3) -- (16,3)
+        node[pos= 0.9, tsLargeBold, below] {LCS bus};
+
+       	% Define producer node
+        \node[  tsRoundedRectangle, 
+        minimum width=3cm,
+        minimum height=1.5cm,
+        text width=3cm,
+        text centered,
+        fill=red!20] (p) at (5,5) {Producer};
+
+        % Connecting arrow to LCS bus
+        \path[name path=p1] (p.south) -- (5,3); % Define arrow path
+        \path[name intersections={of=lcsline and p1, by=intpoint1}];
+        \coordinate (adjustedPoint1) at ($(intpoint1) + (0,0.75mm)$);
+        \draw[->, ultra thick, line cap=round] (p.south) -- (adjustedPoint1);
+        
+        \node[tsCell] at (0,5) {\textbf{Button}};
+        \draw[->] (2,5) -- ( 3, 5);
+        
+        % Define consumer node
+        \node[  tsRoundedRectangle, 
+        minimum width=3cm,
+        minimum height=1.5cm,
+        text width=3cm,
+        text centered,
+        fill=red!20] (c) at (10,1) {Consumer};
+
+         % Connecting arrow to LCS bus
+        \path[name path=p1] (c.north) -- (10,3); % Define arrow path
+        \path[name intersections={of=lcsline and p1, by=intpoint1}];
+        \coordinate (adjustedPoint1) at ($(intpoint1) - (0,0.75mm)$);
+        \draw[<-, ultra thick, line cap=round] (c.north) -- (adjustedPoint1);
+        
+        \node[tsCell] at (13.5,1) {\textbf{LED}};
+        \draw[->] (12,1) -- ( 13, 1);
+    \end{tikzpicture}
+\end{center}
+
+The important property of this model is that the producer does not know the
+consumer. It simply generates an event. Any node that is configured to react to
+this event can receive it.
+
+This allows LCS applications to be developed as independent components. A
+button, sensor or other input device can generate events without knowing which
+other nodes use that information.
 
 %--------------------------------------------------------------------------------
-\unnumberedSection{Consumer}
+\unnumberedSection{A Simple Event Producer Program}
 
+The producer application generates an event when the button is pressed. In this
+example, the event identifier is 200.
 
+The application does not need to know which nodes are interested in this event.
+It simply sends the event into the LCS network. The runtime and communication
+layer handle the distribution to all registered consumers.
+Again, the button hardware setup is omitted for clarity.
+
+\begin{lstlisting}[style=codesnippetstyle]
+#include "LcsMainControllerBoardDesc.h"
+#include "LcsCdcLib.h"
+#include "LcsRuntimeLib.h"
+
+using namespace LCS;
+using namespace CDC;
+
+CdcResourceDescMap dMap = LCS_MAIN_CONTROLLER_BOARD_DESC_B_02_10;
+
+uint16_t buttonPressedEventId = 200;
+
+void setupButton( ) {
+
+    ...
+}
+
+void buttonPressed( ) {
+
+    uint8_t rStat;
+
+    rStat = sendEventOn( 0, buttonPressedEventId );
+}
+
+int main( ) {
+
+    uint8_t rStat;
+
+    rStat = initRuntime( &dMap,
+                         ( NPO_SKIP_NODE_ID_CONFIG |
+                           NPO_DISABLE_WATCHDOG ),
+                         ( LCS_DBG_ENABLE |
+                           LCS_DBG_SETUP ));
+
+    if ( rStat == NO_ERR ) {
+
+        setupButton( );
+        startRuntime( );
+    }
+
+    return( NO_ERR );
+}
+\end{lstlisting}
+
+The important line is the call to \texttt{sendEventOn()}. This function creates
+an LCS event notification. The runtime takes care of the required message
+generation and transmission.
+The application only expresses the logical action:
+
+\begin{quote}
+``An event happened.''
+\end{quote}
+
+It does not need to know how the event is transported or which nodes will
+receive it.
+
+%--------------------------------------------------------------------------------
+\unnumberedSection{A Simple Event Handler Program}
+
+The consumer program is configured to react to event identifier 200.
+The program initializes the LED hardware, registers an event callback and starts
+the runtime. Whenever the event is received, RtLib invokes the callback.
+The LED hardware setup and handling are omitted here and will be covered in a
+later chapter.
+
+\begin{lstlisting}[style=codesnippetstyle]
+#include "LcsMainControllerBoardDesc.h"
+#include "LcsCdcLib.h"
+#include "LcsRuntimeLib.h"
+
+using namespace LCS;
+using namespace CDC;
+
+CdcResourceDescMap dMap = LCS_MAIN_CONTROLLER_BOARD_DESC_B_02_10;
+
+uint16_t buttonPressedEventId = 200;
+
+void setupLED( ) {
+
+    ...
+}
+
+uint8_t lcsEventCallback( uint16_t npId,
+                           uint16_t eId,
+                           uint8_t eAction,
+                           uint16_t eData,
+                           void *uData ) {
+
+    if ( eId == buttonPressedEventId ) {
+
+        if ( eAction == PEA_EVENT_ON ) {
+
+            // ... turn LED on ...
+
+        }
+        else if ( eAction == PEA_EVENT_OFF ) {
+
+            // ... turn LED off ...
+
+        }
+    }
+
+    return( NO_ERR );
+}
+
+int main( ) {
+
+    uint8_t rStat;
+
+    rStat = initRuntime( &dMap,
+                         ( NPO_SKIP_NODE_ID_CONFIG |
+                           NPO_DISABLE_WATCHDOG ),
+                         ( LCS_DBG_ENABLE |
+                           LCS_DBG_SETUP ));
+
+    if ( rStat == NO_ERR ) {
+
+        setupLED( );
+
+        registerEventCallback( lcsEventCallback );
+
+        startRuntime( );
+    }
+
+    return( NO_ERR );
+}
+\end{lstlisting}
+
+The main task of the consumer application is to create an event handler and
+register it with the runtime.
+From this point onward, the application is event driven. The program does not
+need to continuously check whether the button was pressed. Instead, it waits for
+the runtime to notify it that an event has occurred.
+This small example already demonstrates the basic programming model of LCS:
+
+\begin{smallGapItemize}
+\item nodes perform local functions,
+\item events are exchanged through the LCS network,
+\item applications react through callbacks,
+\item producers and consumers remain independent.
+\end{smallGapItemize}
+
+More complex applications build on exactly this mechanism. Sensors, controls,
+automation functions and user interfaces can all communicate using the same
+event-based approach.
 

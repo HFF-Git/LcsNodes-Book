@@ -75,34 +75,29 @@ several controller peripherals.
 \begin{center}
 \begin{tikzpicture}[scale=0.9, transform shape]
 
-     % flow
-     \node at (8.5,8.4) {\textbf{create}};
-     \draw[->, ultra thick, gray, line cap=round] (7,8) -- (10,8);
+    % flow
+    \node at (8.5,8.4) {\textbf{create}};
+    \draw[->, ultra thick, gray, line cap=round] (7,8) -- (10,8);
 
-     % rectangles
-     \draw[rounded corners=2pt, fill=yellow!10] (2,0) rectangle (7,7);
-     \draw[rounded corners=2pt, fill=green!10] (10,0) rectangle (15,7);
+    % rectangles
+    \draw[rounded corners=2pt, fill=yellow!10] (2,0) rectangle (7,7);
+    \draw[rounded corners=2pt, fill=green!10] (10,0) rectangle (15,7);
 
-     % Descriptors
-     \node at (4,7.5) {\textbf{Descriptors}};
-     \node at (4,0.5) {Board Type};
-     \draw (2,1)--(7,1);
-
-     \node at (4,1.5) {Board Version};
-     \draw (2,2)--(7,2);
-
-     \node at (4,4) {Descriptor Map};
+    % Descriptors
+    \node[tsCell] at (2.2,7.5) {\textbf{Descriptors}}; 
+    \node[tsCell] at (2.2,0.5) {Board Type};
+	\node[tsCell] at (2.2,1.5) {Board Version};
+	\node[tsCell] at (2.2,4.0) {Descriptor Map};
+    \draw (2,1)--(7,1);
+    \draw (2,2)--(7,2);
 
      % Resources
-     \node at (12,7.5) {\textbf{Resources}};
-     \node at (12.5,0.5) {Board Descriptor};
-     \draw (10,1)--(15,1);
-
+     \node[tsCell] at (10.2,7.5) {\textbf{Resources}};
+     \node[tsCell] at (10.2,0.5) {Board Descriptor};
+     \node[tsCell] at (10.2,5) {Resource Map};
      \node at (12.5,2) {Controller Family Data};
+     \draw (10,1)--(15,1);
      \draw (10,3)--(15,3);
-
-     \node at (12.5,5) {Resource Map};
-   
 \end{tikzpicture}
 \end{center}
 \FloatBarrier
@@ -622,20 +617,47 @@ architecture.
 
 \unnumberedSubSection{CAN Bus}
 
-... can2040 library, saves us dedicated CAN bus HW chips.
+LCS uses the CAN bus as its communication backbone. From a hardware perspective,
+microcontrollers either provide a CAN controller as an on-chip peripheral or 
+rely on an external CAN controller such as the MCP2515. The RP2040 offers an 
+interesting third alternative. Its Programmable I/O (PIO) state machines are 
+powerful enough to implement the CAN protocol entirely in software, requiring 
+only an external CAN bus transceiver.
+
+The Pico implementation of LCS uses the can2040 library. It is a little gem 
+of a library that implements the complete CAN protocol using the RP2040 PIO 
+hardware. Apart from the CAN transceiver, no dedicated CAN controller is 
+required. Since the RP2040 provides two processor cores, one core is dedicated 
+to CAN communication while the other executes the application firmware.
 
 \unnumberedSubSection{H-Bridge Control}
 
-... used for quad block controller
+We will also make extensive use of the RP2040 PIO state machines in the block 
+controller. Here they replace a considerable amount of discrete logic that 
+would otherwise be required to drive the H-Bridges, generate the DCC waveform, 
+manage the RailCom cutout periods, and detect incoming RailCom datagrams. 
+Besides simplifying the hardware design, the PIO implementation keeps all 
+timing-critical signal generation in dedicated hardware.
 
 \unnumberedSubSection{DCC Signal Generation}
 
-... future, not done yet 
+One could also imagine generating the DCC waveform directly in a PIO state 
+machine. Such an implementation would move the precise waveform timing entirely 
+into hardware and would further reduce the real-time requirements placed on 
+the firmware.
 
-\unnumberedSubSection{Other Uses} 
+The current LCS implementation deliberately follows a different approach. 
+DCC packet generation is implemented as a software state machine running in 
+the base station firmware. This provides excellent flexibility, keeps the 
+implementation easy to understand and debug, and has proven more than capable 
+of meeting the timing requirements. The resulting bit stream is then 
+transferred to the hardware that drives the track output.
 
-... who knows ...
-
+A future version of the base station may move the waveform generation into 
+a PIO state machine, in much the same way as the CAN bus interface and H-bridge 
+control logic already benefit from programmable I/O. At present, however, 
+the software implementation is straightforward, reliable, and fully satisfies 
+the performance requirements.
 
 %--------------------------------------------------------------------------------
 \unnumberedSection{Summary}
@@ -669,7 +691,7 @@ portability, but the decision remains entirely with the firmware designer.
 
 Together with the LCS Runtime library described in the previous chapter, the CDC
 layer completes the software foundation for portable LCS node firmware. The
-runtime library abstracts the communication and node behaviour, while the CDC
+runtime library abstracts the communication and node behavior, while the CDC
 library abstracts the underlying hardware platform. Application firmware can
 therefore concentrate almost entirely on implementing the intended functionality
 of the hardware module.

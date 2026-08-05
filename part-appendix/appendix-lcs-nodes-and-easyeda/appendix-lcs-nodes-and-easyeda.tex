@@ -74,20 +74,14 @@ This section contains all the footprints available so far. There are three main 
     \endfoot
     \bottomrule
     \endlastfoot
-    LCS-FP-MAIN-10x12-B.02.10 & Main controller board footprint, 10x12cm. \\
-    \midrule
-    LCS-FP-MAIN-10x16-B.02.10 & Main controller board footprint, 10x16cm. \\
-    \midrule
+    LCS-FP-MAIN-10x12-B.01.00 & Main controller board footprint, 10x12cm. \\
     \midrule
 \end{longtable}
 
 
-
 \begin{figure}[htbp]
     \centering
-    \includegraphics[page=1, scale=0.7]{./schematics/LCS-FP-MAIN-10X12-B.02.10.pdf}
-    \caption{LCS-FP-MAIN-CTRL-10X16}
-    %\label{fig:your-label}
+    \includegraphics[page=1, scale=0.7]{./part-appendix/appendix-lcs-nodes-and-easyeda/LCS-FP-MAIN-10X12.pdf}
 \end{figure}
 
 \FloatBarrier
@@ -113,12 +107,9 @@ Next, there are the extension boards. The extension board has the LCS connectors
     \endfoot
     \bottomrule
     \endlastfoot
-    LCS-FP-EXT-10x4-B.02.10 & Extension board footprint, 10x4cm. \\
+    LCS-FP-EXT-10x4-B.01.00 & Extension board footprint, 10x4cm. \\
     \midrule
-    LCS-FP-EXT-10x12-B.02.10 & Extension board footprint, 10x12cm. \\
-    \midrule
-    \midrule
-    LCS-FP-EXT-10x16-B.02.10 & Extension board footprint, 10x16cm. \\
+    LCS-FP-EXT-10x12-B.01.00 & Extension board footprint, 10x12cm. \\
     \midrule
 \end{longtable}
 
@@ -128,16 +119,14 @@ The following figure shows the general layout of an extension board.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[page=1, scale=0.7]{./schematics/LCS-FP-EXT-10X12-B.02.10.pdf}
-    \caption{LCS-FP-EXT-R-10X16}
-    %\label{fig:your-label}
+     \includegraphics[page=1, scale=0.7]{./part-appendix/appendix-lcs-nodes-and-easyeda/LCS-FP-EXT-10X12.pdf}
 \end{figure}
 
 In addition to the basic 16cm x 10cm form factor is a set of 12cm x 10cm boards. They have exactly the same layout, except that their length is 12cm instead of 16cm. As always, there could be many more combinations as new boards with different demands are developed. Nevertheless it is important that when connectors are used, that they have the same meaning and are placed at the same location. This is the whole idea of using footprints to ensure this exact fitting.
 
 \unnumberedSection{Pad Numbers}
 
-In EasyEDA, the symbol pads and the PCB pads meet via PAD numbers. Across all symbols and PCBs the numbers assignments are shown in the figure below.
+In EasyEDA, the symbol pads and the PCB pads meet via PAD numbers. Across all symbols and PCB footprints the numbers assignments are shown in the figure below. The numbers for the extension bard connectors reverse their numbering, since we use 2-row connectors. The left-most row on the main board thus connectors to the right-most row on the extension board. 
 
 \begin{figure}[H]
 \centering
@@ -197,27 +186,58 @@ In EasyEDA, the symbol pads and the PCB pads meet via PAD numbers. Across all sy
             
     \node[  tsRectangle, 
             minimum width=1cm,
-            minimum height=12cm,  
+            minimum height=1.5cm,  
             fill=white,
-            anchor=south west] at (7, 3) {\rotatebox{90}{ EXT-OUT }};
-            
-    \node[font=\small] at (7.0-0.25,15+0.25) {40};
-    \node[font=\small] at (8.0+0.25,15+0.25) {41};
-    
-    \node[font=\small] at (7.0-0.25,3-0.25) {98};
-    \node[font=\small] at (8.0+0.25,3-0.25) {99};
+            anchor=south west] at (7, 13) {\rotatebox{90}{ TRACK }};
             
     \node[  tsRectangle, 
             minimum width=1cm,
-            minimum height=12cm,  
+            minimum height=7cm,  
             fill=white,
-            anchor=south west] at (11, 3) {\rotatebox{90}{ EXT-IN }};
+            anchor=south west] at (7, 5.35) {\rotatebox{90}{ EXT }};
             
-    \node[font=\small] at (11.0-0.25,15+0.25) {41};
-    \node[font=\small] at (12.0+0.25,15+0.25) {40};
+    \node[  tsRectangle, 
+            minimum width=1cm,
+            minimum height=1.5cm,  
+            fill=white,
+            anchor=south west] at (7, 2) {\rotatebox{90}{ TRACK }};
+            
+    \node[font=\small] at (7.0-0.25,15.5) {40};
+    \node[font=\small] at (8.0+0.25,15.5) {41};
     
-    \node[font=\small] at (11.0-0.25,3-0.25) {99};
-    \node[font=\small] at (12.0+0.25,3-0.25) {98};
+    \node[font=\small] at (7.0-0.25,12.2) {50};
+    \node[font=\small] at (8.0+0.25,12.2) {51};
+    
+    \node[font=\small] at (7.0-0.25,4.6) {90};
+    \node[font=\small] at (8.0+0.25,4.6) {91};
+  
+            
+   	\node[  tsRectangle, 
+            minimum width=1cm,
+            minimum height=1.5cm,  
+            fill=white,
+            anchor=south west] at (11, 13) {\rotatebox{90}{ TRACK }};
+            
+    \node[  tsRectangle, 
+            minimum width=1cm,
+            minimum height=7cm,  
+            fill=white,
+            anchor=south west] at (11, 5.35) {\rotatebox{90}{ EXT }};
+            
+    \node[  tsRectangle, 
+            minimum width=1cm,
+            minimum height=1.5cm,  
+            fill=white,
+            anchor=south west] at (11, 2) {\rotatebox{90}{ TRACK }};;
+            
+    \node[font=\small] at (11.0-0.25,15.5) {41};
+    \node[font=\small] at (12.0+0.25,15.5) {40};
+    
+    \node[font=\small] at (11.0-0.25,12.2) {51};
+    \node[font=\small] at (12.0+0.25,12.2) {50};
+    
+    \node[font=\small] at (11.0-0.25,4.6) {91};
+    \node[font=\small] at (12.0+0.25,4.6) {90};
             
     \node[  tsRectangle, 
     		dashed,

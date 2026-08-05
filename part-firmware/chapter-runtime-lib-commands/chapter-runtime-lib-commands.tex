@@ -30,9 +30,8 @@ and service operations, direct access to a node is extremely valuable.
 
 The Runtime Library therefore provides a serial interface which can be accessed, for
 example, through an USB connector on a hardware module. A standard terminal program is
-sufficient to communicate with the node.
-
-The serial interface provides two related but distinct functions:
+sufficient to communicate with the node. The serial interface provides two related 
+but distinct functions:
 
 \begin{smallGapItemize}
     \item a command interface for interacting with the runtime library,
@@ -106,7 +105,6 @@ processing.
 Commands that are not recognized by the runtime are passed to an optional firmware
 defined command callback. This allows a module designer to extend the command interface
 with hardware or application specific commands.
-
 The command interface therefore follows the same extension principle as the runtime
 library itself:
 
@@ -134,7 +132,6 @@ and display command list
 
 Many runtime operations modify persistent node data. To prevent accidental changes
 during normal operation, these operations are restricted to configuration mode.
-
 The following commands switch between configuration and operational mode.
 
 \begin{table}[ht!]
@@ -162,15 +159,11 @@ C>          configuration mode
 O>          operational mode
 \end{lstlisting}
 
-??? show prompt changes
-
-
 %--------------------------------------------------------------------------------
 \unnumberedSection{Accessing Node Data}
 
 The command interface provides direct access to node and port data using the same
 item-based concept introduced earlier in this book.
-
 The commands correspond closely to the runtime library functions:
 
 \begin{center}
@@ -202,14 +195,11 @@ a simple way to inspect and modify node data without writing dedicated firmware.
 \end{table}
 \FloatBarrier
 
-
-
 %--------------------------------------------------------------------------------
 \unnumberedSection{Event Testing}
 
 Events are a central concept in the LCS system. The command interface provides tools to
 inspect and test event handling without requiring another node to generate the event.
-
 Events can be locally generated, allowing the programmer to verify:
 
 \begin{itemize}
@@ -261,17 +251,13 @@ when developing new message types or verifying communication with other nodes.
 \end{table}
 \FloatBarrier
 
-
-
 %--------------------------------------------------------------------------------
 \unnumberedSection{Runtime Diagnostics}
 
 One of the most useful features of the command interface is the ability to inspect the
 internal state of a node.
-
 The \texttt{s} command provides formatted views of runtime data structures. This is
 particularly valuable when debugging a node that does not behave as expected.
-
 The command can display information from:
 
 \begin{itemize}
@@ -294,7 +280,9 @@ The command can display information from:
 \end{table}
 \FloatBarrier
 
-The \texttt{s} command accepts a numeric parameter which indicates what status information to print. They are grouped for showing memory data, NVM data and a formatted version of some data.
+The \texttt{s} command accepts a numeric parameter which indicates what status 
+information to print. They are grouped for showing memory data, NVM data and a 
+formatted version of some data.
 
 \begin{table}[ht!]
     \begin{center}
@@ -328,24 +316,17 @@ The \texttt{s} command accepts a numeric parameter which indicates what status i
 \end{table}
 \FloatBarrier
 
-
-
 The formatted views are intended for human inspection, while the MEM and NVM views are
 useful when investigating storage or configuration problems.
-
-% ??? examples
-
 
 %--------------------------------------------------------------------------------
 \unnumberedSection{Text Representation of LCS Messages}
 
 In addition to commands, the serial interface can also be used to represent LCS messages
 as ASCII text.
-
 This representation is useful for communication gateways where messages need to be
 transported through another medium, such as Ethernet. It also provides a convenient way
 to create simple test tools.
-
 The message is enclosed by the \texttt{<} and \texttt{>} delimiters and contains the
 individual message bytes.
 
@@ -355,7 +336,6 @@ individual message bytes.
 < 0x01 0x02 0x03 >
 
 \end{lstlisting}
-
 
 The runtime library provides helper functions to convert between the binary message
 representation and the ASCII format.

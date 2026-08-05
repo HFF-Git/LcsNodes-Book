@@ -1,19 +1,73 @@
+%--------------------------------------------------------------------------------
+%
+%--------------------------------------------------------------------------------
 \unnumberedChapter{Summary}
 
-??? what have accomplished ?
+This part of the book introduced the hardware foundation used throughout the 
+remainder of the LCS hardware design. The focus was not on building one specific
+application module, but rather on creating a reusable controller platform
+that can serve as the basis for many different LCS nodes.
+The main controller board combines all the common elements required by an LCS
+node:
 
-??? foundation is board design and how they connect
+\begin{smallGapItemize}
+\item a powerful controller platform,
+\item the CAN bus communication interface,
+\item non-volatile storage,
+\item power management,
+\item standardized extension interfaces.
+\end{smallGapItemize}
 
-??? a general purpose controller board for specialized extension function
+The board is therefore much more than a controller carrier. It is a complete
+LCS node capable of processing messages, running the LCS runtime library and
+interacting with other nodes on the LCS bus.
 
-??? experiments
+During the development of the LCS runtime library, this board served as the
+primary development platform. It allowed the individual runtime functions,
+message handling and configuration concepts to be developed and tested on
+real hardware. However, its purpose goes far beyond being a development
+vehicle. The same board can be used to build useful LCS modules by adding
+dedicated extension hardware.
 
-??? capable of driving extension boards
+The extension connector is the key element that enables this flexibility.
+Extension boards can add application specific functionality while the
+controller foundation remains unchanged. A turnout controller, signal module,
+sensor interface or other specialized node can reuse the same controller
+platform and concentrate only on the hardware and firmware required for its
+specific purpose.
 
-??? a great learning platform for LCS library functions and commands 
+The hardware schematics introduced throughout this chapter follow the same
+building block philosophy. Communication interfaces, power circuits,
+controllers, level shifters and other functional blocks are designed as
+reusable elements. These building blocks will appear again in the following
+hardware designs and form the foundation for more complex modules.
 
+For specialized nodes, such as the base station or the block controller, the
+same principles still apply. In these cases, the main controller and the
+required extension functionality may be combined into one integrated PCB.
+This approach reduces complexity for more demanding hardware modules while
+keeping the same design concepts. Even these integrated designs retain the
+external I2C extension capability where socket boards are useful for local
+functions.
 
+Before moving on to these specialized modules, one more aspect is worth
+mentioning. Although all LCS nodes use the same runtime library concepts,
+the underlying hardware resources are not necessarily identical. Different
+controller families, board layouts or integrated hardware designs may assign
+controller pins and peripherals differently.
 
-We now have a core library which can handle the basics of just about any node and we have a main controller board that will form the heart of many projects to come for the layout control system. However, while LCS boards will all run the same core library, there are still differences how for example the controller pins are assigned on the boards. It is very likely that new software versions and perhaps different processors and boards layouts will require that the core library is adapted to each processor / board combination. This is especially true for monolithic board designs, where there is a great freedom which pins to use for what. At this point, many projects found on the web will now start a symphony of "ifdefs" in their coding. The conditional compiles often reach up to the highest layers of the firmware programming. This \textbf{controller dependent layer} presented before addresses this issue with offering a mapping structure that will translate between the symbolic names and the actual HW counterpart.
+A common approach in many embedded projects is to handle these differences
+with a growing number of conditional compilation statements. Over time,
+these \textbf{ifdef} sections often spread throughout the entire firmware,
+making the software increasingly difficult to maintain.
 
-Just before we move on, a good question is what can be done with this board ?. It seems to be just a fancy wrapping around the controller chip. Well, first of all, it is a complete LCS node, capable of processing CAN bus messages. It also features the library runtime storage and exports a variety of pins to the extension connector. During the library development of the concepts and the runtime library this board served as the development platform. When designing a new node type, it is a great starting point to take care of the main controller part, allowing to concentrate fully on the node additional capabilities. We will pick up on this in later chapters when extensions are presented.   
+The \textbf{Controller Dependent Code (CDC)} layer introduced earlier avoids
+this problem. Hardware-specific details are isolated in a dedicated layer
+that maps symbolic hardware resources used by the runtime to the actual
+controller implementation. This keeps the LCS runtime portable while still
+allowing optimized hardware designs.
+
+With the concepts, firmware architecture and hardware foundation now in
+place, we are ready to look at the first specialized LCS module. The next
+chapter introduces the heart of the layout control system: the LCS base
+station.

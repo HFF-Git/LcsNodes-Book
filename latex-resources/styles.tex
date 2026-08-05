@@ -155,7 +155,7 @@
 %
 %--------------------------------------------------------------------------------
 \lstdefinestyle{codesnippetstyle}{
-    backgroundcolor=\color{gray!5},
+    backgroundcolor=\color{gray!4},
     basicstyle={\ttfamily\small}, % Try \relsize{-2} if this is still too large
     keywordstyle=\color{black},
     identifierstyle={\ttfamily\color{gray}},
@@ -163,7 +163,7 @@
     commentstyle={\ttfamily\color{teal}},
     showstringspaces=false,
     numbers=left,
-    frame=single,
+    frame=none,
     texcl=false,
     alsoletter={\#},
     morekeywords={\#include, \#define, \#ifdef, \#endif, \#pragma},
@@ -237,6 +237,13 @@
     draw=black,
     line width=1mm
 ]
+
+\tikzset{ tsCell/.style=
+	{ anchor=west,
+        align=left,
+        text width=4.5cm
+    }
+}
 
 %--------------------------------------------------------------------------------
 % Instruction format.
