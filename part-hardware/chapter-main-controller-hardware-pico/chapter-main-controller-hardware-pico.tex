@@ -210,8 +210,8 @@ The external I2C bus is also buffered. The driver provides additional
 capability for longer connections and isolates the controller from the
 extension bus.
 
-The extension connector exposes not only simple digital inputs and outputs,
-but also access to controller peripheral functions such as:
+The extension connector exposes via the GPIO pins not only simple digital 
+inputs and outputs but also access to controller peripheral functions such as:
 
 \begin{smallGapItemize}
 \item I2C,
@@ -231,7 +231,6 @@ of the Pico controller instead of being limited to simple GPIO signals.
 The previous chapter defined the logical extension connector signals.
 The following table shows how these logical signals are mapped to the actual
 Pico pins.
-
 The mapping was chosen carefully to keep the most commonly used functions
 available while still allowing access to the internal Pico peripherals.
 
@@ -279,7 +278,12 @@ available while still allowing access to the internal Pico peripherals.
 \unnumberedSection{A Main Controller Board PCB for PICO}
 
 The following figure shows the PCB layout of the Pico based main controller
-board.
+board. Printed circuit boards for the LCS hardware come in few standardized
+sizes. Their width is always 10cm, their length ranges from 4cm to 20cm in 
+4cm increments.
+The board uses the standardized 10cm x 12cm form factor introduced in the
+previous chapter.
+
 
 \begin{figure}[htbp]
     \centering
@@ -288,9 +292,6 @@ board.
     %\label{fig:schematic}
 \end{figure}
 \FloatBarrier
-
-The board uses the standardized 10cm x 12cm form factor introduced in the
-previous chapter.
 
 A significant portion of the PCB area is used by the 5V to 3.3V level
 shifting circuitry. For a fully integrated module where the controller and

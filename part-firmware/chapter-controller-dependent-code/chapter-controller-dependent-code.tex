@@ -23,7 +23,7 @@ software layer. The runtime library and the application firmware no longer
 access controller peripherals directly. Instead, they operate on abstract hardware
 resources that are configured once during system initialization.
 
-The CDC layer deliberately provides only a thin abstraction. It hides the details
+The CDC layer provides only a thin abstraction. It hides the details
 that would otherwise clutter the firmware, while still allowing direct access to
 the underlying controller whenever this is required. In this way the common 
 firmware remains portable without preventing applications from taking advantage
@@ -38,7 +38,6 @@ layers.
 \unnumberedSection{Concept}
 
 The CDC library is based on two simple ideas.
-
 The first idea is to separate the description of the hardware from its actual
 configuration. Every supported board is described by a constant
 \textbf{resource descriptor map}. This description specifies the board type,
@@ -65,7 +64,7 @@ device directly but use the file handle returned by the operating system.
 Similarly, the CDC library returns resource numbers that uniquely identify the
 configured hardware resources.
 
-The resource abstraction is intentionally not limited to simple controller
+The resource abstraction is not limited to simple controller
 peripherals such as GPIO pins, timers or serial interfaces. Higher level
 resources can also be introduced whenever they simplify firmware development.
 For example, a DCC output, an encoder with push button or an H-bridge driver can
@@ -141,11 +140,11 @@ the corresponding runtime resources.
 
 The descriptor map contains three kinds of information:
 
-\begin{itemize}
+\begin{smallGapItemize}
 \item the board type,
 \item the board version, and
 \item a list of resource descriptors.
-\end{itemize}
+\end{smallGapItemize}
 
 Each resource descriptor defines one hardware capability together with the
 parameters required to configure it. Depending on the resource type, these
@@ -156,7 +155,6 @@ The descriptor map therefore becomes the \emph{single source of truth} for the
 hardware configuration of a particular board. Whenever the board layout changes,
 only the corresponding descriptor map needs to be updated. The runtime library
 and the application firmware remain completely unchanged.
-
 The descriptor map itself is defined as follows.
 
 \lstset{language=c++, style=codesnippetstyle}
@@ -228,12 +226,6 @@ A key concept is that every configured resource receives a unique
 \textbf{Resource Number}. This number serves as the handle by which the resource
 is referenced throughout the lifetime of the application.
 
-The concept closely resembles the use of file descriptors in an operating
-system. After opening a file, an application no longer refers to the underlying
-storage device but simply uses the returned file descriptor. Likewise, firmware
-never accesses controller pins directly after initialization. Instead, all CDC
-functions operate on Resource Numbers.
-
 Since Resource Numbers are implemented as simple indices into the internal
 Resource Map, resource lookup requires only a single array access and therefore
 adds virtually no runtime overhead.
@@ -257,9 +249,10 @@ enum CdcResourceIdNum : uint8_t {
 \end{lstlisting}
 \FloatBarrier
 
-The first Resource Numbers are reserved for the runtime library itself. They
+The first eight resource numbers are reserved for the runtime library itself. They
 identify resources that are required by every LCS node, such as the activity
 LED, the CAN interface or the non-volatile memory.
+The runtime library handles the configuration of these resources at startup.
 
 Application specific resources begin at
 \texttt{CDC\_RN\_FIRST\_USER\_RN}. From this point onwards the firmware designer
@@ -267,11 +260,12 @@ is free to define resources that best describe the application rather than the
 underlying controller peripherals.
 
 Typical examples include encoder interfaces, DCC outputs, H-bridge controllers,
-servo drivers or complete occupancy detector channels. Such logical resources
+servo drivers or track occupancy detectors. Such logical resources
 may internally combine several controller peripherals while still presenting a
 single, easy-to-use interface to the application firmware.
 
-\paragraph{Configuration Validation}
+%--------------------------------------------------------------------------------
+\unnumberedSection{Configuration Validation}
 
 Besides configuring the controller peripherals, the CDC library performs a
 number of consistency checks during initialization. These checks detect many
@@ -288,6 +282,12 @@ be discovered after deployment.
 
 %--------------------------------------------------------------------------------
 \unnumberedSection{CDC Library setup}
+
+The CDC library is initialized using the resource descriptor map. Although
+the firmware programmer can explicitly initialize the libraey, the LCS runtime
+library does it also at runtime initialization. 
+Explicitly initializing is helpful if the firmware needs to access hardware
+resources before initializing the LCS runtime.
 
 \lstset{language=c++, style=api-interface}
 \begin{lstlisting}
@@ -324,7 +324,7 @@ for initialization and low-level timing tasks.
 
 Every controller also provides a unique hardware identifier from which the CDC
 library derives a compact serial number or unique node identifier. This
-identifier can be used whenever an LCS node requires a hardware unique address
+identifier can be used whenever an LCS node requires a hardware unique Id
 or serial number.
 
 \lstset{language=c++, style=api-interface}
@@ -426,7 +426,11 @@ processor family.
 \lstset{language=c++, style=api-interface}
 \begin{lstlisting}
 uint8_t         configureAdc( uint8_t rNum );
-uint8_t         configureAdc( uint8_t rNum, uint8_t adcPin, uint8_t adcNum );
+
+uint8_t         configureAdc( uint8_t rNum, 
+                              uint8_t adcPin, 
+                              uint8_t adcNum );
+
 uint8_t         readAdc( uint8_t rNum, uint16_t *val );
 \end{lstlisting}
 \FloatBarrier
@@ -458,9 +462,11 @@ uint8_t         configureDio(   uint8_t rNum,
 uint8_t         readDio( uint8_t rNum, bool *valA, bool *valB = nullptr );
 uint8_t         writeDio( uint8_t rNum, bool valA, bool valB = false );
 uint8_t         toggleDio( uint8_t rNum );
+
 uint8_t         registerDioCallback( uint8_t rNum, 
                                      uint8_t event, 
                                      GpioCallback func );
+                                     
 uint8_t         unregisterDioCallback( uint8_t rNum );
 
 uint8_t         getGpioPinA( uint8_t rNum) ;
@@ -486,6 +492,7 @@ synchronously to avoid unwanted timing skew between the two channels.
 \lstset{language=c++, style=api-interface}
 \begin{lstlisting}
 uint8_t         configurePwm( uint8_t rNum );
+
 uint8_t         configurePwm(   uint8_t rNum, 
                                 uint8_t pinA, 
                                 uint8_t pinB, 
@@ -516,13 +523,18 @@ changing the overall programming model.
 \lstset{language=c++, style=api-interface}
 \begin{lstlisting}
 uint8_t         configureUart( uint8_t rNum );
+
 uint8_t         configureUart(  uint8_t rNum, 
                                 uint8_t rxPin, 
                                 uint8_t txPin, 
                                 uint32_t baudRate );
+                                
 uint8_t         startUartRead( uint8_t rNum );
 uint8_t         stopUartRead( uint8_t rNum );
-uint8_t         getUartBuffer( uint8_t rNum, uint8_t *buf, uint8_t bufLen );
+
+uint8_t         getUartBuffer( uint8_t rNum, 
+                               uint8_t *buf, 
+                               uint8_t bufLen );
 \end{lstlisting}
 \FloatBarrier
 
@@ -536,12 +548,13 @@ assignment where required by the controller family.
 
 Read and write operations are performed through the configured Resource Number,
 allowing the application to remain independent of the actual controller
-instance. Additional utility functions support bus recovery and automatic device
+instance. Additional utility functions support bus reset and automatic device
 scanning during development.
 
 \lstset{language=c++, style=api-interface}
 \begin{lstlisting}
 uint8_t         configureI2C( uint8_t rNum );
+
 uint8_t         configureI2C( uint8_t rNum, 
                               uint8_t sclPin, 
                               uint8_t sdaPin, 
@@ -584,11 +597,13 @@ controller capabilities.
 \lstset{language=c++, style=api-interface}
 \begin{lstlisting}
 uint8_t         configureCanBus( uint8_t rNum );
+
 uint8_t         configureCanBus( uint8_t rNum, 
                                  uint8_t rxPin, 
                                  uint8_t xPin, 
                                  uint32_t baudRate, 
                                  bool twoCores = false );
+                                 
 uint8_t         canGetRxPin( uint8_t rNum );
 uint8_t         canGetTxPin( uint8_t rNum );
 uint32_t        canGetBaudrate( uint8_t rNum );
@@ -596,13 +611,13 @@ bool            canGetTwoCores( uint8_t rNum );
 \end{lstlisting}
 \FloatBarrier
 
+??? should we add send and receive calls to this interface ?
+
 %--------------------------------------------------------------------------------
 \unnumberedSection{Programmable State Machines}
 
-Some controller families provide programmable hardware engines that execute
-simple instruction sequences independently of the CPU. The Raspberry Pi Pico,
-for example, offers Programmable I/O (PIO) state machines that are particularly
-well suited for communication protocols and precise signal generation.
+The Raspberry Pi Pico offers Programmable I/O (PIO) state machines that are 
+particularly well suited for communication protocols and precise signal generation.
 
 The CDC library treats these programmable state machines as another hardware
 resource. Applications configure and use them through the same resource based
@@ -646,7 +661,7 @@ machine. Such an implementation would move the precise waveform timing entirely
 into hardware and would further reduce the real-time requirements placed on 
 the firmware.
 
-The current LCS implementation deliberately follows a different approach. 
+The current LCS implementation follows a different approach. 
 DCC packet generation is implemented as a software state machine running in 
 the base station firmware. This provides excellent flexibility, keeps the 
 implementation easy to understand and debug, and has proven more than capable 

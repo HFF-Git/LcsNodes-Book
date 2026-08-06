@@ -3,7 +3,12 @@
 %--------------------------------------------------------------------------------
 \unnumberedChapter{LCS Runtime Lib Items}
 
-??? need a table with the items that the runtime support already...
+The \texttt{GET}, \texttt{SET} and \texttt{REQ} library functions use items 
+as one of their arguments. Getting and setting refers to attributes, requests
+result in the execution of a library function or a user defined callback.
+A firmware programmer should use the symbolic names in their programs. 
+The following table lists the reserved items for the LCS runtime.
+
 
 
 \begin{longtable}{@{}|p{0.3\linewidth}|p{0.05\linewidth}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.3\linewidth}|@{}}

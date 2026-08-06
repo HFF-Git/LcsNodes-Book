@@ -59,7 +59,8 @@ controller pins and peripherals differently.
 A common approach in many embedded projects is to handle these differences
 with a growing number of conditional compilation statements. Over time,
 these \textbf{ifdef} sections often spread throughout the entire firmware,
-making the software increasingly difficult to maintain.
+making the software increasingly difficult to maintain and frankly 
+to understand.
 
 The \textbf{Controller Dependent Code (CDC)} layer introduced earlier avoids
 this problem. Hardware-specific details are isolated in a dedicated layer

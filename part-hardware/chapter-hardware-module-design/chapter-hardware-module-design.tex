@@ -45,8 +45,7 @@ understand how each component works and how it can be combined with the others. 
 then use these building blocks to create complete modules such as the base station, block controller, 
 and other LCS devices.
 
-
-%-------------------------------------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 \unnumberedSection{Selecting the controller}
 
 The first hardware designs described in this book started with the AtMega controller family together 
@@ -77,7 +76,6 @@ One example is the CAN bus implementation used by LCS. Instead of requiring a de
 controller chip, the \textbf{can2040} library uses the PIO state machines of the PICO to implement 
 the CAN protocol. The result is a very compact solution: only the CAN transceiver hardware is 
 required in addition to the controller.
-
 This is one of those small but powerful design features that makes the PICO particularly attractive 
 for this project.
 
@@ -101,7 +99,7 @@ layer introduced in the firmware section. This keeps the possibility open to use
 families in the future.
 
 
-%-------------------------------------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 \unnumberedSection{The Controller Platform}
 
 The following table summarizes the controller capabilities typically required for an LCS hardware 
@@ -149,12 +147,11 @@ applicable to other controller platforms as well.
     \textbf{WLAN} & WLAN is optional, but becoming really popular. There is a PICO version with WLAN capability integrated. \\
 \end{longtable}
 
-%-------------------------------------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 \unnumberedSection{Communication and the CAN Bus}
 
 Communication is one of the fundamental building blocks of every LCS hardware module. 
 The LCS architecture uses the CAN bus as the communication backbone between nodes.
-
 From a hardware perspective, controllers usually provide one of two approaches. Some controllers 
 include a dedicated CAN controller as an internal hardware block. Others require an external CAN 
 controller chip, such as the MCP2515, connected through a serial interface.
@@ -168,20 +165,18 @@ This is a very elegant solution. The hardware module only requires the physical 
 connected to the controller. No additional CAN controller chip is needed. The PIO state machine takes 
 care of the timing-critical CAN protocol processing while the main firmware can focus on the LCS 
 application.
-
 The dual-core architecture of the PICO fits this design particularly well. One core is dedicated to 
 the communication processing, while the other core executes the runtime and application firmware.
 
 The use of PIO state machines will appear several times throughout the hardware design. They are not 
 only useful for communication. They can also replace dedicated logic components for timing-critical 
 tasks.
-
 For example, the block controller design later in this book uses PIO state machines to assist with 
 DCC signal processing, H-bridge control timing, cutout period handling, and RailCom datagram 
 detection. Instead of adding several dedicated logic components, these functions can be implemented 
 close to the controller itself.
 
-%-------------------------------------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 \unnumberedSection{Hardware Module Schematics}
 
 Hardware modules are described to a large extent through their schematics. The schematics shown 
@@ -195,7 +190,6 @@ combined when building a complete hardware module.
 Each building block contains clearly defined connection points. These connection points are named 
 using a unique network identifier. When two blocks use the same network name, the signals are 
 connected when the blocks are combined into a complete schematic.
-
 For example, the network name \texttt{VCC-3V3} always refers to the 3.3V supply line. Any building 
 block containing this connection will automatically connect to the same power supply when used in a 
 module design.
@@ -203,19 +197,17 @@ module design.
 This approach makes the schematics easier to understand and reuse. A CAN interface block, a power 
 supply block, or an I2C interface block can be reused in different hardware modules without 
 redrawing the complete circuit.
-
 The building blocks shown in this book should be understood as reference implementations. They 
 describe how a function can be implemented and explain the assumptions made by the LCS software.
 
 The runtime library has intentionally been designed with hardware independence in mind. However, the 
 final implementation always requires adaptation to the selected controller, including timers, 
 communication interfaces, GPIO assignments, and other hardware resources.
-
 Throughout the hardware chapters, comments will identify which parts are generic and which parts are 
 specific to the Raspberry Pi Pico implementation.
 
 
-%-------------------------------------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 \unnumberedSection{General Board Layout}
 
 Every LCS node requires a controller running the node firmware. While different nodes will require 
@@ -244,7 +236,6 @@ controller board or several boards can be combined using a backplane.
 This provides flexibility. A simple sensor module may only require the controller board and a small 
 extension board. A complex module such as the base station or block controller can combine several 
 functions into one larger hardware design.
-
 Before looking at individual modules, we first define the physical layout and connectors used by all 
 boards.
 
@@ -277,7 +268,6 @@ boards.
 
 All boards follow a common form factor. The standard widths and lengths allow boards to be combined 
 mechanically while keeping the connector positions consistent.
-
 The main controller board contains the external connections on the left side:
 
 \begin{smallGapItemize}
@@ -288,33 +278,28 @@ The main controller board contains the external connections on the left side:
 
 The extension connector is located on the right side. This connector is optional and allows 
 additional functionality to be attached.
-
 To simplify schematic creation and ensure mechanical compatibility, EasyEDA symbols and PCB 
 footprints are provided for the supported board dimensions and connector locations.
 
 
-%-------------------------------------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 \unnumberedSection{LCS Bus Connector}
 
 Every hardware module needs access to the LCS bus. Some smaller modules may also receive their power 
 from the bus, while larger modules such as boosters or block controllers use a separate power supply.
-
 The physical connection uses an RJ45 connector. Although commonly associated with Ethernet, the RJ45 
 connector provides a convenient and inexpensive multi-wire connection for the different signals 
 required by LCS.
 
 The signals on the LCS bus can be grouped into several categories.
-
 The first group is the CAN differential pair. These two signals form the communication backbone of 
 the layout control system.
-
 The second group provides power. The \texttt{PWR} line is intended for modules with low power 
 requirements. Modules with higher power consumption should use their own power input.
 
 The third group contains the DCC signal lines. These signals carry an exact copy of the generated 
 track signal and are primarily intended for distribution from the base station to boosters or 
 analysis modules.
-
 Finally, the \texttt{STOP} line provides a simple emergency mechanism. It is implemented as a shared 
 active-low line that allows any connected device to request a layout stop condition.
 
@@ -352,7 +337,7 @@ active-low line that allows any connected device to request a layout stop condit
 \end{longtable}
 \FloatBarrier
 
-%-------------------------------------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 \unnumberedSection{I2C Bus Connector}
 
 In addition to the LCS bus, the controller board exposes an external I2C interface. The I2C bus is 
@@ -363,9 +348,10 @@ I2C interface, including memory devices, sensor components, display controllers,
 interface chips. Using I2C allows additional functionality to be added without consuming many 
 controller GPIO pins.
 
-The external I2C connector is available both on the controller board and on extension boards. 
-Extension boards typically use this interface as their primary communication channel with the 
+The external I2C connector is available both on the controller board. 
+Socket extension boards typically use this interface as their primary communication channel with the 
 controller board.
+In addition, the I2C bus is also available on the extension board connector.
 
 \begin{longtable}{@{}|l|l|p{0.6\linewidth}|@{}}
     %\caption{I2C Bus Connector Pins}
@@ -405,37 +391,31 @@ The I2C bus is not intended to replace the LCS CAN bus. The two interfaces serve
 The CAN bus provides the communication backbone between independent LCS nodes, while the I2C bus is 
 used locally between components that belong to the same hardware module.
 
-%-------------------------------------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 \unnumberedSection{LCS Node Extension Board Connector}
 
 To make extension boards interchangeable, a standardized connector is defined between the controller 
 board and extension boards.
-
 An extension board provides a male connector on its left side, while the controller board provides 
 the matching female connector on its right side. This allows extension boards to be placed directly 
 next to the controller board.
 
 The same connector concept also supports a backplane arrangement. In this case, several extension 
 boards can be connected next to the controller board instead of stacking directly.
-
 The concept is similar to the shield ecosystem used by platforms such as Arduino or Raspberry Pi. 
 However, the LCS approach is designed specifically for layout control modules and allows both direct 
 connection and backplane-style arrangements.
 
 The primary communication method between controller and extension boards is the I2C bus. In fact, 
 most current extension boards only require the I2C interface and power supply.
-
 Nevertheless, the connector provides additional controller resources. This leaves room for more 
 complex extension boards that require direct access to controller capabilities such as digital I/O, 
 analog inputs, PWM outputs, or serial interfaces.
 
-The Raspberry Pi Pico provides a very flexible pin assignment system. Many peripheral functions can 
-be mapped to different GPIO pins. The extension connector therefore exposes a carefully selected set 
+The Raspberry Pi Pico provides a very flexible pin assignment system. With few execptions, 
+many peripheral functions can be mapped to different GPIO pins. 
+The extension connector therefore exposes a carefully selected set 
 of signals that allow the capabilities of the controller to be used by extension boards.
-
-% ---------------------------------------------------------------------------
-% Insert extension connector figure here
-% ---------------------------------------------------------------------------
 
 \begin{longtable}{@{}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.4\linewidth}|@{}}
     \caption{Extension Connector} \\
@@ -517,7 +497,6 @@ of signals that allow the capabilities of the controller to be used by extension
 
 
 The extension connector consists of three physical connector groups.
-
 The central connector provides the general-purpose interface between controller and extension 
 boards. It contains power, communication signals, and GPIO connections.
 
@@ -525,9 +504,7 @@ Two additional connectors provide track-related signals. These connectors are pr
 modules such as the base station and block controller where several track outputs need to be 
 connected to extension hardware.
 
-
-
-%-------------------------------------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 \unnumberedSection{Controller, Extension and Socket Boards}
 
 The combination of controller and extension boards forms a complete LCS node. The controller board 
@@ -535,7 +512,6 @@ provides the common infrastructure, while extension boards add the hardware func
 specific application.
 
 There are two basic ways of using this concept.
-
 The first option is a direct connection. An extension board is plugged directly into the controller 
 board connector. This is suitable when the additional hardware belongs physically close to the 
 controller.
@@ -585,28 +561,23 @@ mechanical arrangement changes.
 
 
 The advantage of this approach becomes visible when looking at the range of possible LCS modules.
-
 A small sensor node may consist of only a controller board and a small extension board. A signal 
 module may add LED drivers and output circuitry. A base station or block controller may combine the 
 controller board with several specialized extension boards containing powerful hardware functions.
-
 The same basic controller platform can therefore serve many different purposes.
 
 
-%-------------------------------------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 \unnumberedSection{Socket Extension Board}
 
 While extension boards add functionality to the controller board, some functions are better located 
 close to the physical element they control.
-
-For example, a turnout or signal may be located several meters away from the main controller. Running 
+For example, a turnout or signal may be located one or two meters away from the main controller. Running 
 many individual wires back to a central extension board would not be practical.
-
-For these cases, small socket extension boards are used.
+For these cases, small \textbf{socket extension board}s are used.
 
 Socket boards are connected to an extension board through the I2C bus and receive their power through 
 the same connection. They provide a local interface close to the controlled element.
-
 Typical examples are:
 
 \begin{smallGapItemize}
@@ -615,17 +586,16 @@ Typical examples are:
 \item a small sensor interface located close to a detector
 \end{smallGapItemize}
 
-The extension board provides the more powerful local hardware resources, while socket boards provide 
-a simple way to distribute the physical connections around the layout.
+The extension board provides the more powerful local hardware resources, while socket boards 
+provide smaller dedicated functions. For example, a signal socket extension board, would 
+manage two signals and is located close top where the signals are on the layout. 
 
 The separation also keeps the wiring of the layout manageable. Instead of bringing every individual 
 signal wire back to a central location, small local modules can be placed where they are needed.
-
+The I2C bus connects the socket board to the controller board nearby, the controller boards
+themselves communicate via the LCS bus and are spread throughout the layout.
 Since only a limited number of extension boards are normally connected to one controller, the signal 
-line lengths remain reasonable. For more compact arrangements, extension boards with only the right 
-side connector can be inserted into a backplane board together with the controller board.
-
-The electrical concept remains unchanged. Only the mechanical arrangement is different.
+line lengths of the I2C bus remain reasonable. 
 
 \begin{figure}[ht]
     \centering
@@ -647,11 +617,10 @@ The electrical concept remains unchanged. Only the mechanical arrangement is dif
 \end{figure}
 \FloatBarrier
 
-%-------------------------------------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 \unnumberedSection{Summary}
 
 This chapter introduced the basic hardware design philosophy behind LCS modules.
-
 A hardware module is built from three fundamental parts: communication, controller, and function 
 blocks. The controller provides the processing platform, the communication interface connects the 
 module to the LCS network, and the function blocks implement the actual purpose of the module.

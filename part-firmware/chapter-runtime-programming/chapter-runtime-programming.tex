@@ -6,14 +6,13 @@ This chapter demonstrates how an application is built on top of the LCS runtime
 library. The examples are intentionally small, but they represent complete LCS
 applications. They show the basic structure every node program follows:
 
-\begin{itemize}
+\begin{smallGapItemize}
 \item initialize the runtime environment,
 \item register application callbacks,
 \item start the runtime and enter normal node operation.
-\end{itemize}
+\end{smallGapItemize}
 
 Two examples are presented.
-
 The first example is a runtime test application. It is used during development
 to explore a node, verify runtime functions and hardware, and provide a simple
 environment for debugging. Although its purpose is testing, it already contains
@@ -33,9 +32,8 @@ hardware and runtime features are introduced.
 The runtime test program is a simplified version of the application actually
 used during runtime library development and hardware testing. Some details, such
 as the controller board descriptor definition, are omitted here. The complete
-version can be found in the LCS GitHub repositories.
-
-The program demonstrates the complete lifecycle of an LCS application:
+version can be found in the LCS GitHub repositories. 
+The program nevertheless demonstrates the complete lifecycle of an LCS application:
 
 \begin{smallGapItemize}
 \item The runtime environment is initialized.
@@ -329,8 +327,6 @@ requests that event 200 is handled for all ports:
 
 \begin{lstlisting}[style=codesnippetstyle]
 (O)->r 0 30 200 0xf
-lookupEventMapEntry, id: 200, hash: 307
-Node: 0x0, item: 30, val1: 0xc8, val2: 0xf
 (O)->
 \end{lstlisting}
 
@@ -367,7 +363,7 @@ The following diagram illustrates the basic principle:
 \begin{center}
     \begin{tikzpicture} [scale=0.9, transform shape]
 
-        \draw[help lines, gray!50, dashed] (0,0) grid(16,6);
+        % \draw[help lines, gray!50, dashed] (0,0) grid(16,6);
 
         % Thick horizontal line (LCS bus) with text
         \draw[line width=1.5mm, <->, line cap=round, draw=gray, name path=lcsline] 
@@ -423,7 +419,6 @@ other nodes use that information.
 
 The producer application generates an event when the button is pressed. In this
 example, the event identifier is 200.
-
 The application does not need to know which nodes are interested in this event.
 It simply sends the event into the LCS network. The runtime and communication
 layer handle the distribution to all registered consumers.
@@ -442,14 +437,12 @@ CdcResourceDescMap dMap = LCS_MAIN_CONTROLLER_BOARD_DESC_B_02_10;
 uint16_t buttonPressedEventId = 200;
 
 void setupButton( ) {
-
     ...
 }
 
 void buttonPressed( ) {
 
     uint8_t rStat;
-
     rStat = sendEventOn( 0, buttonPressedEventId );
 }
 
@@ -476,19 +469,15 @@ int main( ) {
 The important line is the call to \texttt{sendEventOn()}. This function creates
 an LCS event notification. The runtime takes care of the required message
 generation and transmission.
-The application only expresses the logical action:
-
-\begin{quote}
-``An event happened.''
-\end{quote}
-
+The application only expresses the logical action: "An event happened."
 It does not need to know how the event is transported or which nodes will
 receive it.
 
 %--------------------------------------------------------------------------------
 \unnumberedSection{A Simple Event Handler Program}
 
-The consumer program is configured to react to event identifier 200.
+The consumer program is configured to react to event identifier 200. 
+This was done for example with a REQ command using the command line interface.
 The program initializes the LED hardware, registers an event callback and starts
 the runtime. Whenever the event is received, RtLib invokes the callback.
 The LED hardware setup and handling are omitted here and will be covered in a
@@ -507,7 +496,6 @@ CdcResourceDescMap dMap = LCS_MAIN_CONTROLLER_BOARD_DESC_B_02_10;
 uint16_t buttonPressedEventId = 200;
 
 void setupLED( ) {
-
     ...
 }
 
@@ -520,14 +508,10 @@ uint8_t lcsEventCallback( uint16_t npId,
     if ( eId == buttonPressedEventId ) {
 
         if ( eAction == PEA_EVENT_ON ) {
-
             // ... turn LED on ...
-
         }
         else if ( eAction == PEA_EVENT_OFF ) {
-
             // ... turn LED off ...
-
         }
     }
 
@@ -537,7 +521,6 @@ uint8_t lcsEventCallback( uint16_t npId,
 int main( ) {
 
     uint8_t rStat;
-
     rStat = initRuntime( &dMap,
                          ( NPO_SKIP_NODE_ID_CONFIG |
                            NPO_DISABLE_WATCHDOG ),
@@ -547,9 +530,7 @@ int main( ) {
     if ( rStat == NO_ERR ) {
 
         setupLED( );
-
         registerEventCallback( lcsEventCallback );
-
         startRuntime( );
     }
 
@@ -574,4 +555,8 @@ This small example already demonstrates the basic programming model of LCS:
 More complex applications build on exactly this mechanism. Sensors, controls,
 automation functions and user interfaces can all communicate using the same
 event-based approach.
+
+In addition, there is still the directed address methods for accessing attributes 
+and functions on a particular node. Any node can query for example any other 
+node for a value. 
 

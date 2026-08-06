@@ -70,7 +70,6 @@ internal hardware implementation.
 
 A fundamental design goal of the LCS architecture is to separate fixed firmware
 functionality from configurable behavior.
-
 A firmware update should normally only be required when adding new capabilities,
 correcting errors or supporting new hardware. Changes such as assigning a
 different turnout address, changing event behavior or adjusting operating
@@ -82,7 +81,6 @@ how these capabilities are used in a particular installation.
 
 The separation between firmware and configuration is one of the fundamental
 design principles of the Layout Control System.
-
 The firmware defines the capabilities of a node. Configuration defines how
 these capabilities are used in a particular installation. A turnout controller,
 for example, contains the capability to control a turnout, detect its state and
@@ -113,9 +111,8 @@ requiring special communication mechanisms.
 Ports are the logical interfaces provided by a node. While node items represent
 general node attributes, ports represent independent functions that can be
 addressed and controlled.
-
-A good example is a block controller with four independent block sections. Each
-block section should normally be represented by a separate port. The physical
+A good example is a block controller with four independent blocks. Each
+block should normally be represented by a separate port. The physical
 implementation, such as input pins, current sensors or extension modules, is an
 internal detail of the node.
 
@@ -127,9 +124,9 @@ Channels are used internally by a port to represent individual controllable or
 measurable elements. Depending on the node type, a port may provide one or more
 channels. A channel may represent, for example, an individual output, sensor
 value or controlled element belonging to a port.
-
 The firmware designer should decide early which functions deserve their own
-port and how the internal channels are organized.
+port and how the internal channels, which represent the access to hardware, 
+are organized.
 
 A port should represent something that has an independent meaning in the layout,
 not simply a hardware resource. A block controller with four track sections
@@ -142,7 +139,6 @@ implementation detail.
 
 The Layout Control System is fundamentally an event driven system. Events allow
 nodes to react to changes without continuously polling other nodes.
-
 For example, changing a turnout position can generate an event. Other nodes,
 such as a control panel or display module, can subscribe to this event and
 update their own state. The turnout controller does not need to know which
@@ -162,15 +158,7 @@ is invoked.
 The event mechanism is one of the most powerful configuration features of the
 LCS architecture. It allows complex layout behavior to be created by
 configuration instead of adding special cases to firmware.
-
-A good example is route setting. A node containing a control button can
-broadcast a ``set route'' event. All turnout ports belonging to that route can
-be configured to react to this event. Each port then performs its local action
-through its callback function. The individual turnouts do not need to know about
-the route, and the node creating the event does not need to know where the
-turnouts are located.
-
-This event driven approach avoids unnecessary dependencies between nodes and
+This event driven approach also avoids unnecessary dependencies between nodes and
 allows complex layout behavior to be created by configuration.
 
 %--------------------------------------------------------------------------------
@@ -184,7 +172,6 @@ The node specific firmware communicates with the framework through defined APIs
 and callback functions. In practice, a large part of firmware development
 consists of implementing these callbacks and using the available driver
 interfaces.
-
 The main program of a node is intentionally simple:
 
 \begin{smallGapEnumerate}
@@ -196,7 +183,6 @@ The main program of a node is intentionally simple:
 
 Message handling, event processing, configuration management and hardware
 abstraction are performed by the lower software layers.
-
 The following chapters explain the programming model in more detail and show how
 these concepts are applied in real firmware implementations.
 
@@ -210,7 +196,6 @@ checking power consumption.
 The LCS core library provides periodic callbacks for this purpose. The firmware
 designer implements the required processing in these callbacks rather than
 creating an independent timing mechanism.
-
 For example, a block controller may periodically read the track current
 measurement. If the measured value exceeds a configured limit, the firmware can
 broadcast an event and disable track power.
@@ -226,7 +211,6 @@ The LCS library already offers a command line interface. It provides commands
 for managing a node and accessing its data. While this interface is not used
 during normal operation, it is extremely useful during firmware development,
 testing and debugging.
-
 All commands are also available through LCS messages, allowing troubleshooting
 and monitoring even when a node is already installed in the layout.
 
@@ -238,7 +222,6 @@ registering it during node initialization.
 \unnumberedSection{Configuration}
 
 Configuration of an LCS node consists of two different aspects.
-
 The first aspect is hardware configuration. This includes mapping controller
 resources, configuring extension boards and preparing the hardware interfaces.
 This work is normally handled by the CDC and driver layers. The firmware designer
@@ -251,7 +234,6 @@ reasonably change during installation as node or port items.
 
 A good rule is that firmware should implement capabilities, while configuration
 should define their use.
-
 The larger node examples presented later in this book demonstrate this approach
 in practice.
 

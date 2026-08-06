@@ -177,7 +177,6 @@ struct UIEncoder : UIElements {
 LEDs provide visual feedback to the user and therefore complement buttons and
 rotary encoders. The UILED object represents an indicator rather than a simple
 digital output.
-
 Besides switching the LED on and off, the object supports common blinking
 patterns controlled by an internal state machine. Applications therefore specify
 the desired behavior instead of periodically toggling the output pin
@@ -278,7 +277,7 @@ functions. Consequently, identical UI objects can operate with direct GPIO pins,
 shift registers, I/O expanders or other hardware interfaces without requiring
 any modifications.
 
-The UI Elements library deliberately concentrates on the individual building
+The UI Elements library concentrates on the individual building
 blocks of a user interface. More advanced concepts such as screen management,
 menu navigation and complete operator interfaces are constructed from these
 elements. The next chapter introduces this additional abstraction layer and
