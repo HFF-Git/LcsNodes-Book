@@ -3,25 +3,49 @@
 %--------------------------------------------------------------------------------
 \unnumberedChapter{Programming with UI Elements}
 
+The LCS runtime provides the basic infrastructure for nodes, ports, events and messages. On top of this foundation, a hardware module can provide a user interface. Buttons, LEDs, rotary encoders and displays are examples of UI elements that allow a user to interact with an LCS node.
 
+This chapter gives a brief introduction to programming UI elements. It does not attempt to describe every available element or provide a complete application example. Instead, it introduces the basic programming model and points to the cab handheld as the practical example of how these elements can be combined into a complete user interface.
 
-??? place holder...
+\unnumberedSection{Producer Code}
 
-??? pick up on the previous example
+The simplest UI elements are those that produce an action. A button is a good example. When the button is pressed, the UI element produces an event that can be handled by the application firmware. An LED works in the opposite direction: the application controls the element to indicate a state or activity.
 
+The programming of such simple elements is straightforward. The hardware element is defined and initialized, and the application provides the appropriate callback or handler for the generated action. The callback can then perform whatever application-specific operation is required.
 
+Picking up on our previous example, the next sections will use a button an d LED UI element to demonstrate the basic principle. The button produces an action which is handled by the firmware, while the LED is controlled by the application to provide visual feedback. More elaborate UI elements follow the same general idea, although they may involve additional state and more callbacks.
 
-%--------------------------------------------------------------------------------
-\unnumberedSection{Scenario}
+The important point is that the application does not need to deal directly with the electrical details of the button or LED. Those details belong to the UI element implementation. The application works with the logical element and its actions.
 
-%--------------------------------------------------------------------------------
-\unnumberedSection{Definitions}
+\unnumberedSection{Producer Code}
 
-%--------------------------------------------------------------------------------
-\unnumberedSection{Producer}
+The producer from our previous example is enhanced to define a button and when pressed, send an event. 
 
-%--------------------------------------------------------------------------------
-\unnumberedSection{Consumer}
+??? code here 
 
+??? explain the "tick" function ...
 
+\unnumberedSection{Consumer Code}
+
+The consumer side defines a LED and on receiving the event, will toggle the LED state.
+
+ ??? code here
+
+\unnumberedSection{Screen UI}
+
+A screen-based user interface is considerably more elaborate. A screen is not simply another UI element. It combines several elements into a user interaction model. A typical screen may contain buttons used for menu navigation, selection or confirmation, together with display elements showing the current state or available choices.
+
+Programming such a screen therefore involves several steps. First, the required UI elements have to be defined. This includes the buttons for selecting a menu item, buttons for navigating between choices, and the display used to present information to the user. 
+
+All used UI elements are created and connected to the screen. The screen provides the context in which the elements operate and manages their interaction. Finally, the application provides callbacks for the actions that can be selected by the user. These callbacks contain the application-specific behavior that should take place when the user makes a selection.
+
+The screen itself therefore becomes a small user-interface framework. The UI library takes care of the mechanics of displaying the elements, processing input and navigating between them. The application firmware supplies the elements that make up the screen and implements the actions associated with them.
+
+A complete example of this programming model would take considerably more space than the simple button and LED example above. Rather than reproducing such an example here, the best way to understand screen programming is to study the implementation of the LCS cab handheld.
+
+The cab handheld is currently the only LCS component that makes intensive use of the UI element and screen libraries. Its firmware contains several screens, navigation between screens, selection controls and display elements, together with the callbacks that implement the corresponding actions. The code is deliberately well documented and provides a practical example of how the individual pieces fit together.
+
+If you want to develop a new screen or a more sophisticated UI element arrangement, the cab handheld should therefore be considered the primary reference implementation. Studying its code is often more useful than a small isolated example, because it shows the complete programming model in the context of an actual LCS application.
+
+The important principle remains the same throughout: define the UI elements, create and connect them to the screen, and then implement the callbacks that give the user's actions their meaning. The UI library provides the infrastructure; the application firmware provides the behavior.
 

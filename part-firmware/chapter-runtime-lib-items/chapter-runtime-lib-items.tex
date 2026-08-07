@@ -9,23 +9,126 @@ result in the execution of a library function or a user defined callback.
 A firmware programmer should use the symbolic names in their programs. 
 The following table lists the reserved items for the LCS runtime.
 
+{
+\footnotesize
 
-
-\begin{longtable}{@{}|p{0.3\linewidth}|p{0.05\linewidth}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.3\linewidth}|@{}}
+\begin{longtable}{@{}|p{0.4\linewidth}|p{0.06\linewidth}|p{0.08\linewidth}|p{0.08\linewidth}|p{0.22\linewidth}|@{}}
     \toprule
-    \textbf{Name} & \textbf{Id} & \textbf{Arg0} & \textbf{Arg1}& \textbf{Purpose} \\
+    \textbf{Name} & \textbf{Id} & \textbf{Arg0} & \textbf{Arg1} & \textbf{Access Type} \\
+    \midrule
     \midrule
     \endfirsthead
     \toprule
-    \textbf{Name} & \textbf{Id} & \textbf{Arg0} & \textbf{Arg1}& \textbf{Purpose} \\
+    \textbf{Name} & \textbf{Id} & \textbf{Arg0} & \textbf{Arg1} & \textbf{Access Type} \\
     \midrule
+     \midrule
     \endhead
     \midrule
-    \multicolumn{2}{r}{\textit{Continued on next page}} \\
+    \multicolumn{5}{r}{\textit{Continued on next page}} \\
     \midrule
     \endfoot
     \bottomrule
     \endlastfoot
-    x & x & x & x & x \\
+
+    \texttt{ITEM\_ID\_DEBUG\_MASK}       & 1   & mask & - & GET / SET \\
     \midrule
+
+    \texttt{ITEM\_ID\_RUNTIME\_OPTIONS}  & 2   & options & - & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_FIRMWARE\_OPTIONS} & 3   & options & - & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_RT\_LIB\_VERSION}   & 4   & version & - & GET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_RT\_LIB\_PATCH\_LEVEL} & 5 & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_NODE\_OPTIONS}     & 6   & & & \\
+    \midrule
+
+    \texttt{ITEM\_ID\_NODE\_FLAGS}       & 7   & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_BOARD\_INFO}       & 8   & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_BOARD\_VERSION}    & 9   & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_BOARD\_TYPE}       & 10  & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_CONTROLLER\_INFO}  & 11  & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_OPTIONS}           & 12  & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_FLAGS}             & 13  & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_TYPE}              & 14  & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_NODE\_STATE}       & 15  & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_NODE\_ID}          & 16  & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_RESTART\_COUNT}    & 17  & & & GET / SET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_PORT\_MAP\_ENTRIES} & 18 & & & GET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_PORT\_MAP\_HWM}    & 19  & & & GET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_EVENT\_MAP\_ENTRIES} & 20 & & & GET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_EVENT\_MAP\_HWM}   & 21  & & & GET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_ATTR\_MAP\_ENTRIES} & 22 & & & GET \\
+    \midrule
+
+    \texttt{ITEM\_ID\_RESET}             & 23  & & & REQ \\
+    \midrule
+
+    \texttt{ITEM\_ID\_GET\_NODE\_UID}    & 24  & & & REQ \\
+    \midrule
+
+    \texttt{ITEM\_ID\_SYNC\_TO\_NVM}     & 27  & & & REQ \\
+    \midrule
+
+    \texttt{ITEM\_ID\_SYNC\_TO\_MEM}     & 28  & & & REQ \\
+    \midrule
+
+    \texttt{ITEM\_ID\_ADD\_EVENT}        & 30  & & & REQ \\
+    \midrule
+
+    \texttt{ITEM\_ID\_REMOVE\_EVENT}     & 31  & & & REQ \\
+    \midrule
+
+    \texttt{ITEM\_ID\_LOOKUP\_EVENT\_ENTRY} & 32 & & & REQ \\
+    \midrule
+
+    \texttt{ITEM\_ID\_GET\_EVENT\_MAP\_ENTRY} & 33 & & & REQ \\
+    \midrule
+
+    \texttt{ITEM\_ID\_EVENT\_DELAY\_TICKS} & 34 & & & \\
+    \midrule
+
+    \texttt{ITEM\_ID\_ENABLE\_EVENT\_PROCESSING} & 35 & & & REQ \\
+    \midrule
+
+    \texttt{ITEM\_ID\_SET\_ACTIVE\_LED}  & 36  & & & REQ \\
+    \midrule
+
 \end{longtable}
+
+}
