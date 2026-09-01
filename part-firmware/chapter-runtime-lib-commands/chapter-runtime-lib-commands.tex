@@ -79,13 +79,9 @@ format used internally and the ASCII representation.
 
 \lstset{style=api-interface}
 \begin{lstlisting}
-uint8_t lcsMsgToStr( char *msgStr,
-                     uint8_t *dataBuf,
-                     uint8_t dataBufLen );
+uint8_t strToLcsMsg( uint8_t *dataBuf, char *msgStr );
 
-uint8_t strToLcsMsg( uint8_t *dataBuf,
-                     uint8_t dataBufLen,
-                     char *msgStr );
+uint8_t strToLcsMsg( uint8_t *dataBuf, char *msgStr ); 
 \end{lstlisting}
 
 The ASCII representation is deliberately simple. It is not intended as a replacement
@@ -191,9 +187,9 @@ item-based concept introduced earlier in this book.
 The commands correspond closely to the runtime library functions:
 
 \begin{tabular}{ll}
-g & nodeGet() \\
-p & nodeSet() \\
-r & nodeReq()
+g & getItem() \\
+p & setItem() \\
+r & reqITem()
 \end{tabular}
 
 The item number identifies the attribute or runtime function to access. This provides
@@ -318,11 +314,13 @@ formatted version of some data.
             \hline
             s & 2 & 22 & 42 & Node Map.\\
             \hline
-            s & 3 & 23 & - & Node Data.\\
+            s & 3 & 23 & 43 & Port Map.\\
             \hline
-            s & - & 24 & - & Event Map.\\
+            s & 4 & 24 & 44 & Event Map.\\
             \hline
-            s & 5 & 25 & 45 & Port Map.\\
+            s & 5 & 25 & - & Port Data Map.\\
+            \hline
+            s & 6 & 26 & - & Global Data Map.\\
             \hline
             s & 6 & - & 46 & Task Map.\\
             \hline

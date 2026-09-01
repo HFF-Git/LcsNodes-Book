@@ -124,18 +124,33 @@ uint8_t registerReqCallback( LcsReqCallback handler,
 %--------------------------------------------------------------------------------
 \unnumberedSection{Local Node Access}
 
-Local node access provides firmware access to the attributes and services of 
-the local node. The three operations correspond to the Item ID programming model 
-introduced earlier.
+Local node access provides firmware access to the attributes and services of  
+the local node. They are referred to by item numbers. The three operations 
+correspond to the Item ID programming model introduced earlier.
+
+The routines to get and set an item also accept a range of items. This is very 
+useful if a whole set of attributes need to be accessed. 
+
 
 \begin{lstlisting}[style=api-interface]
-uint8_t nodeGet( uint16_t npId, uint16_t item, uint16_t *arg );
-uint8_t nodeSet( uint16_t npId, uint16_t item, uint16_t arg );
+uint8_t     getItem( uint16_t npId, 
+                     uint16_t item, 
+                     uint16_t *arg, 
+                     uint16_t len = 1 );
 
-uint8_t nodeReq( uint16_t npId,
-                 uint16_t item,
-                 uint16_t *arg1 = nullptr,
-                 uint16_t *arg2 = nullptr );
+uint8_t     setItem( uint16_t npId, 
+                     uint16_t item, 
+                     uint16_t *arg,
+                     uint16_t len = 1 );
+
+uint8_t     reqItem( uint16_t npId, 
+                     uint16_t item, 
+                     uint16_t *arg1 = nullptr, 
+                     uint16_t *arg2 = nullptr );
+
+uint8_t     getItemPtr( uint16_t npId,
+                        uint16_t item,
+                        uint16_t **itemPtr );
 \end{lstlisting}
 
 %%---------------------------------------------------------------------------------
