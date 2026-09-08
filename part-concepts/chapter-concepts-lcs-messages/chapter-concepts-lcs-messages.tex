@@ -195,7 +195,7 @@ In addition, LCS nodes that actually manage the track will have a set of node/po
 
 \unnumberedSection{DCC Locomotive Decoder Management}
 
-Locomotive management comprises the set of messages used by the base station to control running equipment. To control a locomotive, the \texttt{(REQ-LOC)} command is issued, typically by a handheld cab and processed by the base station. Upon receiving this command, the session manager allocates a session and responds with a \texttt{(REP-LOC)} message containing the initial speed and direction settings for the locomotive. A previously allocated session can be closed using the \texttt{(REL-LOC)} command, to which the session manager also responds with a \texttt{(REP-LOC)} message. Information about an existing DCC session can be requested using the \texttt{(QRY-LOC)} command, while data for a locomotive within a consist can be obtained using the \texttt{(QRY-LCON)} command. In both cases, the session manager replies with a \texttt{(REP-LOC)} message.
+Locomotive management comprises the set of messages used by the base station to control running equipment. To control a locomotive, the \texttt{(REQ-LOC)} command is issued, typically by a handheld cab and processed by the base station. Upon receiving this command, the base station responds with a \texttt{(REP-LOC)} message containing the initial speed and direction settings for the locomotive. Information about eh current state of the locomotive can be requested using the \texttt{(QRY-LOC)} command, while data for a locomotive within a consist can be obtained using the \texttt{(QRY-LCON)} command. In both cases, the session manager replies with a \texttt{(REP-LOC)} message.
 
 \begin{table}[ht!]
     \centering 
@@ -206,7 +206,6 @@ Locomotive management comprises the set of messages used by the base station to 
             \hline
             REQ-LOC & cabId-H & CabId-L & flags & & & & \\
             REP-LOC & cabId-H & CabId-L & spDir & fn1 & fn2 & fn3 & fn4 \\
-            REL-LOC & cabId-H & CabId-L & flags & & & & \\
             QRY-LOC & cabId-H & CabId-L & & & & & \\
             QRY-LCON & conId & index & & & & & \\
             \hline
@@ -345,7 +344,7 @@ Some DCC commands return an acknowledgment or an error for the outcome of a DCC 
             \hline
             \textbf{Opcode} & \textbf{Data1} & \textbf{Data2} & \textbf{Data3} & \textbf{Data4} & \textbf{Data5} & \textbf{Data6} & \textbf{Data7} \\
             \hline
-            DCC-ACK & arg & & & & & & \\
+            DCC-ACK & arg1 & arg2 & & & & & \\
             \hline
         \end{tabular}
     }
