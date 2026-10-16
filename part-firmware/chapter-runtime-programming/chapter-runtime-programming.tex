@@ -68,9 +68,9 @@ uint8_t lcsMsgCallback( uint8_t *msg, void *uData ) {
     return( NO_ERR );
 }
 
-uint8_t lcsCmdCallback( char *cmdLine, void *uData  ) {
+uint8_t lcsCmdCallback( uint8_t chan, char *cmdLine, void *uData  ) {
 
-    printf( "Command Line Callback: %s\n", cmdLine );
+    printf( "Command Line Callback ( %d ): %s\n", chan, cmdLine );
     return( NO_ERR );
 }
 

@@ -345,14 +345,15 @@ During development and debugging, console output is one of the most valuable
 tools. The CDC library therefore offers a simple console interface that shields
 the firmware from the underlying USB implementation.
 
-The interface intentionally resembles the familiar \texttt{printf( )} model. For supporting two USB channels as required by the base station of protocol gateways, individual channels can be selected independently. Applications can also determine whether a host terminal is currently connected before attempting to transmit debug messages.
+The interface intentionally resembles the familiar \texttt{printf( )} model. For supporting two USB channels as required by the base station for protocol gateways, two individual channels can be selected independently. Applications can also determine whether a host USB channel is currently connected before attempting to using a channel.
 
 \lstset{language=c++, style=api-interface}
 \begin{lstlisting}
 uint8_t         configureUsbIO( );
-bool            usbIoIsConnected( );
-char            usbIoGetChar( int chan );            
-int             usbIoPrintf( int chan, const char *fmt, ... );
+bool            usbIoIsConnected( uint8_t chan = 0 );
+void            usbIoTick( );
+char            usbIoGetChar( uint8_t chan );            
+int             usbIoPrintf( uint8_t chan, const char *fmt, ... );
 \end{lstlisting}
 \FloatBarrier
 
