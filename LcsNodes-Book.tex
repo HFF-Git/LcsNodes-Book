@@ -39,7 +39,8 @@
     %----------------------------------------------------------------------------
     \newcommand{\srcinputpath}{../../LcsNodes-Pico/}
     \newtoggle{includeListings}
-    \togglefalse{includeListings} 
+    \toggletrue{includeListings}
+    %\togglefalse{includeListings} 
     
     %----------------------------------------------------------------------------
     % Title page.
@@ -99,6 +100,11 @@
     \include{part-reference/part-reference}
     \include{part-appendix/part-appendix}
     
+    %----------------------------------------------------------------------------  
+    % Optional Listing part
+    %----------------------------------------------------------------------------  
+    \include{part-listings/part-listings}
+	    
     %----------------------------------------------------------------------------    
     % Back matter (table of contents, etc.)
     %----------------------------------------------------------------------------
