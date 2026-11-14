@@ -264,6 +264,7 @@ Init Callback: 0x38
 
 The node is now initialized and has entered operational mode. The initialization
 callbacks show the runtime processing the available node and port resources.
+The init callback is invoked for each port.
 At this point the developer can interact with the node using the runtime command
 interface described in the previous chapter.
 
@@ -326,7 +327,7 @@ For example, we can manually configure an event entry. The following command
 requests that event 200 is handled for all ports:
 
 \begin{lstlisting}[style=codesnippetstyle]
-(O)->r 0 30 200 0xf
+(O)->r 0 30 200 0x7
 (O)->
 \end{lstlisting}
 
