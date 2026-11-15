@@ -183,12 +183,10 @@ uint8_t registerLcsCallbacks( ) {
 int main( ) {
 
     uint8_t rStat;
-
-    rStat = initRuntime( &dMap,
-                         ( NPO_SKIP_NODE_ID_CONFIG |
-                           NPO_DISABLE_WATCHDOG ),
-                         ( LCS_DBG_ENABLE |
-                           LCS_DBG_SETUP ));
+    uint16_t options = ( NPO_SKIP_NODE_ID_CONFIG |
+                         NPO_DISABLE_WATCHDOG );
+                     
+    rStat = initRuntime( &dMap, options );
 
     if ( rStat == NO_ERR )
         rStat = registerLcsCallbacks( );
@@ -522,11 +520,10 @@ uint8_t lcsEventCallback( uint16_t npId,
 int main( ) {
 
     uint8_t rStat;
-    rStat = initRuntime( &dMap,
-                         ( NPO_SKIP_NODE_ID_CONFIG |
-                           NPO_DISABLE_WATCHDOG ),
-                         ( LCS_DBG_ENABLE |
-                           LCS_DBG_SETUP ));
+    uint16_t options = ( NPO_SKIP_NODE_ID_CONFIG |
+                         NPO_DISABLE_WATCHDOG );
+                     
+    rStat = initRuntime( &dMap, options );
 
     if ( rStat == NO_ERR ) {
 

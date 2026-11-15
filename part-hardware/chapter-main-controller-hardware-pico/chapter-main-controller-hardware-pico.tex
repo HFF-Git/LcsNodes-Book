@@ -110,7 +110,6 @@ This decision adds some hardware complexity but greatly simplifies the design
 of extension modules. A developer building an extension board does not need
 to worry about the controller voltage level used internally.
 
-
 \textbf{Why external non-volatile memory}.
 
 The LCS system requires persistent storage for configuration data, node
@@ -125,6 +124,7 @@ the specific module. The common controller design provides the interface so
 that different memory devices can be used when needed.
 
 \textbf{Summary}.
+
 The main controller board is therefore not intended to be the final solution
 for every LCS module. Instead, it represents a carefully chosen foundation.
 It combines a powerful controller, reliable communication, flexible
@@ -140,7 +140,6 @@ architecture. The controller, communication interface, storage and extension
 capabilities together form a reusable foundation for many different LCS
 modules.
 
-
 %--------------------------------------------------------------------------------
 \unnumberedSection{Main Controller}
 
@@ -150,12 +149,11 @@ interface, external non-volatile memory and the power supply circuitry.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[page=2, width=0.8\textwidth]{./part-hardware/chapter-main-controller-hardware-pico/Schematic_LcsNodes-Main-Controller-Board-B.02.10.pdf}
+    \includegraphics[page=2, width=0.8\textwidth]{./part-hardware/chapter-main-controller-hardware-pico/Schematic_LcsNodes-Main-Controller-Board.pdf}
     \caption{Main LCS Controller Controller Part}
     %\label{fig:schematic}
 \end{figure}
 \FloatBarrier
-
 
 Most of these components will appear again in later hardware designs. They
 represent the fundamental building blocks of an LCS node and are therefore
@@ -177,7 +175,28 @@ Power-fail detection and brown-out detection serve complementary roles.
 The power-fail detector triggers early, while the supply voltage is still
 within specification. This allows the firmware to continue running normally
 and perform an orderly shutdown or save important state information using the
-energy stored in a hold-up capacitor.
+energy stored in a hold-up capacitor. 
+
+Note that the power supply section contains two DC/DC converters. The first 
+is used to power the controller and extension boards. The second supplies 
+power to the external I2C socket boards and can optionally provide power t
+o the LCS bus, allowing small devices such as handheld controllers to draw 
+power directly from the bus.
+
+If no extension or socket boards are used and there is no requirement to 
+supply power to the LCS bus, the power supply section could be simplified 
+by using a single DC/DC converter to provide the 9V supply, together with 
+a linear voltage regulator for the local 5V supply. This approach is used 
+on one of the later boards described in this book.
+
+The main controller is designed as a general-purpose board and therefore 
+provides quite generous power capabilities.
+
+There is one more nice feature: the diagnostic display connector allows 
+a small 0.91” OLED I2C display to be connected. The firmware can use this 
+display to present diagnostic information in a readable format. This is 
+particularly useful when you are lying underneath the layout and want 
+to see what is happening at each node.
 
 %--------------------------------------------------------------------------------
 \unnumberedSection{Connectors and Level Shifters}
@@ -188,7 +207,7 @@ logic level conversion circuitry.
 \begin{figure}[htbp]
     \centering
     \includegraphics[page=3, width=0.8\textwidth]
-    {./part-hardware/chapter-main-controller-hardware-pico/Schematic_LcsNodes-Main-Controller-Board-B.02.10.pdf}
+    {./part-hardware/chapter-main-controller-hardware-pico/Schematic_LcsNodes-Main-Controller-Board.pdf}
     \caption{Main LCS Controller Connector and Level Shifters}
     %\label{fig:schematic}
 \end{figure}
@@ -284,11 +303,10 @@ sizes. Their width is always 10cm, their length ranges from 4cm to 20cm in
 The board uses the standardized 10cm x 12cm form factor introduced in the
 previous chapter.
 
-
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{./part-hardware/chapter-main-controller-hardware-pico/PCB_LcsNodes-Main-Controller-Board-B.02.10.pdf}
-    \caption{Main LCS Controller Connector and Level Shifters}
+    \includegraphics[width=0.8\textwidth]{./part-hardware/chapter-main-controller-hardware-pico/PCB_LcsNodes-Main-Controller-Board.pdf}
+    \caption{Main LCS Controller Board}
     %\label{fig:schematic}
 \end{figure}
 \FloatBarrier

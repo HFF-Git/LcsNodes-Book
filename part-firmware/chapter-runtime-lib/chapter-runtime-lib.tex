@@ -298,19 +298,19 @@ To simplify dispatching, the Item ID space is divided into several reserved rang
 Reserved NIL Item.\\
 \hline
 1 & 63 &
-Standard runtime items. Depending on the operation, these Item IDs either access 
+\textbf{Standard runtime item}s. Depending on the operation, these Item IDs either access 
 standardized node and port variables or invoke built-in runtime services.\\
 \hline
 64 & 127 &
-Channel Item IDs. GET, SET and REQ operations are dispatched directly to the
+\textbf{Channel Item ID}s. GET, SET and REQ operations are dispatched directly to the
 corresponding hardware channel.\\
 \hline
 128 & 255 &
-Application Item IDs. GET and SET operations access node or port attributes, 
+\textbf{Application Item ID}s. GET and SET operations access node or port attributes, 
 while REQ operations invoke application-defined callback functions.\\
 \hline
 256 & NVM\_MAX &
-Global User Data stored in the application-defined NVM area.\\
+\textbf{Global User Data} stored in the application-defined NVM area.\\
 \hline
 \end{tabularx}
 \end{center}
@@ -334,7 +334,8 @@ invoke application-defined callback functions.
 
 Finally, all Item IDs above 255 address the Global User Data area. This storage 
 is entirely application-defined and can be used for arbitrary persistent 
-information.
+information. The size is determined by the capacity of the non-volatile memory used
+on the particular board.
 
 %--------------------------------------------------------------------------------
 \unnumberedSubSection{Why Item IDs?}
@@ -343,10 +344,14 @@ The Item ID concept is one of the central architectural elements of RtLib.
 First, it provides a uniform programming model. Application firmware, 
 configuration tools, and remote nodes all use exactly the same addressing 
 mechanism, regardless of whether they access a runtime variable, an attribute, 
-a hardware channel, or an application-defined function. Second, dispatching 
+a hardware channel, or an application-defined function. 
+
+Second, dispatching 
 requests is extremely efficient. The runtime determines the destination of a 
 request through a few simple range comparisons, avoiding complex lookup tables 
-or dynamic registration mechanisms. Third, the dedicated Channel Item range 
+or dynamic registration mechanisms. 
+
+Third, the dedicated Channel Item range 
 cleanly separates hardware-specific functionality from the core runtime library. 
 New channel types can therefore be added without modifying the runtime itself.
 
@@ -355,6 +360,12 @@ ranges are standardized by RtLib, the application firmware is free to define
 its own attributes, callback functions, and persistent user data without 
 conflicting with the runtime library. The result is a compact, efficient, and 
 flexible programming interface that remains consistent across all LCS nodes.
+
+%--------------------------------------------------------------------------------
+\unnumberedSubSection{Addressing Examples}
+
+???? show how nodeId and Item form addresses...
+
 
 %--------------------------------------------------------------------------------
 \unnumberedSection{Summary}

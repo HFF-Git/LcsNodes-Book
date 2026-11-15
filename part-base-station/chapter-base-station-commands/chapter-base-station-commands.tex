@@ -1,5 +1,7 @@
 \unnumberedChapter{Base Station Commands}
 
+??? needs rework for new DCC-EX aligned commands...
+
 
 In addition to the LCS core library serial commands available to any node, the base station implements a serial command interface which accepts a subset of the \texttt{DCC++ / DCC-EX} commands. As a short introduction, \texttt{DCC++} was an implementation of a DCC base station using an Arduino Uno and a motor shield. For a very small budget and with little effort, the world of DCC opened up to everyone. Part of the \texttt{DCC++} system is an ASCII interface to send commends to the base station. The original commands was then refined by \texttt{DCC-EX}. Not only is this command line feature useful for debugging the base station code, it is really valuable when interfacing to tools such as Decoder Pro provided by the JMRI organization, which implemented an ACCI interface to \texttt{DCC++}.
 
@@ -21,29 +23,25 @@ The command listed in the table below are an accurate implementation of the offe
     \endfoot
     \bottomrule
     \endlastfoot
-    \textbf{O} cabId & & allocate a session for the cab \\
-    \midrule
-    \textbf{K} sessionId & & release a session \\
-    \midrule
-    \textbf{t} sessionId cabId speed direction & & set cab speed / direction \\
+    \textbf{t} cabId speed direction & & set cab speed / direction \\
     \midrule
     \textbf{f} cabId funcId val & & set cab function value, function group DCC format \\
     \midrule
-    \textbf{v} sessionId funcId val & & set cab function value, individual \\
+    \textbf{v} funcId val & & set cab function value, individual \\
     \midrule
-    \textbf{R} cvId callbacknum callbacksub & & read CV byte on the programming track \\
+    \textbf{R} cvId & & read CV byte on the programming track \\
     \midrule
-    \textbf{W} cvId val callbacknum callbacksub & & write CV byte on the programming track \\
+    \textbf{W} cvId val & & write CV byte on the programming track \\
     \midrule
-    \textbf{B} cvId bitPos bitVal callbacknum callbacksub & & write CV bit on the programming track \\
+    \textbf{B} cvId bitPos bitVal & & write CV bit on the programming track \\
     \midrule
     \textbf{b} cabId cvId bitPos bitVal & & write CV bit on the programming track \\
     \midrule
     \textbf{w} cabId cvId val & & write CV byte on the operations track \\
     \midrule
-    \textbf{M} sessionId byte1 byte2 [byte3 ... byte10] & & send DCC packet on operations track \\
+    \textbf{M} byte1 byte2 [byte3 ... byte10] & & send DCC packet on operations track \\
     \midrule
-    \textbf{P} sessionId byte1 byte2 [byte3 ... byte10] & & send DCC packet on programming track \\
+    \textbf{P} byte1 byte2 [byte3 ... byte10] & & send DCC packet on programming track \\
     \midrule
     \textbf{X} & & emergency stop all \\
     \midrule

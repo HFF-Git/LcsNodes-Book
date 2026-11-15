@@ -130,7 +130,7 @@ are organized.
 
 A port should represent something that has an independent meaning in the layout,
 not simply a hardware resource. A block controller with four track sections
-should therefore expose four block ports. The fact that these ports are
+should therefore for example expose four block ports. The fact that these ports are
 implemented using current sensors, GPIO pins or extension boards is an internal
 implementation detail.
 
@@ -211,12 +211,16 @@ The LCS library already offers a command line interface. It provides commands
 for managing a node and accessing its data. While this interface is not used
 during normal operation, it is extremely useful during firmware development,
 testing and debugging.
-All commands are also available through LCS messages, allowing troubleshooting
-and monitoring even when a node is already installed in the layout.
 
-Following this philosophy, implementing node specific commands is encouraged.
-Adding a new command simply requires implementing a command callback and
-registering it during node initialization.
+All LCS messages are also available through commands, allowing troubleshooting
+and monitoring even when a node is already installed in the layout. Especially 
+inspecting node attributes or submitting a request is extremely useful. The 
+command interface simply allows for sending messages to a node.
+
+Following this philosophy, implementing further node specific commands is 
+encouraged. Adding a new command simply requires implementing a command 
+callback and registering it during node initialization. The callback is 
+simply passed the command line for further command decoding.
 
 %--------------------------------------------------------------------------------
 \unnumberedSection{Configuration}
