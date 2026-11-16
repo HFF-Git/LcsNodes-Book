@@ -245,55 +245,6 @@ This flexibility allows extension boards to make use of the full capability
 of the Pico controller instead of being limited to simple GPIO signals.
 
 %--------------------------------------------------------------------------------
-\unnumberedSection{PICO Pin Mapping}
-
-The previous chapter defined the logical extension connector signals.
-The following table shows how these logical signals are mapped to the actual
-Pico pins.
-The mapping was chosen carefully to keep the most commonly used functions
-available while still allowing access to the internal Pico peripherals.
-
-\begin{longtable}{@{}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.2\linewidth}|@{}}
-    \caption{Pico Pin Mapping} \\
-    \toprule
-    \textbf{LCS Name} & \textbf{PICO Pin} & \textbf{LCS Name } & \textbf{PICO Pin} & \textbf{Purpose} \\
-    \midrule
-    \endfirsthead
-    \toprule
-    \textbf{LCS Name} & \textbf{PICO Pin} & \textbf{LCS Name } & \textbf{PICO Pin} & \textbf{Purpose} \\
-    \midrule
-    \endhead
-    \midrule
-    \multicolumn{2}{r}{\textit{Continued on next page}} \\
-    \midrule
-    \endfoot
-    \bottomrule
-    \endlastfoot
-    EXT-INT & 4 & PFAIL & 15 & \\
-    \midrule
-    ACT-LED & 14 & & & \\
-    \midrule
-    CAN-H & 0 & CAN-L & 1 & \\
-    \midrule
-    NVM-SDA & 2 & NVM-SCL & 3 & \\
-    \midrule
-    EXT-SDA & 16 & EXT-SCL & 17 & \\
-    \midrule
-    DIO-0 & 6 & DIO-1 & 7 & \\
-    \midrule
-    DIO-2 & 8 & DIO-3 & 9 & \\
-    \midrule
-    DIO-4 & 10 & DIO-5 & 11 & \\
-    \midrule
-    DIO-6 & 12 & DIO-7 & 13 & \\
-    \midrule
-    DIO-8 & 18 & DIO-9 & 19 & \\
-    \midrule
-    DIO-10 & 20 & DIO-11 & 21 & \\
-    \midrule
-\end{longtable}  
-
-%--------------------------------------------------------------------------------
 \unnumberedSection{A Main Controller Board PCB for PICO}
 
 The following figure shows the PCB layout of the Pico based main controller
@@ -321,7 +272,10 @@ interface between the controller board and extension boards. This allows
 different extension boards to be developed independently while still being
 compatible with the same controller platform.
 
-The main controller board therefore represents the basic building block for
-many future LCS modules. The following chapters will use this foundation and
+The main controller board represents the basic building block for
+many future LCS modules. Besides the controller there is the power supply
+section, the CAN bus interface and little else. Most of the controller Pins are routed to the exetension connector. 
+
+ are The following chapters will use this foundation and
 add the hardware required for specific tasks such as locomotive control,
 track power management and user interfaces.

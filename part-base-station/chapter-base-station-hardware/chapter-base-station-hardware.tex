@@ -2,19 +2,22 @@
 
 The base station is essentially based on a main controller board, a power module unit and a RailCom detector. We will use the PICO controller building blocks shown in the previous chapter. The extension connector of the base station exports the I2C interface and the DCC signal produced by the base station. So, adding an I2C based extension board for display, switches, etc. is possible. 
 
-There are two more building blocks we have to introduce first. They are the \texttt{Power Module} and the \texttt{RailCom Detector}.
+There are two more building blocks we have to introduce first. They are the \textbf{Power Module} and the \textbf{RailCom Detector}.
 
 \unnumberedSection{Power Module}
 
-A layout control system needs a form of DCC signal generator. They can be directly integrated with the base station to form one hardware module or be at the heart of a separated booster module. Depending on the model railroad scale, there are different voltages and maximum current considerations. A Gauge N layout has a different power requirement than a Gauge G layout. The NMRA standard defines the voltage ranges for the different gauges. Our assumption is that the layout system has a form of power supply that delivers the voltage and current requirements to the power module. For convenience, all hardware module node local power supplies for the controller and other chips should be able to handle a voltage range between 7V and 24V when drawing power from this power supply.
+A layout control system needs a form of DCC signal generator. They can be directly integrated with the base station to form one hardware module or be at the heart of a separated booster module. Depending on the model railroad scale, there are different voltages and maximum current considerations. A Gauge N layout has a different power requirement than a Gauge G layout. 
+
+The NMRA standard defines the voltage ranges for the different gauges. Our assumption is that the layout system has a form of power supply that delivers the voltage and current requirements to the power module. For convenience, all hardware module node local power supplies for the controller and other chips should be able to handle a voltage range between 7V and 24V when drawing power from this power supply.
 
 The power module exports the DCC signals via the external connectors and also as part of the LCS message bus connector. The track power extension connector is used by extension boards that directly use the H-Bridge output. A good example is an occupancy detector board which takes the DCC outputs and routes them to different sections, each equipped with a detectors for power consumption on the track. The power module unit features two identical channels. They are labelled "MAIN" and "PROG". Although the "PROG" channel would not need to deliver a high amperage, the dual H-Bridge is there anyway. And as said before, it would be nice to dynamically treat the PROG track as a type MAIN track too. 
 
  The main task of the DCC track power module is to provide the DCC signal to the track. DCC signals are square wave signals with a defined duty cycle period. A duty cycle of 58 microseconds represents a "DCC one", a duty cycle of 116 microseconds a "DCC zero" bit. A typical solution to this task is a H-Bridge design. The following figure shows the H-Bridge signal convention for LCS power modules.
  
+ \begin{center}
  \begin{tikzpicture}[scale=0.9, transform shape]
 
-    \draw[help lines, gray!50, dashed] (0,-2) grid (16,3);
+    % \draw[help lines, gray!50, dashed] (0,-2) grid (16,3);
 
     % Square wave
 
@@ -27,24 +30,23 @@ The power module exports the DCC signals via the external connectors and also as
     % Braces
 
     \draw[decorate, decoration={brace, mirror}]
-
         (2,-0.5) -- (4,-0.5)
         node[midway, below=8pt] {116\,\si{\micro\second}};
 
     \draw[decorate, decoration={brace, mirror}]
-
         (4,-0.5) -- (6,-0.5)
         node[midway, below=8pt] {116\,\si{\micro\second}};
 
     \draw[decorate, decoration={brace, mirror}]
-
         (6,-0.5) -- (10,-0.5)
         node[midway, below=8pt] {232\,\si{\micro\second}};
 
 \end{tikzpicture}
+\end{center}
 
+While a power module can vary in capacity and technology components, our logical design expect to send the same digital signals to a power module, no matter what it's design. It is a key requirements to derive from the DCC signal on the bus connector the state "+", "-" and "short circuit". The latter is needed for the cutout option. There is also the need to detect a logic "one" on both signal inputs and interpret this as setting the bridge to a high impedance state. 
 
-While a power module can vary in capacity and technology components, our logical design expect to send the same digital signals to a power module, no matter what it's design. It is a key requirements to derive from the DCC signal on the bus connector the state "+", "-" and "short circuit". The latter is needed for the cutout option. There is also the need to detect a logic "one" on both signal inputs and interpret this as setting the bridge to a high impedance state. This requirement comes primarily from the capability to also issue PWM signals, which will depending in the direction alternate between a positive or negative voltage and the high impedance state. There is a whole family of H-Bridge ICs and breakout boards. If a particular H-Bridge IC does not map the inputs to the table below, some gate logic needs to be added. The following table depicts the power module digital input management signals. The table below fits the L6205 H-Bridge nicely.
+This requirement comes primarily from the capability to also issue PWM signals, which will depending in the direction alternate between a positive or negative voltage and the high impedance state. There is a whole family of H-Bridge ICs and breakout boards. If a particular H-Bridge IC does not map the inputs to the table below, some gate logic needs to be added. The following table depicts the power module digital input management signals. The table below fits the L6205 H-Bridge nicely.
 
 \begin{longtable}{@{}|l|l|l|p{0.4\linewidth}|@{}}
     \caption{H-Bridge Control} \\
@@ -129,8 +131,6 @@ During the RailCom cutout period, the H-bridge is switched off and its outputs a
 
 Although the bridge presents a very low resistance, it still has a small internal resistance. The current pulses supplied by the decoder therefore produce corresponding voltage drops across the bridge. The RailCom detector monitors these voltage changes and uses its comparators to convert them into digital signals representing ones and zeroes.
 
-The hardware thus provides the electrical detection of RailCom transmissions, while the actual interpretation and processing of the received data is handled entirely by the firmware.
-
 The following figure shows the RailCom detector circuitry.
 
 \begin{figure}[htbp]
@@ -139,6 +139,8 @@ The following figure shows the RailCom detector circuitry.
 \caption{RailCom Detector}
 \end{figure}
 \FloatBarrier
+
+The hardware provides the electrical detection of RailCom transmissions, while the actual interpretation and processing of the received data is handled entirely by the firmware.
 
 For details on how the RailCom detector is used and how the received signals are processed, refer to the base station firmware chapter.
 

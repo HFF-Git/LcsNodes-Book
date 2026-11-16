@@ -1,23 +1,93 @@
 \unnumberedChapter{The Base Station}
 
-Take a deep breath. Over the next chapters we are about to put together our first major LCS hardware module. The previous chapters introduced the message format and protocols and the core library for implementing the event system as well as the running equipment based on the DCC signal standards. Next, we took a closer look on hardware building blocks. We also looked at how one would go after designing the node firmware in general. So here is the first and most important hardware module putting it all together. The base station. Every layout needs to have some kind of a base station that acts as the central place for layout control and signal generation.
+Take a deep breath. Over the next few chapters, we are going to put together our first major LCS
+ hardware module. The previous chapters introduced the message format and protocols, the core 
+ library for implementing the event system, and the underlying equipment based on the DCC 
+ signal standards. We then took a closer look at the individual hardware building blocks and 
+ discussed how to approach the design of node firmware in general.
 
-Looking at the market, there are plenty of so called base stations. They typically offer support for several standards and communication protocols, such as DCC, mfx, LocoNet, a Can Bus, a S88 sensor bus, and so on. Most base station also have the power module directly integrated. They support the configuration of locomotive and stationary decoders. In short, a one stop all round solution. Their price range is around few hundred Euros. With the advent of Arduino, Raspberry and other controllers there are numerous do it yourself solutions as well.
+Now it is time to bring all these pieces together. Here comes the first and arguably most 
+important hardware module: the base station. Every layout needs some kind of base station 
+that acts as the central point for layout control and signal generation.
 
-Just to name one, the \texttt{DCC++} Arduino base station with a motor shield as a power unit, gets you a base station for well under hundred Euros. The excellent work of the JMRI community to provide a \texttt{DCC++} interface for configuration software and other utilities to use this inexpensive base station hardware. The \texttt{DCC-EX} group extended and stabilized the original \texttt{DCC++} work for a wider range of controllers but also with new capabilities. There are many such great projects. The appendix provides some links and pointers to this work.
+Looking at the market, there are plenty of so-called base stations available. They typically
+ support several standards and communication protocols, such as DCC, mfx, LocoNet, CAN bus, 
+ S88 sensor bus, and so on. Most base stations also have the power unit directly integrated. 
+ They support the configuration of locomotive and stationary decoders. In short, they offer 
+ an all-in-one solution. Prices are typically in the range of a few hundred Euros. With the 
+ advent of Arduino, Raspberry Pi, and other low-cost controllers, there are numerous d
+ o-it-yourself solutions as well.
+
+Just to name one example, the classic \texttt{DCC++} Arduino base station, using a motor 
+shield as its power unit, provides a fully functional base station for well under a hundred
+ Euros. The excellent work of the JMRI community has made it possible to use this inexpensive 
+ hardware with configuration software and other utilities through a dedicated 
+ \texttt{DCC++} interface. The \texttt{DCC-EX} group has taken the original \texttt{DCC++} 
+ project further, extending and stabilizing it for a wider range of controllers while 
+ adding new capabilities. There are many other great projects out there. The appendix 
+ provides some links and pointers to this work.
 
 \unnumberedSection{Requirements}
 
-Our base station needs to deliver the following capabilities. At first it needs to be able to assemble the DCC packets and generate the respective DCC hardware signals. This work is split into the base station producing the signal content and the power section driving the hardware. Furthermore, the base station needs to provide a way to manage several locomotive sessions. For each active session the current state of the locomotive is maintained and the DCC packets are produced. When a new locomotive session is established, a dictionary of locomotives could be consulted about the particular locomotive to get the initial function settings, and so on.
+Our base station needs to provide a number of capabilities.
 
-A base station implementing locomotive session and track management should also implement a serial command interface for managing a session or sending commands to a locomotive. Although not really necessary, it is very beneficial for testing and debugging. But also, programming DCC decoders will need some form of getting the configuration data to the decoder. There are great openSource tools out there which make use of an ASCII interface to send their commands. An example is DecoderPro from the JMRI teams. It features among other protocols the \texttt{DCC++ / DCC-EX} ASCII interface to send and receive commands. Our base station will therefore implement the relevant \texttt{DCC++ / DCC-EX} commands.
+First, it must be able to assemble DCC packets and generate the corresponding DCC hardware
+ signals. These tasks are split between the base station, which produces the signal content, 
+ and the power unit, which drives the track.
 
-All configuration settings, such as the number of concurrent sessions or the current consumption limit for a track, should be available as attributes on the node itself and ports. A track should be represented by a port, so there will be a port for controlling the MAIN track output, and a port for controlling the PROG tack output.
+Furthermore, the base station needs to provide a way to manage several active locomotives. 
+For each active locomotive, the current state is maintained and the corresponding DCC packets 
+are produced. When a new locomotive session is established, a locomotive dictionary could be 
+consulted to retrieve the initial function settings and other relevant information about that 
+particular locomotive.
 
-Finally, the firmware for the base station should be able to host LCS management functions, such as a configuration database or display data about layout operations. This is not per se a function of the base station, but as each layout needs to have a base station and perhaps display high level status data, it is a convenient place to put central functionality there as well. This subject will be discussed in another chapter, this chapter will focus on the core base station features.
+A base station implementing locomotive session and track management should also provide a serial 
+command interface for managing sessions and sending commands to individual locomotives. Although 
+not strictly necessary, such an interface is extremely useful for testing and debugging. It is 
+also beneficial when programming DCC decoders, as some means of transferring configuration data
+ to the decoder is required.
+
+There are excellent open-source tools available that make use of an ASCII interface to send their
+ commands. One example is DecoderPro from the JMRI project. Among other protocols, it supports 
+ the \texttt{DCC++ / DCC-EX} ASCII interface for sending and receiving commands. Our base 
+ station will therefore implement the relevant \texttt{DCC++ / DCC-EX} commands.
+
+Base stations are often combined with layout management systems. These provide tools for 
+creating track plans, displaying graphical representations of the layout, and controlling 
+locomotives, turnouts, signals, and so on. RocRail, for example, is such a management system 
+and can connect to many different base stations.
+
+Our base station should be flexible enough to accommodate these management systems as well. 
+Think of a gateway approach: commands from RocRail, which come in several different forms, 
+are received and translated into LCS messages. Later in the book, we will have a chapter 
+dedicated to LCS gateways. A gateway, as well as a base station, is a natural place to provide
+ this kind of functionality.
+
+All configuration settings, such as the number of concurrent locomotive sessions or the current
+ consumption limit for a track, should be available as attributes in the node and port structures.
+  A track should be represented by a port. Consequently, we will have one port controlling the 
+  MAIN track output and another controlling the PROG track output.
+
+Finally, the base station firmware should be able to host basic LCS management functions, 
+such as defining a new node. This is not strictly a base station function. However, since 
+every layout needs a base station, and since it might also be used to display high-level status 
+information, it is a convenient place to host some central management functionality as well.
+
+We will discuss this subject in another chapter. For now, this chapter will focus on the core 
+features of the base station itself.
 
 \unnumberedSection{Base Station Components}
 
-The next chapters and sections will describe our base station. First the hardware is presented. IN addition to the main controller part, which we already know from the previous chapters, we need two more components. The \textbf{Power Unit} will power the DCC track. The description of the power unit design is also a good place to standardize the connectivity and polarity. 
+The following chapters and sections will describe the various components of our base station. 
+We will start with the hardware. 
+In addition to the main controller components we already know from the previous chapters, we 
+need two more components.
 
-The other component of the base station is a \textbf{RailCom Message detector}. RailCom is the back channel added to the DCC protocol. The base station will receive these messages, if the particular DCC decoder supports RailCom.
+The first is the \textbf{Power Unit}, which supplies power to the DCC track. Describing the 
+power unit design also provides a good opportunity to establish some standards for connectivity 
+and polarity.
+
+The second component is a \textbf{RailCom Message Detector}. RailCom is the back-channel 
+communication mechanism added to the DCC protocol. If a particular DCC decoder supports RailCom, 
+the base station can receive messages transmitted by that decoder through this channel.
+
