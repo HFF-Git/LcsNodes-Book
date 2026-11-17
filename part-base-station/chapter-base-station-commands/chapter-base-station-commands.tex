@@ -63,3 +63,369 @@ The command listed in the table below are an accurate implementation of the offe
 // ??? what else to say ? add some more text to the commands ?
 
 
+oooooo
+
+
+
+\unnumberedChapter{Base Station Commands}
+
+The base station provides a simple serial command interface for controlling
+locomotives, programming decoders, and inspecting the current state of the
+system. The commands are plain ASCII text and can be sent from a terminal
+or from layout-management software.
+
+The command syntax is based on the DCC++ command interface. The original
+DCC++ project provided a simple command interface for an Arduino-based
+command station. DCC-EX grew out of that work and has extended the interface
+over time. Several applications already understand this family of commands,
+so adopting a familiar syntax makes integration easier.
+
+The base station implements a useful subset of the DCC-EX command interface,
+together with a few commands specific to this implementation. It is neither
+a complete implementation nor an attempt to track every change in DCC-EX.
+The latter is an evolving project, and maintaining exact compatibility would
+be a moving target. The intention is to support the commands needed by the
+layout-management software and to provide a few additional facilities for
+testing and diagnostics.
+
+\unnumberedSection{The Command Interface}
+
+The command interface is implemented using the callback mechanism provided
+by the LCS runtime library. The runtime library handles the incoming serial
+data and distinguishes LCS messages from ordinary text commands. Any input
+that is not recognized as an LCS command is passed to the command callback
+registered by the base station.
+
+The base station implements the command interpreter in this callback. It
+parses the command, checks its arguments, and invokes the corresponding
+functionality in the base-station firmware.
+
+The CDC library provides two independent USB serial channels. One is used
+for the command interface. The second remains available for debugging and
+observing the firmware while the command interface is in use. This separation
+is quite convenient during development and does not require diagnostic output
+to share the command channel.
+
+An important detail is that command execution is asynchronous. The command
+callback does not wait for the requested operation to finish before accepting
+the next command. Instead, it starts or schedules the operation, and any
+result is printed later when it becomes available. This is particularly
+relevant for decoder programming, where the base station has to communicate
+with the decoder and determine whether the operation succeeded.
+
+Consequently, the serial interface should not be understood as a strict
+request/reply protocol in which every command is followed immediately by
+exactly one response. Output is written to the serial stream whenever it
+becomes available.
+
+Error reporting is also not entirely consistent. Depending on the command
+and the error condition, the interface may report an error using
+\texttt{<X>} or \texttt{<-1>}. These conventions are not applied uniformly
+throughout the command set. The descriptions below therefore document the
+known behavior of individual commands rather than suggesting that all
+commands follow one common response format.
+
+
+??? align and expand a little on the commands.... this is the first cut.
+
+\unnumberedSection{Command Overview}
+
+The following table provides a quick overview of the available commands.
+The detailed descriptions are grouped by functionality in the next section.
+
+\begin{longtable}{@{}|p{0.34\linewidth}|p{0.56\linewidth}|@{}}
+\caption{Base Station Serial Commands} \\
+\toprule
+\textbf{Command} & \textbf{Operation} \\
+\midrule
+\endfirsthead
+
+\toprule
+\textbf{Command} & \textbf{Operation} \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{2}{r}{\textit{Continued on next page}} \\
+\midrule
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+\multicolumn{2}{|l|}{\textbf{Locomotive Control}} \\
+\texttt{t cabId speed direction} & Set locomotive speed and direction \\
+\texttt{f cabId funcId val} & Set a locomotive function group \\
+\texttt{X} & Emergency stop all locomotives \\
+\midrule
+
+\multicolumn{2}{|l|}{\textbf{Decoder Programming}} \\
+\texttt{v funcId val} & Set an individual function on the PROG track \\
+\texttt{R cvId} & Read a CV byte on the PROG track \\
+\texttt{W cvId val} & Write a CV byte on the PROG track \\
+\texttt{B cvId bitPos bitVal} & Write a CV bit on the PROG track \\
+\texttt{b cabId cvId bitPos bitVal} & Write a CV bit on the operations track \\
+\texttt{w cabId cvId val} & Write a CV byte on the operations track \\
+\midrule
+
+\multicolumn{2}{|l|}{\textbf{Direct DCC Packet Transmission}} \\
+\texttt{M byte1 byte2 [byte3 ... byte10]} & Send a DCC packet on the operations track \\
+\texttt{P byte1 byte2 [byte3 ... byte10]} & Send a DCC packet on the PROG track \\
+\midrule
+
+\multicolumn{2}{|l|}{\textbf{Base Station Control and Diagnostics}} \\
+\texttt{a [opt]} & Display current consumption \\
+\texttt{C [option]} & Set base-station options \\
+\texttt{s [level]} & Display status information \\
+\texttt{S} & Display base-station configuration \\
+\texttt{L} & Display the locomotive session table \\
+\texttt{D} & Enter diagnostics mode \\
+\texttt{?} & Display command help \\
+
+\end{longtable}
+
+\unnumberedSection{Command Reference}
+
+The following section will give a short reference for the DCC-EX style commands support by our base station.
+
+\unnumberedSubSection{Set Locomotive Speed and Direction}
+
+The \textbf{t} command sets the speed and direction of a locomotive on the
+main track. The locomotive is identified by its cab address, referred to
+as \texttt{cabId} throughout the LCS software.
+
+\textbf{Syntax:} \texttt{t cabId speed direction}
+
+\textbf{Return:} The command is processed asynchronously. The exact success
+response and the command-specific error response still need to be verified.
+
+\unnumberedSubSection{Set Locomotive Functions}
+
+The \texttt{f} command sets a function group for a locomotive. The function
+group is specified in the DCC function-group format. Unlike the individual
+function command described below, this command addresses a locomotive on
+the main track using its cab address.
+
+\textbf{Syntax:} \texttt{f cabId funcId val}
+
+\textbf{Return:} The exact success response and command-specific error
+response still need to be verified.
+
+\unnumberedSubSection{Set an Individual Function on the PROG Track}
+
+The \texttt{v} command sets an individual function value on the programming
+track. It does not take a cab address. The PROG track is used to configure
+one decoder at a time, so there is no need to identify a locomotive by its
+cab address.
+
+\textbf{Syntax:} \texttt{v funcId val}
+
+\textbf{Return:} The operation is processed asynchronously. The exact
+success response and command-specific error response still need to be
+verified.
+
+\unnumberedSubSection{Emergency Stop}
+
+The \texttt{X} command requests an emergency stop for all locomotives.
+
+\textbf{Syntax:} \texttt{X}
+
+\textbf{Return:} It still needs to be verified whether the command produces
+a success acknowledgement and, if so, what that acknowledgement looks like.
+
+\unnumberedSection{Decoder Programming}
+
+The programming commands operate on either the PROG track or the main
+operations track. The distinction is important: commands for the PROG track
+do not require a cab address, whereas operations-track commands address a
+decoder using its cab address.
+
+\unnumberedSubSection{Read a CV Byte}
+
+The \texttt{R} command reads a configuration variable (CV) byte from the
+decoder on the programming track.
+
+\textbf{Syntax:} \texttt{R cvId}
+
+\textbf{Return:} The result of the CV read is reported asynchronously.
+The exact output format and the response in case of a failed read still
+need to be verified.
+
+\unnumberedSubSection{Write a CV Byte on the PROG Track}
+
+The \texttt{W} command writes a byte value to a configuration variable on
+the programming track.
+
+\textbf{Syntax:} \texttt{W cvId val}
+
+\textbf{Return:} The exact success acknowledgement and error response
+still need to be verified.
+
+\unnumberedSubSection{Write a CV Bit on the PROG Track}
+
+The \texttt{B} command changes an individual bit in a configuration variable
+on the programming track. The bit position and the value to be written are
+given as separate arguments.
+
+\textbf{Syntax:} \texttt{B cvId bitPos bitVal}
+
+\textbf{Return:} The exact success acknowledgement and error response
+still need to be verified.
+
+\unnumberedSubSection{Write a CV Bit on the Operations Track}
+
+The \texttt{b} command changes an individual bit in a configuration variable
+using operations-mode programming. The target decoder is identified by its
+cab address.
+
+\textbf{Syntax:} \texttt{b cabId cvId bitPos bitVal}
+
+\textbf{Return:} The exact success acknowledgement and error response
+still need to be verified.
+
+\unnumberedSubSection{Write a CV Byte on the Operations Track}
+
+The \texttt{w} command writes a complete byte to a configuration variable
+using operations-mode programming. The target decoder is identified by its
+cab address.
+
+\textbf{Syntax:} \texttt{w cabId cvId val}
+
+\textbf{Return:} The exact success acknowledgement and error response
+still need to be verified.
+
+\unnumberedSection{Direct DCC Packet Transmission}
+
+In addition to the higher-level commands for controlling locomotives and
+programming decoders, the base station can transmit a DCC packet supplied
+directly as a sequence of bytes. This is useful for testing and for sending
+commands that are not covered by the higher-level interface.
+
+\unnumberedSubSection{Send a DCC Packet on the Operations Track}
+
+The \texttt{M} command transmits the supplied DCC packet on the main
+operations track. At least two bytes are required; additional bytes can be
+supplied up to the supported maximum of ten.
+
+\textbf{Syntax:} \texttt{M byte1 byte2 [byte3 ... byte10]}
+
+\textbf{Return:} It still needs to be verified whether a successful
+transmission is acknowledged and how transmission errors are reported.
+
+\unnumberedSubSection{Send a DCC Packet on the PROG Track}
+
+The \texttt{P} command transmits the supplied DCC packet on the programming
+track. As with the \texttt{M} command, at least two bytes are required and
+additional bytes can be supplied up to the supported maximum of ten.
+
+\textbf{Syntax:} \texttt{P byte1 byte2 [byte3 ... byte10]}
+
+\textbf{Return:} It still needs to be verified whether a successful
+transmission is acknowledged and how transmission errors are reported.
+
+\unnumberedSection{Base Station Control and Diagnostics}
+
+The remaining commands provide access to base-station settings, status
+information, and diagnostic facilities.
+
+\unnumberedSubSection{Display Track Current Consumption}
+
+The \texttt{a} command displays the current consumption measured on one or
+both tracks. The optional argument selects the track.
+
+\textbf{Syntax:} \texttt{a [opt]}
+
+The argument has the following meaning:
+
+\begin{itemize}
+    \item \texttt{0}: MAIN track (default)
+    \item \texttt{1}: PROG track
+    \item \texttt{2}: Both tracks
+\end{itemize}
+
+\textbf{Return:} The current-consumption readings for the selected track
+or tracks are printed asynchronously. The exact output format and units
+should be confirmed against the implementation.
+
+\unnumberedSubSection{Set Base Station Options}
+
+The \texttt{C} command changes selected base-station options. The argument
+identifies the option to be changed.
+
+\textbf{Syntax:} \texttt{C [option]}
+
+The available options are:
+
+\begin{itemize}
+    \item \texttt{0}: Set the service track to operations mode
+    \item \texttt{1}: Set the service track to service mode
+    \item \texttt{2}: Enable RailCom
+    \item \texttt{3}: Disable RailCom
+\end{itemize}
+
+\textbf{Return:} It still needs to be verified whether changing an option
+produces a confirmation and how invalid option values are reported.
+
+\unnumberedSubSection{Display Base Station Status}
+
+The \texttt{s} command displays status information. The optional argument
+selects the amount and type of information to be shown.
+
+\textbf{Syntax:} \texttt{s [level]}
+
+The available levels are:
+
+\begin{itemize}
+    \item \texttt{0}: Summary (default)
+    \item \texttt{1}: Configuration
+    \item \texttt{2}: Session map
+\end{itemize}
+
+\textbf{Return:} The selected status information is printed asynchronously.
+The exact formatting and the end of the output should be confirmed.
+
+\unnumberedSubSection{Display Base Station Configuration}
+
+The \texttt{S} command displays the base-station configuration.
+
+\textbf{Syntax:} \texttt{S}
+
+\textbf{Return:} The configuration is printed to the command interface.
+The exact output format and any error response should be confirmed.
+
+\unnumberedSubSection{Display the Locomotive Session Table}
+
+The \texttt{L} command displays the current locomotive session table. This
+is useful when inspecting which locomotives are known to the base station
+and which sessions are currently maintained.
+
+\textbf{Syntax:} \texttt{L}
+
+\textbf{Return:} The session table is printed to the command interface.
+The exact output format and any error response should be confirmed.
+
+\unnumberedSubSection{Enter Diagnostics Mode}
+
+The \texttt{D} command enters diagnostics mode. Leaving this mode requires
+a restart of the base station.
+
+\textbf{Syntax:} \texttt{D}
+
+\textbf{Return:} It still needs to be verified whether the command prints
+a confirmation before entering diagnostics mode and how the transition
+is reported.
+
+\unnumberedSubSection{Display Command Help}
+
+The \texttt{?} command displays the available command help.
+
+\textbf{Syntax:} \texttt{?}
+
+\textbf{Return:} A help listing is printed to the command interface. The
+exact formatting and the end of the output should be confirmed.
+
+
+
+
+
+

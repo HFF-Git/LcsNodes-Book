@@ -1,0 +1,27 @@
+\clearpage
+\thispagestyle{empty}
+
+\begin{tikzpicture} [ remember picture, overlay ]
+
+% Centered illustration
+\node at ([ yshift=40mm ]current page.center) {
+	\includegraphics[
+		width=0.8\paperwidth,
+		height=0.85\paperheight,
+		keepaspectratio
+		] {part-last-page/abisz-cart-kopf365_pfeiler-LO.png}
+	};
+
+% Publication information in the lower-right corner
+\node [
+    anchor=south east,
+    align=right,
+    font=\footnotesize
+] at ([ xshift=-18mm, yshift=12mm ] current page.south east) {
+    \textbf{LCS - Model Railroad Control System}\\
+    Book Version: 1.0.0\\
+    Date printed: \today
+};
+
+\end{tikzpicture}
+\clearpage
