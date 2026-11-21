@@ -17,9 +17,17 @@ Because of the large variety of extension boards a software layer is needed that
 
 // ??? nodes, ports and channels...
 
+// ??? new text ... 
+
+/// ??? started out with dedicated I2C c hips, but too limiting.
+
+// ??? ATTINY allows to implement functionality and I2C interface with our numbering scheme.
+
+// ??? common layout for reserved items ( 64 .. 127 ), etc.
+
 To accommodate the requirements, each extension board has to a hardware mechanism that uniquely identifies the board and its capabilities. It is a not a requirement that such a board has processing power or retains any state. This is the responsibility of the controller board. When power is applied to the main controller the reset or restart sequence will attempt to discover all extension boards connected. For this to work, each board has a non-volatile memory structure that describes the board capabilities. And this memory needs to be at a known place, i.e. I2C address, such that this information can be read without knowing any further details. For this purpose, extension boards will have a NVM chip, that contains the board description.
 
-The NVM chip is "programmed" by writing the relevant data to the chip. A write-enable jumper is used to allow writing and then disable all further changes during operation. There is no need for a special programmer, any main controller board can do this via the I2C lines of the extension connector. With using the NV chip, there is no need to have any further DIP switches or alike on the board. In fact, a memory chip allows for even more precise options to configure. And it is cheaper that even a 4-DIP switch.
+The NVM chip is "programmed" by writing the relevant data to the chip. A write-enable jumper is used to allow writing and then disable all further changes during operation. There is no need for a special programmer, any main controller board can do this via the I2C lines of the extension connector. With using the NV chip, there is no need to have any further DIP switches or alike on the board. In fact, a memory chip allows for even more precise options to configure. And it is cheaper than even a 4-DIP switch.
 
 After programming the NVM chip will contains all information needed to address the extension board functions. Typically, one or more I2C addressable chips are on the board and the NVM tells us what their address is. Combining the chip foxed I2C address portion, the board address portion and the individual chip select portion, an I2C bus unique address is formed. 
 
@@ -29,8 +37,18 @@ In addition to the board address a large variety of inputs, outputs and perhaps 
 
 For a new board design, the development process is therefore to define the NVM data that represent the hardware capabilities  and to provide a driver for the board capabilities. From thereon, the firmware designer can use the extension boards with simple but powerful commands. How does this all map to LCS nodes and ports ? Well, the firmware designer has to provide the code that makes the respective driver calls when receiving node and port control commands and events.
 
+\unnumberedSection{The Attiny Microcontroller}
+
+??? what is the Attiny, what will it do for us ?
+
+\unnumberedSection{A typical Extension Board}
+
+??? outline the common pieces...
+
 
 \unnumberedSection{Multiple Extension Boards}
+
+// ??? two options. I2C cable or backplane
 
 // ??? they are encoded via the port and channels number. One can have boards directly connected to the extension connector and via a cable as satellites...
 
@@ -38,7 +56,24 @@ For a new board design, the development process is therefore to define the NVM d
 \unnumberedSection{Board Discovery and Setup}
 
 // ??? we do not need a discovery... channels do the trick ... 
+
 // ??? we try to read from a channels and if response -> found one .
+
+
+\unnumberedSection{Extension Memory layout}
+
+??? what is the common register map seen by I2C reads and writes ?
+
+\unnumberedSection{Extension Protocol Messages}
+
+// ??? we simply use the LCS messages... 
+
+// ??? it is the addressing/item scheme that is our friend ... 
+
+
+
+
+
 
 
 
